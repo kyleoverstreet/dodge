@@ -61,6 +61,7 @@ Window win;
 //function prototypes
 void initXWindows(void);
 void initOpengl(void);
+void cleanupPPM(void);
 void cleanupXWindows(void);
 void checkResize(XEvent *e);
 void checkMouse(XEvent *e);
@@ -192,11 +193,18 @@ int main(void)
 		render();
 		glXSwapBuffers(dpy, win);
 	}
+	cleanupPPM();
 	cleanupXWindows();
 	cleanup_fonts();
 	logClose();
 	return 0;
 }
+
+void cleanupPPM(void)
+{
+    system("rm ./images/standL.ppm");
+}
+
 
 void cleanupXWindows(void)
 {
@@ -315,6 +323,7 @@ void initOpengl(void)
 	//
 	//load the images file into a ppm structure.
 	//
+	system("convert ./images/standL.png ./images/standL.ppm");
 	bigfootImage     = ppm6GetImage("./images/standL.ppm");
 	forestImage      = ppm6GetImage("./images/forest.ppm");
 	forestTransImage = ppm6GetImage("./images/forestTrans.ppm");
