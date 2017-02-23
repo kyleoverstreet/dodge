@@ -30,9 +30,9 @@
 #include <X11/keysym.h>
 #include <GL/glx.h>
 #include "log.h"
-#include "ppm.h"
+#include "./libraries/ppm.h"
 extern "C" {
-	#include "fonts.h"
+	#include "./libraries/fonts.h"
 }
 
 //defined types
