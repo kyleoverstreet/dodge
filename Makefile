@@ -1,11 +1,7 @@
-CFLAGS = -I ./include
-##LIB  = ./lib/fmod/libfmodex64.so
-LFLAGS = -lrt -lx11 -lGLU -lGL -pthread -lm #-lXrandr
-
 all: dodge
 
-dodge: dodge.cpp ppm.cpp log.cpp jacobW.cpp christianC.cpp kyleO.cpp koryD.cpp youngO.cpp
-	g++ $(CFLAGS) dodge.cpp ppm.cpp log.cpp jacobW.cpp christianC.cpp kyleO.cpp koryD.cpp youngO.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -o dodge
+dodge: dodge.cpp jacobW.cpp christianC.cpp kyleO.cpp koryD.cpp youngO.cpp
+	g++ dodge.cpp ./libraries/ppm.cpp ./libraries/fonts.h ./libraries/log.cpp ./libraries/libggfonts.a -Wall -o dodge -lX11 -lGL -lGLU -lm
 
 clean:
 	rm -f dodge
