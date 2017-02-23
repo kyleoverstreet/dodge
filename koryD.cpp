@@ -3,7 +3,7 @@
 using namespace std;
 
 
-void jacob() 
+void kory() 
 {
 	cout << "This is a test of kory's function\n";
 	return;
