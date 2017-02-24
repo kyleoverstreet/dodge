@@ -95,6 +95,7 @@ int xres=800, yres=600;
 typedef struct t_bigfoot {
 	Vec pos;
 	Vec vel;
+	Vec lastpos;
 } Bigfoot;
 Bigfoot bigfoot;
 
@@ -203,6 +204,7 @@ int main(void)
 void cleanupPPM(void)
 {
     system("rm ./images/standL.ppm");
+    system("rm ./images/PixelBG.ppm");
 }
 
 
@@ -323,9 +325,13 @@ void initOpengl(void)
 	//
 	//load the images file into a ppm structure.
 	//
+	//Character Image
 	system("convert ./images/standL.png ./images/standL.ppm");
 	bigfootImage     = ppm6GetImage("./images/standL.ppm");
-	forestImage      = ppm6GetImage("./images/forest.ppm");
+	//Background Image
+	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
+	forestImage      = ppm6GetImage("./images/PixelBG.ppm");
+	
 	forestTransImage = ppm6GetImage("./images/forestTrans.ppm");
 	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
 	//
@@ -338,7 +344,7 @@ void initOpengl(void)
 	//bigfoot
 	//
 	int w = bigfootImage->width;
-	int h = bigfootImage->height;
+	int h = bigfootImage->height;	
 	//
 	glBindTexture(GL_TEXTURE_2D, bigfootTexture);
 	//
@@ -440,9 +446,9 @@ void initSounds(void)
 }
 
 void init() {
-	umbrella.pos[0] = 220.0;
-	umbrella.pos[1] = (double)(yres-200);
-	VecCopy(umbrella.pos, umbrella.lastpos);
+	bigfoot.pos[0] = 220.0;
+	bigfoot.pos[1] = (double)(yres-200);
+	VecCopy(bigfoot.pos, bigfoot.lastpos);
 	umbrella.width = 200.0;
 	umbrella.width2 = umbrella.width * 0.5;
 	umbrella.radius = (float)umbrella.width2;
@@ -498,7 +504,7 @@ void checkKeys(XEvent *e)
 		case XK_b:
 			showBigfoot ^= 1;
 			if (showBigfoot) {
-			   bigfoot.pos[0] = -250.0;
+			   bigfoot.pos[0] = +300.0;
 			}
 			break;
 		case XK_d:
@@ -526,14 +532,14 @@ void checkKeys(XEvent *e)
 			//	cleanup_raindrops();
 			break;
 		case XK_Left:
-			VecCopy(umbrella.pos, umbrella.lastpos);
-			umbrella.pos[0] -= 10.0;
+			VecCopy(bigfoot.pos, bigfoot.lastpos);
+			bigfoot.pos[0] -= 10.0;
 			break;
 		case XK_Right:
-			VecCopy(umbrella.pos, umbrella.lastpos);
-			umbrella.pos[0] += 10.0;
+			VecCopy(bigfoot.pos, bigfoot.lastpos);
+			bigfoot.pos[0] += 10.0;
 			break;
-		case XK_Up:
+		/*case XK_Up:
 			VecCopy(umbrella.pos, umbrella.lastpos);
 			umbrella.pos[1] += 10.0;
 			break;
@@ -541,6 +547,7 @@ void checkKeys(XEvent *e)
 			VecCopy(umbrella.pos, umbrella.lastpos);
 			umbrella.pos[1] -= 10.0;
 			break;
+		*/
 		case XK_equal:
 			if (++ndrops > 40)
 				ndrops=40;
@@ -634,27 +641,14 @@ void deleteRain(Raindrop *node)
 
 void moveBigfoot()
 {
-	if (!showBigfoot)
-		return;
-	//move bigfoot...
-	int addgrav = 1;
-	//Update position
-	bigfoot.pos[0] += bigfoot.vel[0];
-	bigfoot.pos[1] += bigfoot.vel[1];
-	//Check for collision with window edges
-	if ((bigfoot.pos[0] < -140.0 && bigfoot.vel[0] < 0.0) ||
-				(bigfoot.pos[0] >= (float)xres+140.0 && bigfoot.vel[0] > 0.0)) {
-		bigfoot.vel[0] = -bigfoot.vel[0];
-		addgrav = 0;
+    //Check if picture at edge LEFT
+	if (bigfoot.pos[0] <= 0.0) {
+		bigfoot.pos[0] = 0;
 	}
-	if ((bigfoot.pos[1] < 150.0 && bigfoot.vel[1] < 0.0) ||
-				(bigfoot.pos[1] >= (float)yres && bigfoot.vel[1] > 0.0)) {
-		bigfoot.vel[1] = -bigfoot.vel[1];
-		addgrav = 0;
+	//Check if picture at edge RIGHT
+	if (bigfoot.pos[0] >= 600) {
+	        bigfoot.pos[0] = 600;
 	}
-	//Gravity
-	if (addgrav)
-		bigfoot.vel[1] -= 0.75;
 }
 
 
