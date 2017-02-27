@@ -162,7 +162,7 @@ int main(void)
 		while (XPending(dpy)) {
 			XEvent e;
 			XNextEvent(dpy, &e);
-			checkResize(&e);
+//			checkResize(&e);
 			checkMouse(&e);
 			checkKeys(&e);
 		}
@@ -257,7 +257,7 @@ void initXWindows(void)
 	setTitle();
 }
 
-void reshapeWindow(int width, int height)
+/*void reshapeWindow(int width, int height)
 {
 	//window has been resized.
 	setupScreenRes(width, height);
@@ -267,7 +267,7 @@ void reshapeWindow(int width, int height)
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 	glOrtho(0, xres, 0, yres, -1, 1);
 	setTitle();
-}
+}*/
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
@@ -332,7 +332,7 @@ void initOpengl(void)
 	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
 	forestImage      = ppm6GetImage("./images/PixelBG.ppm");
 	
-	forestTransImage = ppm6GetImage("./images/forestTrans.ppm");
+	forestTransImage = ppm6GetImage("./images/transparent.ppm");
 	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
 	//
 	//create opengl texture elements
@@ -416,7 +416,7 @@ void initOpengl(void)
 	//-------------------------------------------------------------------------
 }
 
-void checkResize(XEvent *e)
+/*void checkResize(XEvent *e)
 {
 	//The ConfigureNotify is sent by the
 	//server if the window is resized.
@@ -427,7 +427,7 @@ void checkResize(XEvent *e)
 		//Window size did change.
 		reshapeWindow(xce.width, xce.height);
 	}
-}
+}*/
 
 void initSounds(void)
 {
