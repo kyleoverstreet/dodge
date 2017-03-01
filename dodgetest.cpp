@@ -162,7 +162,6 @@ int main(void)
 		while (XPending(dpy)) {
 			XEvent e;
 			XNextEvent(dpy, &e);
-//			checkResize(&e);
 			checkMouse(&e);
 			checkKeys(&e);
 		}
@@ -233,7 +232,7 @@ void initXWindows(void)
 	//GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
 	XSetWindowAttributes swa;
 
-	setupScreenRes(640, 480);
+	setupScreenRes(1280, 960);
 	dpy = XOpenDisplay(NULL);
 	if (dpy == NULL) {
 		printf("\n\tcannot connect to X server\n\n");
@@ -256,18 +255,6 @@ void initXWindows(void)
 	glXMakeCurrent(dpy, win, glc);
 	setTitle();
 }
-
-/*void reshapeWindow(int width, int height)
-{
-	//window has been resized.
-	setupScreenRes(width, height);
-	//
-	glViewport(0, 0, (GLint)width, (GLint)height);
-	glMatrixMode(GL_PROJECTION); glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-	glOrtho(0, xres, 0, yres, -1, 1);
-	setTitle();
-}*/
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
@@ -331,8 +318,9 @@ void initOpengl(void)
 	//Background Image
 	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
 	forestImage      = ppm6GetImage("./images/PixelBG.ppm");
-	
+	//Transparent Image (since it messes up if I delete it)	
 	forestTransImage = ppm6GetImage("./images/transparent.ppm");
+	//Umbrella Image
 	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
 	//
 	//create opengl texture elements
@@ -416,33 +404,12 @@ void initOpengl(void)
 	//-------------------------------------------------------------------------
 }
 
-/*void checkResize(XEvent *e)
-{
-	//The ConfigureNotify is sent by the
-	//server if the window is resized.
-	if (e->type != ConfigureNotify)
-		return;
-	XConfigureEvent xce = e->xconfigure;
-	if (xce.width != xres || xce.height != yres) {
-		//Window size did change.
-		reshapeWindow(xce.width, xce.height);
-	}
-}*/
-
 void initSounds(void)
 {
 	//You may add sound here for some extra credit.
 	//Fmod is not allowed.
 	//OpenAL sound only.
 	//Look for the openalTest folder under /code.
-
-
-
-
-
-
-
-
 }
 
 void init() {
@@ -454,7 +421,7 @@ void init() {
 	umbrella.radius = (float)umbrella.width2;
 	umbrella.shape = UMBRELLA_FLAT;
 	MakeVector(-150.0,180.0,0.0, bigfoot.pos);
-	MakeVector(6.0,0.0,0.0, bigfoot.vel);
+	MakeVector(5.0,0.0,0.0, bigfoot.vel);
 }
 
 void checkMouse(XEvent *e)
@@ -504,7 +471,8 @@ void checkKeys(XEvent *e)
 		case XK_b:
 			showBigfoot ^= 1;
 			if (showBigfoot) {
-			   bigfoot.pos[0] = +300.0;
+			   bigfoot.pos[0] = xres/2;
+			   bigfoot.pos[1] = yres-820;
 			}
 			break;
 		case XK_d:
@@ -533,11 +501,11 @@ void checkKeys(XEvent *e)
 			break;
 		case XK_Left:
 			VecCopy(bigfoot.pos, bigfoot.lastpos);
-			bigfoot.pos[0] -= 10.0;
+			bigfoot.pos[0] -= 8.0;
 			break;
 		case XK_Right:
 			VecCopy(bigfoot.pos, bigfoot.lastpos);
-			bigfoot.pos[0] += 10.0;
+			bigfoot.pos[0] += 8.0;
 			break;
 		/*case XK_Up:
 			VecCopy(umbrella.pos, umbrella.lastpos);
@@ -642,12 +610,12 @@ void deleteRain(Raindrop *node)
 void moveBigfoot()
 {
     //Check if picture at edge LEFT
-	if (bigfoot.pos[0] <= 0.0) {
+	if (bigfoot.pos[0] <= 0) {
 		bigfoot.pos[0] = 0;
 	}
 	//Check if picture at edge RIGHT
-	if (bigfoot.pos[0] >= 600) {
-	        bigfoot.pos[0] = 600;
+	if (bigfoot.pos[0] >= xres) {
+	        bigfoot.pos[0] = xres;
 	}
 }
 
@@ -875,7 +843,7 @@ void render(void)
 	//
 	//
 	//draw a quad with texture
-	float wid = 120.0f;
+	float wid = 40.0f;
 	glColor3f(1.0, 1.0, 1.0);
 	if (forest) {
 		glBindTexture(GL_TEXTURE_2D, forestTexture);
