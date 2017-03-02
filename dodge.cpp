@@ -4,7 +4,7 @@
 #include "youngO.cpp"
 
 extern void printChristian();
-extern void upload_socres(const char*);
+extern void upload_scores(const char*);
 
 
 int main()
