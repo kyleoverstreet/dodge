@@ -31,6 +31,10 @@
 #include <GL/glx.h>
 #include "log.h"
 #include "./libraries/ppm.h"
+#include <AL/al.h>
+#include <AL/alc.h>
+
+
 extern "C" {
 	#include "./libraries/fonts.h"
 }
