@@ -14,6 +14,10 @@ using namespace std;
 void gamelog(string, int);
 void upload_scores(const char *);
 
+// To do:
+// Need gamelog to be read from web server
+// Need to upload scores to web server
+
 // Append player name, score, and date to gamelog
 void gamelog(string p1, int score1)
 {
@@ -33,8 +37,7 @@ void gamelog(string p1, int score1)
 }
 
 // Upload the gamelog to an html webpage
-// (Hard-coded file path for function testing purpose)
-void upload_scores(const char *path)
+void upload_scores()
 {
     cout << "Ran Kyle's upload_scores function." << endl
         << "See \"scores.html\" for sample. This file will eventually upload to web server" << endl;
