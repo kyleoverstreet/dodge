@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-extern void printChristian()
+void printChristian()
 {
 	cout << "Christian\n";
 	return;
