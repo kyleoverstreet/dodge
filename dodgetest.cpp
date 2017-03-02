@@ -10,7 +10,7 @@
 //This program demonstrates the use of OpenGL and XWindows
 //
 //Texture maps are displayed.
-//Press B to see bigfoot roaming his forest.
+//Press B to see player roaming his forest.
 //
 //The rain builds up like snow on the ground.
 //Fix it by removing each raindrop for the rain linked list.
@@ -92,23 +92,23 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 int done=0;
 int xres=800, yres=600;
 
-typedef struct t_bigfoot {
+typedef struct t_player {
 	Vec pos;
 	Vec vel;
 	Vec lastpos;
-} Bigfoot;
-Bigfoot bigfoot;
+} Player;
+Player player;
 
-Ppmimage *bigfootImage=NULL;
+Ppmimage *playerImage=NULL;
 Ppmimage *forestImage=NULL;
 Ppmimage *forestTransImage=NULL;
 Ppmimage *umbrellaImage=NULL;
-GLuint bigfootTexture;
+GLuint playerTexture;
 GLuint silhouetteTexture;
 GLuint forestTexture;
 GLuint forestTransTexture;
 GLuint umbrellaTexture;
-int showBigfoot=0;
+int showPlayer=0;
 int forest=1;
 int silhouette=1;
 int trees=1;
@@ -203,6 +203,7 @@ int main(void)
 void cleanupPPM(void)
 {
     system("rm ./images/standL.ppm");
+    system("rm ./images/StandR.ppm");
     system("rm ./images/PixelBG.ppm");
 }
 
@@ -312,9 +313,12 @@ void initOpengl(void)
 	//
 	//load the images file into a ppm structure.
 	//
-	//Character Image
+	//Character Image Left
 	system("convert ./images/standL.png ./images/standL.ppm");
-	bigfootImage     = ppm6GetImage("./images/standL.ppm");
+	playerImage     = ppm6GetImage("./images/standL.ppm");
+	//Character Image Right
+	system("convert ./images/StandR.png ./images/StandR.ppm");
+	playerImage     = ppm6GetImage("./images/StandR.ppm");
 	//Background Image
 	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
 	forestImage      = ppm6GetImage("./images/PixelBG.ppm");
@@ -324,22 +328,22 @@ void initOpengl(void)
 	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
 	//
 	//create opengl texture elements
-	glGenTextures(1, &bigfootTexture);
+	glGenTextures(1, &playerTexture);
 	glGenTextures(1, &silhouetteTexture);
 	glGenTextures(1, &forestTexture);
 	glGenTextures(1, &umbrellaTexture);
 	//-------------------------------------------------------------------------
-	//bigfoot
+	//player
 	//
-	int w = bigfootImage->width;
-	int h = bigfootImage->height;	
+	int w = playerImage->width;
+	int h = playerImage->height;	
 	//
-	glBindTexture(GL_TEXTURE_2D, bigfootTexture);
+	glBindTexture(GL_TEXTURE_2D, playerTexture);
 	//
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-							GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
+							GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
 	//-------------------------------------------------------------------------
 	//
 	//silhouette
@@ -351,12 +355,12 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	//
 	//must build a new set of data...
-	unsigned char *silhouetteData = buildAlphaData(bigfootImage);	
+	unsigned char *silhouetteData = buildAlphaData(playerImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 							GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 	//glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-	//	GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
+	//	GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
 	//-------------------------------------------------------------------------
 	//
 	//umbrella
@@ -372,7 +376,7 @@ void initOpengl(void)
 							GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 	//glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-	//	GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
+	//	GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
 	//-------------------------------------------------------------------------
 	//
 	//forest
@@ -400,7 +404,7 @@ void initOpengl(void)
 							GL_RGBA, GL_UNSIGNED_BYTE, ftData);
 	free(ftData);
 	//glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-	//GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
+	//GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
 	//-------------------------------------------------------------------------
 }
 
@@ -413,15 +417,15 @@ void initSounds(void)
 }
 
 void init() {
-	bigfoot.pos[0] = 220.0;
-	bigfoot.pos[1] = (double)(yres-200);
-	VecCopy(bigfoot.pos, bigfoot.lastpos);
+	player.pos[0] = 220.0;
+	player.pos[1] = (double)(yres-200);
+	VecCopy(player.pos, player.lastpos);
 	umbrella.width = 200.0;
 	umbrella.width2 = umbrella.width * 0.5;
 	umbrella.radius = (float)umbrella.width2;
 	umbrella.shape = UMBRELLA_FLAT;
-	MakeVector(-150.0,180.0,0.0, bigfoot.pos);
-	MakeVector(5.0,0.0,0.0, bigfoot.vel);
+	MakeVector(-150.0,180.0,0.0, player.pos);
+	MakeVector(5.0,0.0,0.0, player.vel);
 }
 
 void checkMouse(XEvent *e)
@@ -469,10 +473,10 @@ void checkKeys(XEvent *e)
 	}
 	switch(key) {
 		case XK_b:
-			showBigfoot ^= 1;
-			if (showBigfoot) {
-			   bigfoot.pos[0] = xres/2;
-			   bigfoot.pos[1] = yres-820;
+			showPlayer ^= 1;
+			if (showPlayer) {
+			   player.pos[0] = xres/2;
+			   player.pos[1] = yres-920;
 			}
 			break;
 		case XK_d:
@@ -500,12 +504,12 @@ void checkKeys(XEvent *e)
 			//	cleanup_raindrops();
 			break;
 		case XK_Left:
-			VecCopy(bigfoot.pos, bigfoot.lastpos);
-			bigfoot.pos[0] -= 8.0;
+			VecCopy(player.pos, player.lastpos);
+			player.pos[0] -= 8.0;
 			break;
 		case XK_Right:
-			VecCopy(bigfoot.pos, bigfoot.lastpos);
-			bigfoot.pos[0] += 8.0;
+			VecCopy(player.pos, player.lastpos);
+			player.pos[0] += 8.0;
 			break;
 		/*case XK_Up:
 			VecCopy(umbrella.pos, umbrella.lastpos);
@@ -607,15 +611,15 @@ void deleteRain(Raindrop *node)
 	//and set the node to NULL.
 }
 
-void moveBigfoot()
+void movePlayer()
 {
     //Check if picture at edge LEFT
-	if (bigfoot.pos[0] <= 0) {
-		bigfoot.pos[0] = 0;
+	if (player.pos[0] <= 40) {
+		player.pos[0] = 40;
 	}
 	//Check if picture at edge RIGHT
-	if (bigfoot.pos[0] >= xres) {
-	        bigfoot.pos[0] = xres;
+	if (player.pos[0] >= xres-40) {
+	        player.pos[0] = xres-40;
 	}
 }
 
@@ -777,8 +781,8 @@ void checkRaindrops()
 
 void physics(void)
 {
-	if (showBigfoot)
-		moveBigfoot();
+	if (showPlayer)
+		movePlayer();
 		checkRaindrops();
 }
 
@@ -854,11 +858,11 @@ void render(void)
 			glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 		glEnd();
 	}
-	if (showBigfoot) {
+	if (showPlayer) {
 		glPushMatrix();
-		glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
+		glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
 		if (!silhouette) {
-			glBindTexture(GL_TEXTURE_2D, bigfootTexture);
+			glBindTexture(GL_TEXTURE_2D, playerTexture);
 		} else {
 			glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
 			glEnable(GL_ALPHA_TEST);
@@ -866,7 +870,7 @@ void render(void)
 			glColor4ub(255,255,255,255);
 		}
 		glBegin(GL_QUADS);
-			if (bigfoot.vel[0] > 0.0) {
+			if (player.vel[0] > 0.0) {
 				glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
 				glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
 				glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
@@ -917,7 +921,7 @@ void render(void)
 	r.left = 10;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
-	ggprint8b(&r, 16, color, "B - Bigfoot");
+	ggprint8b(&r, 16, color, "B - Player");
 	ggprint8b(&r, 16, color, "F - Forest");
 	ggprint8b(&r, 16, color, "S - Silhouette");
 	ggprint8b(&r, 16, color, "T - Trees");
