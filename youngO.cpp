@@ -1,6 +1,6 @@
 #include<iostream>
 using namespace std;
-extern void youngsoo()
+void youngsoo()
 {
 	cout << "hello"<<endl;
 	return;
