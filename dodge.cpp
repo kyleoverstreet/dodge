@@ -1,5 +1,6 @@
 extern void printChristian();
 extern void upload_scores();
+extern void youngsoo();
 
 int main()
 {
