@@ -14,20 +14,6 @@ using namespace std;
 void gamelog(string, int);
 void upload_scores(const char *);
 
-/*int main()
-{
-    const char *file_path = "/home/stu/koverstreet/public_html/3350/dodge.html";
-   
-    // game scores have been hard-coded into gamelog.txt
-    // until gamelog function can be implemented with our game
-    
-    //gamelog(player1, score1);
-    
-    upload_scores(file_path);
-
-    return 0;
-}*/
-
 // Append player name, score, and date to gamelog
 void gamelog(string p1, int score1)
 {
@@ -51,7 +37,7 @@ void gamelog(string p1, int score1)
 void upload_scores(const char *path)
 {
     cout << "Ran Kyle's upload_scores function." << endl
-        << "See cs.csubak.edu/~koverstreet/3350/dodge.html for sample" << endl;
+        << "See \"scores.html\" for sample. This file will eventually upload to web server" << endl;
 
     vector<string> players;
     vector<int> scores;
@@ -74,7 +60,7 @@ void upload_scores(const char *path)
     }
     ifs.close();
 
-    ofstream ofs(path);
+    ofstream ofs("scores.html");
     ofs << 
         "<html>\n"
             "<head>\n"
