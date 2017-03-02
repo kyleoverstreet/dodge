@@ -41,7 +41,7 @@ void upload_scores()
 {
     cout << "Ran Kyle's upload_scores function." << endl
         << "See \"scores.html\". This file will eventually upload to web server" << endl
-        << "Webpage will look like: http://cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl;
+        << "Webpage will look like this: http://cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl;
 
     vector<string> players;
     vector<int> scores;
