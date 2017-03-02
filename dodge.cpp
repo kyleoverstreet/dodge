@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //DODGE.CPP
 //Jacob West
 //Kory Despot
@@ -70,7 +71,9 @@ void checkKeys(XEvent *e);
 extern void init(int, int, Player*);
 void physics(void);
 void render(void);
-
+extern void printChristian();
+extern void upload_scores();
+extern void youngsoo();
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 30.0;
@@ -187,6 +190,7 @@ int main(void)
 		render();
 		glXSwapBuffers(dpy, win);
 	}
+	upload_scores(); // Kyle's function
 	cleanupPPM();
 	cleanupXWindows();
 	cleanup_fonts();
