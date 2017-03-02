@@ -1,11 +1,9 @@
 extern void printChristian();
-extern void upload_scores(const char*);
-
+extern void upload_scores();
 
 int main()
 {
-    // Kyle's function
-    upload_scores("scores.html");
+    upload_scores(); // Kyle's function
     
     printChristian();
     jacob();
