@@ -12,7 +12,7 @@
 using namespace std;
 
 void gamelog(string, int);
-void upload_scores(const char *);
+void upload_scores();
 
 // To do:
 // Need gamelog to be read from web server
