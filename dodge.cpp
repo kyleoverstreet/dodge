@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //DODGE.CPP
 //Jacob West
 //Kory Despot
