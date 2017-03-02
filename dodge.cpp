@@ -1,8 +1,3 @@
-#include "kyleO.cpp"
-#include "koryD.cpp"
-#include "jacobW.cpp"
-#include "youngO.cpp"
-
 extern void printChristian();
 extern void upload_scores(const char*);
 
