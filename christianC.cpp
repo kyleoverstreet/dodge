@@ -1,3 +1,7 @@
+//Created by: Christian Chavez
+//Group project
+//Last Update: 3/2/2017
+
 #include <iostream>
 using namespace std;
 
