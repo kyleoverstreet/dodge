@@ -1,30 +1,26 @@
+// Author: Kory Despot 
+// sound functions for dodge program
+//
+//
 
-
-#include <iostream>
-#include <AL/al.h>
+#include <stdio.h>
 #include <string.h>
-#include <AL/alc.h>
+#include <math.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include </usr/include/AL/alut.h>
 
+void play_helmet_hit();
+void play_powerup();
 
-#ifdef LIBAUDIO
-#include <audio/wave.h>
-#define BACKEND "libaudio"
-#else
-#include <AL/alut.h>
-#define BACKEND "alut"
-#endif
-
-
-using namespace std;
-
-
-void kory() 
+/*void kory() 
 {
 	cout << "This is a test of kory's function\n";
 	return;
 }
-
-
+*/
+/*
 static void list_audio_devices(const ALCchar *devices)
 {
 	const ALCchar *device = devices, *next = devices + 1;
@@ -38,6 +34,101 @@ static void list_audio_devices(const ALCchar *devices)
 		next += (len + 2);
 	}
 }
+*/
+void play_helmet()
+{
+	alutInit(0, NULL);
+	if ( alGetError() != AL_NO_ERROR ) {
+		printf("error initializing sound\n");
+		return;
+	}
+	alGetError();
+
+
+	float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+	alListenerfv(AL_ORIENTATION, vec);
+	alListenerf(AL_GAIN, 1.0f);
+
+	ALuint alBuffer;
+	alBuffer = alutCreateBufferFromFile("./sounds/metal-clang1.wav");
+
+	ALuint alSource;
+	alGenSources(1, &alSource);
+	alSourcei(alSource, AL_BUFFER, alBuffer);
+	
+	alSourcef(alSource, AL_GAIN, 1.0f);
+	alSourcef(alSource, AL_PITCH, 1.0f);
+	alSourcei(alSource, AL_LOOPING, AL_FALSE);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR setting the sound source\n");
+		return;
+	}
+	
+	alSourcePlay(alSource);
+	usleep(250000);
+
+	alDeleteSources(1, &alSource);
+
+	alDeleteBuffers(1, &alBuffer);
+	
+	ALCcontext *Context = alcGetCurrentContext();
+	ALCdevice *Device = alcGetContextsDevice(Context);
+
+	alcMakeContextCurrent(NULL);
+
+	alcDestroyContext(Context);
+
+	alcCloseDevice(Device);
+    	return;	    
+}
 
 
 
+void play_powerup() 
+{
+	alutInit(0, NULL);
+	if ( alGetError() != AL_NO_ERROR ) {
+		printf("error initializing sound\n");
+		return;
+	}
+	alGetError();
+
+
+	float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+	alListenerfv(AL_ORIENTATION, vec);
+	alListenerf(AL_GAIN, 1.0f);
+
+	ALuint alBuffer;
+	alBuffer = alutCreateBufferFromFile("./sounds/powerup01");
+
+	ALuint alSource;
+	alGenSources(1, &alSource);
+	alSourcei(alSource, AL_BUFFER, alBuffer);
+	
+	alSourcef(alSource, AL_GAIN, 1.0f);
+	alSourcef(alSource, AL_PITCH, 1.0f);
+	alSourcei(alSource, AL_LOOPING, AL_FALSE);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR setting the sound source\n");
+		return;
+	}
+	
+	alSourcePlay(alSource);
+	usleep(250000);
+
+	alDeleteSources(1, &alSource);
+
+	alDeleteBuffers(1, &alBuffer);
+	
+	ALCcontext *Context = alcGetCurrentContext();
+	ALCdevice *Device = alcGetContextsDevice(Context);
+
+	alcMakeContextCurrent(NULL);
+
+	alcDestroyContext(Context);
+
+	alcCloseDevice(Device);
+    	return;	    
+}
