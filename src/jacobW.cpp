@@ -40,10 +40,12 @@ void init(int xres, int yres, Player *player) {
 
 void keypressL(Player *player) {
     player->pos[0] -= 8.0;
+    player->LR = false;
 }
 
 void keypressR(Player *player) {
     player->pos[0] += 8.0;
+    player->LR = true;
 }
 
 void jacob () {

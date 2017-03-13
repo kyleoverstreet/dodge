@@ -11,6 +11,7 @@ typedef struct t_player {
     Vec pos;
     Vec vel;
     Vec lastpos;
+    bool LR = true;
 } Player;
 
 #endif
