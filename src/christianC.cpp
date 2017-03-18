@@ -3,19 +3,6 @@
 //Last Update: 3/2/2017
 
 #include <iostream>
-using namespace std;
-
-extern void printChristian()
-{
-    cout << "This is Christian\n";
-    return;
-}
-
-
-
-
-/*
-#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <cstring>
@@ -169,6 +156,6 @@ void render(Menu *myMenu)
 	glEnd();
 
 }
-*/
+
 
 

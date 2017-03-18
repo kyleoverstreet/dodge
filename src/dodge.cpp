@@ -36,7 +36,6 @@ const float gravity = -0.2f;
 //X Windows variables
 Display *dpy;
 Window win;
-
 Player player;
 Raindrop *ihead = NULL;
 
@@ -644,7 +643,7 @@ void physics(void)
 		checkRaindrops();
 }
 
-void drawUmbrella(void)
+/*void drawUmbrella(void)
 {
 	//Log("drawUmbrella()...\n");
 	if (umbrella.shape == UMBRELLA_FLAT) {
@@ -673,7 +672,7 @@ void drawUmbrella(void)
 		glDisable(GL_ALPHA_TEST);
 		glPopMatrix();
 	}
-}
+}*/
 
 void render(void)
 {
@@ -708,7 +707,7 @@ void render(void)
 			glColor4ub(255,255,255,255);
 		}
 		glBegin(GL_QUADS);
-			if (player.vel[0] > 0.0) {
+			if (player.LR == true) {
 				glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
 				glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
 				glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
@@ -744,9 +743,9 @@ void render(void)
 	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 	//
-	if (showUmbrella)
-		drawUmbrella();
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//if (showUmbrella)
+	//	drawUmbrella();
+	//glBindTexture(GL_TEXTURE_2D, 0);
 	//
 	//
 	r.bot = yres - 20;
