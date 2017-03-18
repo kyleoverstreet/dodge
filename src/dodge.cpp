@@ -6,6 +6,7 @@
 //Kyle Overstreet
 //
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,24 +22,12 @@
 #include "log.h"
 #include "ppm.h"
 #include "shared.h"
+#include "youngO.h"
 
 extern "C" {
 	#include "fonts.h"
 }
 
-//defined types
-typedef double Flt;
-typedef double Vec[3];
-typedef Flt	Matrix[4][4];
-
-//macros
-#define rnd() (((Flt)rand())/(Flt)RAND_MAX)
-#define random(a) (rand()%a)
-#define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
-#define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
-#define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-                      (c)[1]=(a)[1]-(b)[1]; \
-                      (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -49,6 +38,7 @@ Display *dpy;
 Window win;
 
 Player player;
+Raindrop *ihead = NULL;
 
 //function prototypes
 void initXWindows(void);
@@ -86,55 +76,38 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 //-----------------------------------------------------------------------------
 
 
-int done=0;
-int xres=800, yres=600;
+int done = 0;
+int xres = 800, yres = 600;
 
-Ppmimage *playerImage=NULL;
-Ppmimage *forestImage=NULL;
-Ppmimage *forestTransImage=NULL;
-Ppmimage *umbrellaImage=NULL;
+Ppmimage *playerImage = NULL;
+Ppmimage *forestImage = NULL;
+Ppmimage *forestTransImage = NULL;
+Ppmimage *umbrellaImage = NULL;
+Ppmimage *spikeImage = NULL;
 GLuint playerTexture;
 GLuint silhouetteTexture;
 GLuint forestTexture;
 GLuint forestTransTexture;
 GLuint umbrellaTexture;
-int showPlayer=0;
-int forest=1;
-int silhouette=1;
-int trees=1;
-int showRain=0;
+GLuint spikeTexture;
+int showPlayer = 0;
+int forest = 1;
+int silhouette = 1;
+int trees = 1;
+int showRain = 0;
 //
-typedef struct t_raindrop {
-	int type;
-	int linewidth;
-	int sound;
-	Vec pos;
-	Vec lastpos;
-	Vec vel;
-	Vec maxvel;
-	Vec force;
-	float length;
-	float color[4];
-	struct t_raindrop *prev;
-	struct t_raindrop *next;
-} Raindrop;
-Raindrop *ihead=NULL;
-int ndrops=1;
-int totrain=0;
-int maxrain=0;
+
+
+int ndrops = 1;
+int totrain = 0;
+int maxrain = 0;
 void deleteRain(Raindrop *node);
 void cleanupRaindrops(void);
 //
-#define UMBRELLA_FLAT  0
+#define UMBRELLA_FLAT 0
 #define UMBRELLA_ROUND 1
-typedef struct t_umbrella {
-	int shape;
-	Vec pos;
-	Vec lastpos;
-	float width;
-	float width2;
-	float radius;
-} Umbrella;
+
+
 Umbrella umbrella;
 int showUmbrella=0;
 int deflection=0;
@@ -183,7 +156,7 @@ int main(void)
 		render();
 		glXSwapBuffers(dpy, win);
 	}
-	upload_scores(); // Kyle's function
+	//upload_scores(); // Kyle's function
 	cleanupPPM();
 	cleanupXWindows();
 	cleanup_fonts();
@@ -308,12 +281,15 @@ void initOpengl(void)
 	forestTransImage = ppm6GetImage("./images/transparent.ppm");
 	//Umbrella Image
 	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
-	//
+	//Spike Image
+	system("convert ./images/Spike.png ./images/Spike.ppm");
+	spikeImage = ppm6GetImage("./images/Spike.ppm");
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
 	glGenTextures(1, &silhouetteTexture);
 	glGenTextures(1, &forestTexture);
 	glGenTextures(1, &umbrellaTexture);
+	glGenTextures(1, &spikeTexture);
 	//-------------------------------------------------------------------------
 	//player
 	//
@@ -388,7 +364,15 @@ void initOpengl(void)
 	//glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
 	//GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
 	//-------------------------------------------------------------------------
-}
+	w = spikeImage->width;
+	h = spikeImage->height;	
+	//
+	glBindTexture(GL_TEXTURE_2D, spikeTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+							GL_RGB, GL_UNSIGNED_BYTE, spikeImage->data);}
 
 void initSounds(void)
 {
@@ -497,7 +481,7 @@ void cleanupRaindrops(void)
 		free(ihead);
 		ihead = s;
 	}
-	ihead=NULL;
+	ihead = NULL;
 }
 
 void deleteRain(Raindrop *node)
@@ -533,47 +517,12 @@ void deleteRain(Raindrop *node)
 	//and set the node to NULL.
 }
 
-void createRaindrop(const int n)
-{
-	//create new rain drops...
-	int i;
-	for (i=0; i<n; i++) {
-		Raindrop *node = (Raindrop *)malloc(sizeof(Raindrop));
-		if (node == NULL) {
-			Log("error allocating node.\n");
-			exit(EXIT_FAILURE);
-		}
-		node->prev = NULL;
-		node->next = NULL;
-		node->sound=0;
-		node->pos[0] = rnd() * (float)xres;
-		node->pos[1] = rnd() * 100.0f + (float)yres;
-		VecCopy(node->pos, node->lastpos);
-		node->vel[0] = 
-		node->vel[1] = 0.0f;
-		node->color[0] = rnd() * 0.2f + 0.8f;
-		node->color[1] = rnd() * 0.2f + 0.8f;
-		node->color[2] = rnd() * 0.2f + 0.8f;
-		node->color[3] = rnd() * 0.5f + 0.3f; //alpha
-		node->linewidth = random(8)+1;
-		//larger linewidth = faster speed
-		node->maxvel[1] = (float)(node->linewidth*16);
-		node->length = node->maxvel[1] * 0.2f + rnd();
-		//put raindrop into linked list
-		node->next = ihead;
-		if (ihead != NULL)
-			ihead->prev = node;
-		ihead = node;
-		++totrain;
-	}
-}
-
 void checkRaindrops()
 {
-	if (!showRain)
-		return;
+	// if (!showRain)
+	// 	return;
 	if (random(100) < 50) {
-		createRaindrop(ndrops);
+		createRaindrop(ndrops, xres, yres);
 	}
 	//
 	//move rain droplets
@@ -726,26 +675,6 @@ void drawUmbrella(void)
 	}
 }
 
-void drawRaindrops(void)
-{
-	//if (ihead) {
-	Raindrop *node = ihead;
-	while (node) {
-		glPushMatrix();
-		glTranslated(node->pos[0],node->pos[1],node->pos[2]);
-		glColor4fv(node->color);
-		glLineWidth(node->linewidth);
-		glBegin(GL_LINES);
-			glVertex2f(0.0f, 0.0f);
-			glVertex2f(0.0f, node->length);
-		glEnd();
-		glPopMatrix();
-		node = node->next;
-	}
-	//}
-	glLineWidth(1);
-}
-
 void render(void)
 {
 	Rect r;
@@ -804,20 +733,14 @@ void render(void)
 		}
 		glDisable(GL_ALPHA_TEST);
 	}
+	drawRaindrops();
 
 	glDisable(GL_TEXTURE_2D);
-	//glColor3f(1.0f, 0.0f, 0.0f);
-	//glBegin(GL_QUADS);
-	//	glVertex2i(10,10);
-	//	glVertex2i(10,60);
-	//	glVertex2i(60,60);
-	//	glVertex2i(60,10);
-	//glEnd();
-	//return;
+
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	if (showRain)
-		drawRaindrops();
+	//if (showRain)
+		
 	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 	//
@@ -837,7 +760,7 @@ void render(void)
 	ggprint8b(&r, 16, color, "U - Umbrella");
 	ggprint8b(&r, 16, color, "P - Umbrella shape");
 	ggprint8b(&r, 16, color, "W - Umbrella size");
-	ggprint8b(&r, 16, color, "R - Rain (+/-)");
+	//ggprint8b(&r, 16, color, "R - Rain (+/-)");
 	ggprint8b(&r, 16, color, "D - Deflection");
 	ggprint8b(&r, 16, color, "N - Sounds");
 }

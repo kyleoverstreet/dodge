@@ -16,6 +16,7 @@ void cleanupPPM(void) {
     system("rm ./images/standL.ppm");
     system("rm ./images/PixelBG.ppm");
     system("rm ./images/StandR.ppm");
+    system("rm ./images/Spike.ppm");
 }
 
 void movePlayer(int xres, Player *player) {
