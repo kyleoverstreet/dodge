@@ -5,7 +5,7 @@ SOURCES = src/dodge.cpp src/ppm.cpp src/log.cpp src/jacobW.cpp src/christianC.cp
 all: dodge
 
 dodge: $(SOURCES)
-	g++ $(SOURCES) $(LIB) $(FLAGS) -o dodge 
+	g++ -std=c++11 $(SOURCES) $(LIB) $(FLAGS) -o dodge 
 
 clean:
 	rm -f dodge *.html x.x *.txt 
