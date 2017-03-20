@@ -79,11 +79,15 @@ int done = 0;
 int xres = 800, yres = 600;
 
 Ppmimage *playerImage = NULL;
+Ppmimage *playerImageMv1 = NULL;
+Ppmimage *playerImageMv2 = NULL;
 Ppmimage *forestImage = NULL;
 Ppmimage *forestTransImage = NULL;
 Ppmimage *umbrellaImage = NULL;
 Ppmimage *spikeImage = NULL;
 GLuint playerTexture;
+GLuint playerMv1Texture;
+GLuint playerMv2Texture;
 GLuint silhouetteTexture;
 GLuint forestTexture;
 GLuint forestTransTexture;
@@ -309,8 +313,8 @@ void initOpengl(void)
 	//-------------------------------------------------------------------------
 	//playerMv1
 	//
-	int w = playerImageMv1->width;
-	int h = playerImageMv1->height;	
+	w = playerImageMv1->width;
+	h = playerImageMv1->height;	
 	//
 	glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
 	//
@@ -321,8 +325,8 @@ void initOpengl(void)
 	//-------------------------------------------------------------------------
 	//playerMv2
 	//
-	int w = playerImageMv2->width;
-	int h = playerImageMv2->height;	
+	w = playerImageMv2->width;
+	h = playerImageMv2->height;	
 	//
 	glBindTexture(GL_TEXTURE_2D, playerMv2Texture);
 	//
@@ -736,7 +740,7 @@ void render(void)
 			glColor4ub(255,255,255,255);
 		}
 		glBegin(GL_QUADS);
-			if (player.LR == true) {
+			if (player.LR == false) {
 				glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
 				glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
 				glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
