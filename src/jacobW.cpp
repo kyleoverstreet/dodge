@@ -15,8 +15,9 @@ using namespace std;
 void cleanupPPM(void) {
     system("rm ./images/standL.ppm");
     system("rm ./images/PixelBG.ppm");
-    system("rm ./images/StandR.ppm");
     system("rm ./images/Spike.ppm");
+    system("rm ./images/walking1.ppm");
+    system("rm ./images/walking2.ppm");
 }
 
 void movePlayer(int xres, Player *player) {

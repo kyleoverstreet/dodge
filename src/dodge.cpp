@@ -269,10 +269,13 @@ void initOpengl(void)
 	//
 	//Character Image Left
 	system("convert ./images/standL.png ./images/standL.ppm");
-	playerImage     = ppm6GetImage("./images/standL.ppm");
-	//Character Image Right
-	system("convert ./images/StandR.png ./images/StandR.ppm");
-	playerImage     = ppm6GetImage("./images/StandR.ppm");
+	playerImage      = ppm6GetImage("./images/standL.ppm");
+	//Character Image Move1
+	system("convert ./images/walking1.png ./images/walking1.ppm");
+	playerImageMv1   = ppm6GetImage("./images/walking1.ppm");
+	//Character Image Move2
+	system("convert ./images/walking2.png ./images/walking2.ppm");
+	playerImageMv2   = ppm6GetImage("./images/walking2.ppm");
 	//Background Image
 	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
 	forestImage      = ppm6GetImage("./images/PixelBG.ppm");
@@ -285,6 +288,8 @@ void initOpengl(void)
 	spikeImage = ppm6GetImage("./images/Spike.ppm");
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
+	glGenTextures(1, &playerMv1Texture);
+	glGenTextures(1, &playerMv2Texture);
 	glGenTextures(1, &silhouetteTexture);
 	glGenTextures(1, &forestTexture);
 	glGenTextures(1, &umbrellaTexture);
@@ -301,6 +306,30 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
 							GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
+	//-------------------------------------------------------------------------
+	//playerMv1
+	//
+	int w = playerImageMv1->width;
+	int h = playerImageMv1->height;	
+	//
+	glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+							GL_RGB, GL_UNSIGNED_BYTE, playerImageMv1->data);
+	//-------------------------------------------------------------------------
+	//playerMv2
+	//
+	int w = playerImageMv2->width;
+	int h = playerImageMv2->height;	
+	//
+	glBindTexture(GL_TEXTURE_2D, playerMv2Texture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+							GL_RGB, GL_UNSIGNED_BYTE, playerImageMv2->data);
 	//-------------------------------------------------------------------------
 	//
 	//silhouette
