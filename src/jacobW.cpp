@@ -21,15 +21,29 @@ void cleanupPPM(void) {
 }
 
 void movePlayer(int xres, Player *player) {
+
+    player->pos[0] += player->vel[0];
+
     //Check if edge left
     if (player->pos[0] <= 40) {
 	player->pos[0] = 40;
+	player->vel[0] = 0;
     }
-
     //Check if edge right
     if (player->pos[0] >= xres-40) {
 	player->pos[0] = xres-40;
+	player->vel[0] = 0;
     }
+
+    cout << player->vel[0] << endl;
+
+    if (player->vel[0] < -3) { 
+	player->vel[0] += 2;
+    } else if (player->vel[0] > 3) {
+	player->vel[0] += -2;
+    } else if (player->vel[0] <= 3 && player->vel[0] >= -3) {
+	player->vel[0] = 0;
+    }	
 }
 
 void init(int xres, int yres, Player *player) {
@@ -37,16 +51,31 @@ void init(int xres, int yres, Player *player) {
     player->pos[1] = yres/920;
     VecCopy(player->pos, player->lastpos);
     MakeVector(-150.0, 180.0, 0.0, player->pos);
-    MakeVector(5.0,0.0,0.0, player->vel);
+    MakeVector(0.0,0.0,0.0, player->vel);
 }
 
 void keypressL(Player *player) {
-    player->pos[0] -= 8.0;
+    player->vel[0] -= 3.0;
+    //mv == 1 is walking1.ppm
+    if (player->mv == 1) {
+	//mv == 2 is walking2.ppm
+	player->mv = 2;
+    } else { 
+	player->mv = 1;
+    }
+
     player->LR = false;
 }
 
 void keypressR(Player *player) {
-    player->pos[0] += 8.0;
+    player->vel[0] += 3.0;
+
+    if (player->mv == 1) {
+	player->mv = 2;
+    } else {
+	player->mv = 1;
+    }
+
     player->LR = true;
 }
 
