@@ -56,6 +56,8 @@ void render(void);
 extern void printChristian();
 extern void upload_scores();
 extern void youngsoo();
+extern void play_helmet_hit();
+extern void play_powerup();
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 30.0;
@@ -464,6 +466,10 @@ void checkKeys(XEvent *e)
 			   player.pos[0] = xres/2;
 			   player.pos[1] = yres-920;
 			}
+			play_helmet_hit();
+			break;
+		case XK_p:
+			play_powerup();
 			break;
 		case XK_Left:
 			keypressL(&player);

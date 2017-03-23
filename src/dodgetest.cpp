@@ -484,6 +484,7 @@ void checkKeys(XEvent *e)
 			   player.pos[0] = xres/2;
 			   player.pos[1] = yres-920;
 			}
+			play_helmet_hit();
 			break;
 		case XK_d:
 			deflection ^= 1;

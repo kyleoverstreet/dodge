@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include </usr/include/AL/alut.h>
 
+void play_powerup();
 
 /*void kory() 
 {
@@ -31,9 +32,58 @@ static void list_audio_devices(const ALCchar *devices)
 		device += (len + 1);
 		next += (len + 2);
 	}
+}*/
+int main()
+{
+	alutInit(0, NULL);
+	if ( alGetError() != AL_NO_ERROR ) {
+		printf("error initializing sound\n");
+		return 0;
+	}
+	alGetError();
+
+
+	float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+	alListenerfv(AL_ORIENTATION, vec);
+	alListenerf(AL_GAIN, 1.0f);
+
+	ALuint alBuffer;
+	alBuffer = alutCreateBufferFromFile("../sounds/metal-clang1.wav");
+
+	ALuint alSource;
+	alGenSources(1, &alSource);
+	alSourcei(alSource, AL_BUFFER, alBuffer);
+	
+	alSourcef(alSource, AL_GAIN, 1.0f);
+	alSourcef(alSource, AL_PITCH, 1.0f);
+	alSourcei(alSource, AL_LOOPING, AL_FALSE);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR setting the sound source\n");
+		return 0;
+	}
+	
+	alSourcePlay(alSource);
+	usleep(250000);
+
+	alDeleteSources(1, &alSource);
+
+	alDeleteBuffers(1, &alBuffer);
+	
+	ALCcontext *Context = alcGetCurrentContext();
+	ALCdevice *Device = alcGetContextsDevice(Context);
+
+	alcMakeContextCurrent(NULL);
+
+	alcDestroyContext(Context);
+
+	alcCloseDevice(Device);
+    	return 0;	    
 }
-*/
-extern void play_helmet_hit()
+
+
+
+void play_powerup() 
 {
 	alutInit(0, NULL);
 	if ( alGetError() != AL_NO_ERROR ) {
@@ -42,13 +92,14 @@ extern void play_helmet_hit()
 	}
 	alGetError();
 
+
 	float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
 	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
 	alListenerfv(AL_ORIENTATION, vec);
 	alListenerf(AL_GAIN, 1.0f);
 
 	ALuint alBuffer;
-	alBuffer = alutCreateBufferFromFile("./sounds/metal-clang1.wav");
+	alBuffer = alutCreateBufferFromFile("./sounds/powerup01");
 
 	ALuint alSource;
 	alGenSources(1, &alSource);
@@ -58,73 +109,24 @@ extern void play_helmet_hit()
 	alSourcef(alSource, AL_PITCH, 1.0f);
 	alSourcei(alSource, AL_LOOPING, AL_FALSE);
 	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR setting sound source\n");
+		printf("ERROR setting the sound source\n");
 		return;
 	}
 	
 	alSourcePlay(alSource);
-	usleep(25000);
+	usleep(250000);
 
 	alDeleteSources(1, &alSource);
 
 	alDeleteBuffers(1, &alBuffer);
 	
-	//ALCcontext *Context = alcGetCurrentContext();
-	//ALCdevice *Device = alcGetContextsDevice(Context);
+	ALCcontext *Context = alcGetCurrentContext();
+	ALCdevice *Device = alcGetContextsDevice(Context);
 
-	//alcMakeContextCurrent(NULL);
+	alcMakeContextCurrent(NULL);
 
-	//alcDestroyContext(Context);
+	alcDestroyContext(Context);
 
-	//alcCloseDevice(Device);
-    	return;	    
-}
-
-
-
-extern void play_powerup() 
-{
-	if ( alGetError() != AL_NO_ERROR ) {
-		printf("error initializing sound\n");
-		return;
-	}
-	alGetError();
-
-
-	float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
-	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
-	alListenerfv(AL_ORIENTATION, vec);
-	alListenerf(AL_GAIN, 1.0f);
-
-	ALuint alBuffer;
-	alBuffer = alutCreateBufferFromFile("./sounds/powerup01.wav");
-
-	ALuint alSource;
-	alGenSources(1, &alSource);
-	alSourcei(alSource, AL_BUFFER, alBuffer);
-	
-	alSourcef(alSource, AL_GAIN, 1.0f);
-	alSourcef(alSource, AL_PITCH, 1.0f);
-	alSourcei(alSource, AL_LOOPING, AL_FALSE);
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR setting sound source\n");
-		return;
-	}
-	
-	alSourcePlay(alSource);
-	usleep(25000);
-
-	alDeleteSources(1, &alSource);
-
-	alDeleteBuffers(1, &alBuffer);
-	
-	//ALCcontext *Context = alcGetCurrentContext();
-	//ALCdevice *Device = alcGetContextsDevice(Context);
-
-	//alcMakeContextCurrent(NULL);
-
-	//alcDestroyContext(Context);
-
-	//alcCloseDevice(Device);
+	alcCloseDevice(Device);
     	return;	    
 }
