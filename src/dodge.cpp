@@ -23,6 +23,7 @@
 #include "ppm.h"
 #include "shared.h"
 #include "youngO.h"
+using namespace std;
 
 extern "C" {
 #include "fonts.h"
@@ -76,7 +77,7 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 }
 //-----------------------------------------------------------------------------
 
-
+int score = 0;
 int done = 0;
 int xres = 800, yres = 600;
 
@@ -490,6 +491,7 @@ void checkKeys(XEvent *e)
 			done=1;
 			break;
 }
+}
 
 Flt VecNormalize(Vec vec)
 {
@@ -521,6 +523,7 @@ void cleanupRaindrops(void)
     ihead = NULL;
 }
 
+///////////////////////////////////////////// KYLE ///////////////////////////
 void deleteRain(Raindrop *node)
 {
     //hints:
@@ -549,10 +552,12 @@ void deleteRain(Raindrop *node)
 	node->prev->next = node->next;
     }
     delete node;
+    score = score + 1;
     node = NULL;
     //At the end of this function, free the node's memory,
     //and set the node to NULL.
 }
+//////////////////////////////////////////////////////////////////////////////
 
 void checkRaindrops()
 {
@@ -609,7 +614,7 @@ void checkRaindrops()
 	    }
 	}
 #endif //USE_SOUND
-	//collision detection for raindrop on umbrella
+/*	//collision detection for raindrop on umbrella
 	if (showUmbrella) {
 	    if (umbrella.shape == UMBRELLA_FLAT) {
 		if (node->pos[0] >= (umbrella.pos[0] - umbrella.width2) &&
@@ -660,7 +665,7 @@ void checkRaindrops()
 		    }
 		}
 	    }
-	}
+	}*/
 	if (node->pos[1] < -20.0f) {
 	    //rain drop is below the visible area
 	    Raindrop *savenode = node->next;
@@ -764,7 +769,9 @@ void render(void)
     r.center = 0;
     unsigned int color = 0x00dddd00;
     ggprint8b(&r, 16, color, "B - Player");
-    ggprint8b(&r, 16, color, "Score"); 
+    //Kyle did this part
+    ggprint8b(&r, 16, color, "Score: ");
+    ggprint8b(&r, 16, color, "%i", score); 
     //ggprint8b(&r, 16, color, "R - Rain (+/-)");
     ggprint8b(&r, 16, color, "D - Deflection");
     ggprint8b(&r, 16, color, "N - Sounds");
