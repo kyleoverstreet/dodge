@@ -20,9 +20,11 @@ typedef Flt	Matrix[4][4];
 
 typedef struct t_player {
     Vec pos;
-    Vec vel;
+    Vec vel {0, 0, 0};
     Vec lastpos;
-    bool LR = true;
+    //mv is used for cycling between stand ppm and walking ppm
+    int mv = 0;
+    bool LR = 0;
 } Player;
 
 typedef struct t_raindrop {
