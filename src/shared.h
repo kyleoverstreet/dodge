@@ -39,7 +39,7 @@ typedef struct t_raindrop {
 	float length;
 	struct t_raindrop *prev;
 	struct t_raindrop *next;
-} Raindrop;
+} Item;
 
 
 typedef struct t_umbrella {

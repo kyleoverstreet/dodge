@@ -7,17 +7,17 @@
 #include "src/ppm.h"
 #include "src/shared.h"
 
-extern Raindrop *ihead;
+extern Item *ihead;
 extern Ppmimage *spikeImage;
 extern GLuint spikeTexture;
 extern int totrain;
 
-extern void createRaindrop(const int n, const int xres, const int yres)
+extern void createItems(const int n, const int xres, const int yres)
 {
 	//create new rain drops...
 	int i;
 	for (i = 0; i < n; i++) {
-		Raindrop *node = (Raindrop *)malloc(sizeof(Raindrop));
+		Item *node = (Item *)malloc(sizeof(Item));
 		if (node == NULL) {
 			Log("error allocating node.\n");
 			exit(EXIT_FAILURE);
@@ -42,9 +42,9 @@ extern void createRaindrop(const int n, const int xres, const int yres)
 	}
 }
 
-extern void drawRaindrops(void)
+extern void drawItems(void)
 {
-	Raindrop *node = ihead;
+	Item *node = ihead;
 	while (node) {
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();

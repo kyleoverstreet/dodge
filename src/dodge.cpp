@@ -38,7 +38,7 @@ const float gravity = -0.2f;
 Display *dpy;
 Window win;
 Player player;
-Raindrop *ihead = NULL;
+Item *ihead = NULL;
 
 //function prototypes
 void initXWindows(void);
@@ -102,15 +102,15 @@ int showPlayer = 0;
 int forest = 1;
 int silhouette = 1;
 int trees = 1;
-int showRain = 0;
+int showItems = 0;
 //
 
 
 int ndrops = 1;
 int totrain = 0;
 int maxrain = 0;
-void deleteRain(Raindrop *node);
-void cleanupRaindrops(void);
+void deleteItem(Item *node);
+void cleanupItems(void);
 //
 #define UMBRELLA_FLAT 0
 #define UMBRELLA_ROUND 1
@@ -514,9 +514,9 @@ Flt VecNormalize(Vec vec)
     return(len);
 }
 
-void cleanupRaindrops(void)
+void cleanupItems(void)
 {
-    Raindrop *s;
+    Item *s;
     while (ihead) {
 	s = ihead->next;
 	free(ihead);
@@ -526,7 +526,7 @@ void cleanupRaindrops(void)
 }
 
 ///////////////////////////////////////////// KYLE ///////////////////////////
-void deleteRain(Raindrop *node)
+void deleteItem(Item *node)
 {
     //hints:
     //check for some special cases:
@@ -561,16 +561,16 @@ void deleteRain(Raindrop *node)
 }
 //////////////////////////////////////////////////////////////////////////////
 
-void checkRaindrops()
+void checkItems()
 {
-    // if (!showRain)
+    // if (!showItems)
     // 	return;
     if (random(100) < 15) {
-	createRaindrop(ndrops, xres, yres);
+	createItems(ndrops, xres, yres);
     }
     //
     //move rain droplets
-    Raindrop *node = ihead;
+    Item *node = ihead;
     while (node) {
 	//force is toward the ground
 	node->vel[1] += gravity;
@@ -626,8 +626,8 @@ void checkRaindrops()
 			if (node->pos[1] <= umbrella.pos[1] ||
 				node->pos[1] <= umbrella.lastpos[1]) {
 			    if (node->linewidth > 1) {
-				Raindrop *savenode = node->next;
-				deleteRain(node);
+				Item *savenode = node->next;
+				deleteItem(node);
 				node = savenode;
 				continue;
 			    }
@@ -645,7 +645,7 @@ void checkRaindrops()
 			node->pos[1] > umbrella.pos[1]) {
 		    if (node->linewidth > 1) {
 			if (deflection) {
-			    //deflect raindrop
+			    //deflect item
 			    double dot;
 			    Vec v, up = {0,1,0};
 			    VecSub(node->pos, umbrella.pos, v);
@@ -659,8 +659,8 @@ void checkRaindrops()
 			    node->vel[0] += v[0] * dot * 1.0;
 			    node->vel[1] += v[1] * dot * 1.0;
 			} else {
-			    Raindrop *savenode = node->next;
-			    deleteRain(node);
+			    Item *savenode = node->next;
+			    deleteItem(node);
 			    node = savenode;
 			    continue;
 			}
@@ -670,8 +670,8 @@ void checkRaindrops()
 	}*/
 	if (node->pos[1] < -20.0f) {
 	    //rain drop is below the visible area
-	    Raindrop *savenode = node->next;
-	    deleteRain(node);
+	    Item *savenode = node->next;
+	    deleteItem(node);
 	    node = savenode;
 	    continue;
 	}
@@ -685,7 +685,7 @@ void physics(void)
 {
     if (showPlayer)
 	movePlayer(xres, &player);
-    checkRaindrops();
+    checkItems();
 }
 
 void render(void)
@@ -755,13 +755,13 @@ void render(void)
 	}
 	glDisable(GL_ALPHA_TEST);
     }
-    drawRaindrops();
+    drawItems();
 
     glDisable(GL_TEXTURE_2D);
 
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    //if (showRain)
+    //if (showItems)
 
     glDisable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
@@ -775,7 +775,7 @@ void render(void)
     //ggprint8b(&r, 16, color, "Score: ");
 	//ggprint8b(&r, 16, color, "%i", score); 
 	display_score(xres, yres, score);
-    //ggprint8b(&r, 16, color, "R - Rain (+/-)");
+    //ggprint8b(&r, 16, color, "I - Items (+/-)");
     ggprint8b(&r, 16, color, "D - Deflection");
     ggprint8b(&r, 16, color, "N - Sounds");
 }
