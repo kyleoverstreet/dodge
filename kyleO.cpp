@@ -9,14 +9,59 @@
 #include <string>
 #include <vector>
 
+extern "C" {
+#include "src/fonts.h"
+}
+
 using namespace std;
 
+//void deleteItem(Item *node);
+void display_score(int, int);
 void gamelog(string, int);
 void upload_scores();
 
-// To do:
-// Need gamelog to be read from web server
-// Need to upload scores to web server
+// TO DO:
+// Implement deleteItem into dodge.cpp in place of deleteRain function
+// Set up gamelog and upload_scores functions to communicate with a webpage
+// Create 2nd display_score function for 2-Player mode after its implemented
+
+/*void deleteItem(Item *node)
+{
+    //only
+    if (node->prev == NULL && node->next == NULL){
+        ihead = NULL;
+    }
+    //beginning
+    else if (node->prev == NULL){
+        ihead = node->next;
+        node->next->prev = NULL;
+    }
+    //end
+    else if (node->next == NULL){
+        node->prev->next = NULL;
+    }
+    //node is somewhere else
+    else{
+        node->next->prev = node->prev;
+        node->prev->next = node->next;
+    }
+
+	// Free the node's memory and set node to NULL
+    delete node;
+	node = NULL;
+
+    score++;
+}*/
+
+void display_score(int xres, int yres, int score)
+{
+	Rect r;
+	r.bot = yres - 30;
+	r.left = xres - 100;
+	r.center = 0;
+	unsigned int color = 0x00dddd00;
+	ggprint8b(&r, 16, color, "Score: %i", score);
+}
 
 // Append player name, score, and date to gamelog
 void gamelog(string p1, int score1)

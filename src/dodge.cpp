@@ -55,6 +55,8 @@ extern void init(int, int, Player*);
 void physics(void);
 void render(void);
 extern void printChristian();
+//extern void deleteItem(Item *node);
+extern void display_score(int, int, int);
 extern void upload_scores();
 extern void youngsoo();
 extern void play_helmet_hit();
@@ -770,8 +772,9 @@ void render(void)
     unsigned int color = 0x00dddd00;
     ggprint8b(&r, 16, color, "B - Player");
     //Kyle did this part
-    ggprint8b(&r, 16, color, "Score: ");
-    ggprint8b(&r, 16, color, "%i", score); 
+    //ggprint8b(&r, 16, color, "Score: ");
+	//ggprint8b(&r, 16, color, "%i", score); 
+	display_score(xres, yres, score);
     //ggprint8b(&r, 16, color, "R - Rain (+/-)");
     ggprint8b(&r, 16, color, "D - Deflection");
     ggprint8b(&r, 16, color, "N - Sounds");
