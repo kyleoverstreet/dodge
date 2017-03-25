@@ -55,8 +55,8 @@ extern void init(int, int, Player*);
 void physics(void);
 void render(void);
 extern void printChristian();
-//extern void deleteItem(Item *node);
-extern void display_score(int, int, int);
+extern void deleteItem(Item *node);
+extern void display_score(int, int);
 extern void upload_scores();
 extern void youngsoo();
 extern void play_helmet_hit();
@@ -79,7 +79,6 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 }
 //-----------------------------------------------------------------------------
 
-int score = 0;
 int done = 0;
 int xres = 800, yres = 600;
 
@@ -109,7 +108,6 @@ int showItems = 0;
 int ndrops = 1;
 int totrain = 0;
 int maxrain = 0;
-void deleteItem(Item *node);
 void cleanupItems(void);
 //
 #define UMBRELLA_FLAT 0
@@ -525,42 +523,6 @@ void cleanupItems(void)
     ihead = NULL;
 }
 
-///////////////////////////////////////////// KYLE ///////////////////////////
-void deleteItem(Item *node)
-{
-    //hints:
-    //check for some special cases:
-    //1. only 1 node in list (it is also the head node)
-    //2. node at beginning of list (it is also the head node)
-    //3. node at end of list.
-    //4. node somewhere else in list.
-
-    //only
-    if (node->prev == NULL && node->next == NULL){
-	ihead = NULL;
-    }
-    //beginning
-    else if (node->prev == NULL){
-	ihead = node->next;
-	node->next->prev = NULL;
-    }
-    //end
-    else if (node->next == NULL){
-	node->prev->next = NULL;
-    }
-    //node is somewhere else
-    else{
-	node->next->prev = node->prev;
-	node->prev->next = node->next;
-    }
-    delete node;
-    score = score + 1;
-    node = NULL;
-    //At the end of this function, free the node's memory,
-    //and set the node to NULL.
-}
-//////////////////////////////////////////////////////////////////////////////
-
 void checkItems()
 {
     // if (!showItems)
@@ -772,11 +734,12 @@ void render(void)
     unsigned int color = 0x00dddd00;
     ggprint8b(&r, 16, color, "B - Player");
     //Kyle did this part
-    //ggprint8b(&r, 16, color, "Score: ");
-	//ggprint8b(&r, 16, color, "%i", score); 
-	display_score(xres, yres, score);
     //ggprint8b(&r, 16, color, "I - Items (+/-)");
     ggprint8b(&r, 16, color, "D - Deflection");
     ggprint8b(&r, 16, color, "N - Sounds");
+	
+	// Display score to top right of screen
+	display_score(xres, yres);
+
 }
 

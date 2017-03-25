@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "src/shared.h"
 
 extern "C" {
 #include "src/fonts.h"
@@ -15,17 +16,20 @@ extern "C" {
 
 using namespace std;
 
-//void deleteItem(Item *node);
+void deleteItem(Item *node);
 void display_score(int, int);
 void gamelog(string, int);
 void upload_scores();
 
 // TO DO:
-// Implement deleteItem into dodge.cpp in place of deleteRain function
 // Set up gamelog and upload_scores functions to communicate with a webpage
-// Create 2nd display_score function for 2-Player mode after its implemented
+// Create score display for 2-Player mode (after it's implemented)
 
-/*void deleteItem(Item *node)
+extern Item *ihead;
+int score = 0;
+
+// Deletes off-screen items and keeps track of player score
+void deleteItem(Item *node)
 {
     //only
     if (node->prev == NULL && node->next == NULL){
@@ -51,9 +55,10 @@ void upload_scores();
 	node = NULL;
 
     score++;
-}*/
+}
 
-void display_score(int xres, int yres, int score)
+// Displays the player score at top-right of screen
+void display_score(int xres, int yres)
 {
 	Rect r;
 	r.bot = yres - 30;

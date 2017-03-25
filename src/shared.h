@@ -27,7 +27,7 @@ typedef struct t_player {
     bool LR = 0;
 } Player;
 
-typedef struct t_raindrop {
+typedef struct t_item {
 	int type;
 	int linewidth;
 	int sound;
@@ -37,8 +37,8 @@ typedef struct t_raindrop {
 	Vec maxvel;
 	Vec force;
 	float length;
-	struct t_raindrop *prev;
-	struct t_raindrop *next;
+	struct t_item *prev;
+	struct t_item *next;
 } Item;
 
 
