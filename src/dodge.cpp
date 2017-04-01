@@ -61,6 +61,7 @@ extern void upload_scores();
 extern void youngsoo();
 extern void play_helmet_hit();
 extern void play_powerup();
+extern void play_GetShield();
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 30.0;
@@ -445,7 +446,7 @@ savey = e->xbutton.y;
 void checkKeys(XEvent *e)
 {
 	//keyboard input?
-	static int shift=0;
+	int shift=0;
 	int key = XLookupKeysym(&e->xkey, 0);
 	if (e->type == KeyRelease) {
 		if (key == XK_Shift_L || key == XK_Shift_R)
