@@ -18,6 +18,7 @@ using namespace std;
 
 void deleteItem(Item *node);
 void display_score(int, int);
+void display_collisions(int, int);
 void gamelog(string, int);
 void upload_scores();
 
@@ -66,6 +67,17 @@ void display_score(int xres, int yres)
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "Score: %i", score);
+}
+
+// Displays collision with player - for testing purposes
+void display_collisions(int xres, int yres)
+{
+	Rect r;
+	r.bot = yres - 50;
+	r.left = xres - 198;
+	r.center = 0;
+	unsigned int color = 0x00dddd00;
+	ggprint8b(&r, 16, color, "Collisions (for testing):");
 }
 
 // Append player name, score, and date to gamelog
