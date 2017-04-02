@@ -557,6 +557,7 @@ void checkItems()
 					if (node->pos[0] >= (umbrella.pos[0] - umbrella.width2) &&
 					node->pos[0] <= (umbrella.pos[0] + umbrella.width2)) {
 					if (node->lastpos[1] > umbrella.lastpos[1] ||
+
 					node->lastpos[1] > umbrella.pos[1]) {
 					if (node->pos[1] <= umbrella.pos[1] ||
 					node->pos[1] <= umbrella.lastpos[1]) {
@@ -603,8 +604,9 @@ void checkItems()
 				}
 				}
 				}*/
+
 				if (node->pos[1] < -20.0f) {
-						//rain drop is below the visible area
+						//item has hit ground
 						Item *savenode = node->next;
 						deleteItem(node);
 						node = savenode;
