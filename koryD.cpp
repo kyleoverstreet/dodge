@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include </usr/include/AL/alut.h>
-
+#include <stdlib.h>
 
 /*void kory() 
 {
@@ -33,7 +33,8 @@ static void list_audio_devices(const ALCchar *devices)
 	}
 }
 */
-extern void play_helmet_hit()
+
+extern void initialize_sounds() 
 {
 	alutInit(0, NULL);
 	if ( alGetError() != AL_NO_ERROR ) {
@@ -47,6 +48,9 @@ extern void play_helmet_hit()
 	alListenerfv(AL_ORIENTATION, vec);
 	alListenerf(AL_GAIN, 1.0f);
 
+}
+extern void play_helmet_hit()
+{
 	ALuint alBuffer;
 	alBuffer = alutCreateBufferFromFile("./sounds/metal-clang1.wav");
 
@@ -63,11 +67,11 @@ extern void play_helmet_hit()
 	}
 	
 	alSourcePlay(alSource);
-	usleep(25000);
+	usleep(50000);
 
-	alDeleteSources(1, &alSource);
+	//alDeleteSources(1, &alSource);
 
-	alDeleteBuffers(1, &alBuffer);
+	//alDeleteBuffers(1, &alBuffer);
 	
 	//ALCcontext *Context = alcGetCurrentContext();
 	//ALCdevice *Device = alcGetContextsDevice(Context);
@@ -77,24 +81,12 @@ extern void play_helmet_hit()
 	//alcDestroyContext(Context);
 
 	//alcCloseDevice(Device);
-    	return;	    
 }
 
 
 
 extern void play_powerup() 
 {
-	if ( alGetError() != AL_NO_ERROR ) {
-		printf("error initializing sound\n");
-		return;
-	}
-	alGetError();
-
-
-	float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
-	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
-	alListenerfv(AL_ORIENTATION, vec);
-	alListenerf(AL_GAIN, 1.0f);
 
 	ALuint alBuffer;
 	alBuffer = alutCreateBufferFromFile("./sounds/powerup01.wav");
@@ -112,11 +104,11 @@ extern void play_powerup()
 	}
 	
 	alSourcePlay(alSource);
-	usleep(25000);
+	usleep(50000);
 
-	alDeleteSources(1, &alSource);
+	//alDeleteSources(1, &alSource);
 
-	alDeleteBuffers(1, &alBuffer);
+	//alDeleteBuffers(1, &alBuffer);
 	
 	//ALCcontext *Context = alcGetCurrentContext();
 	//ALCdevice *Device = alcGetContextsDevice(Context);
@@ -126,7 +118,6 @@ extern void play_powerup()
 	//alcDestroyContext(Context);
 
 	//alcCloseDevice(Device);
-    	return;	    
 }
 
 extern void play_GetShield() 
@@ -159,11 +150,10 @@ extern void play_GetShield()
 	}
 	
 	alSourcePlay(alSource);
-	usleep(25000);
 
-	alDeleteSources(1, &alSource);
+	//alDeleteSources(1, &alSource);
 
-	alDeleteBuffers(1, &alBuffer);
+	//alDeleteBuffers(1, &alBuffer);
 	
 	//ALCcontext *Context = alcGetCurrentContext();
 	//ALCdevice *Device = alcGetContextsDevice(Context);
@@ -173,5 +163,4 @@ extern void play_GetShield()
 	//alcDestroyContext(Context);
 
 	//alcCloseDevice(Device);
-    	return;	    
 }

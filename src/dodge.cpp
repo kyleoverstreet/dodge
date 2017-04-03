@@ -58,6 +58,7 @@ extern void display_score(int, int);
 extern void display_collisions(int, int);
 extern void upload_scores();
 extern void youngsoo();
+extern void initialize_sounds();
 extern void play_helmet_hit();
 extern void play_powerup();
 extern void play_GetShield();
@@ -118,6 +119,7 @@ int deflection=0;
 
 int main(void)
 {
+  initialize_sounds();
   logOpen();
   initXWindows();
   initOpengl();
@@ -456,7 +458,7 @@ void checkKeys(XEvent *e)
       play_helmet_hit();
       break;
     case XK_p:
-      play_powerup();
+      play_GetShield();
       break;
     case XK_Left:
       keypressL(&player);
