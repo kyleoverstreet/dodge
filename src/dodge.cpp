@@ -62,6 +62,7 @@ extern void initialize_sounds();
 extern void play_helmet_hit();
 extern void play_powerup();
 extern void play_GetShield();
+extern void cleanup_sounds();
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 30.0;
@@ -161,6 +162,7 @@ int main(void)
     render();
     glXSwapBuffers(dpy, win);
   }
+  cleanup_sounds();
   cleanupPPM();
   cleanupXWindows();
   cleanup_fonts();

@@ -49,6 +49,18 @@ extern void initialize_sounds()
 	alListenerf(AL_GAIN, 1.0f);
 
 }
+extern void cleanup_sounds()
+{
+	ALCcontext *Context = alcGetCurrentContext();
+	ALCdevice *Device = alcGetContextsDevice(Context);
+
+	alcMakeContextCurrent(NULL);
+
+	alcDestroyContext(Context);
+
+	alcCloseDevice(Device);
+
+}
 extern void play_helmet_hit()
 {
 	ALuint alBuffer;
@@ -87,7 +99,6 @@ extern void play_helmet_hit()
 
 extern void play_powerup() 
 {
-
 	ALuint alBuffer;
 	alBuffer = alutCreateBufferFromFile("./sounds/powerup01.wav");
 
