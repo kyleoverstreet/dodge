@@ -55,7 +55,7 @@ void init(int xres, int yres, Player *player) {
 }
 
 void keypressL(Player *player) {
-    player->vel[0] -= 3.0;
+    player->vel[0] -= 3.5;
     //mv == 1 is walking1.ppm
     if (player->mv == 1) {
 	//mv == 2 is walking2.ppm
@@ -68,7 +68,7 @@ void keypressL(Player *player) {
 }
 
 void keypressR(Player *player) {
-    player->vel[0] += 3.0;
+    player->vel[0] += 3.5;
 
     if (player->mv == 1) {
 	player->mv = 2;

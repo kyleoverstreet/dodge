@@ -63,6 +63,8 @@ extern void play_helmet_hit();
 extern void play_powerup();
 extern void play_GetShield();
 extern void cleanup_sounds();
+extern void check_sound();
+extern void play_theme();
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 30.0;
@@ -127,6 +129,7 @@ int main(void)
   init(xres, yres, &player);
   clock_gettime(CLOCK_REALTIME, &timePause);
   clock_gettime(CLOCK_REALTIME, &timeStart);
+  play_theme();
   while (!done) {
     while (XPending(dpy)) {
       XEvent e;
@@ -158,6 +161,7 @@ int main(void)
       //7. Reduce the countdown by our physics-rate
       physicsCountdown -= physicsRate;
     }
+    //check_sound();
     //Always render every frame.
     render();
     glXSwapBuffers(dpy, win);
@@ -460,13 +464,13 @@ void checkKeys(XEvent *e)
       play_helmet_hit();
       break;
     case XK_p:
-      play_GetShield();
+      play_powerup();
       break;
     case XK_Left:
-      keypressL(&player);
+	keypressL(&player);
       break;
     case XK_Right:
-      keypressR(&player);
+        keypressR(&player);
       break;
       /*case XK_Up:
         VecCopy(umbrella.pos, umbrella.lastpos);
