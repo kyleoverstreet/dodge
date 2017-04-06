@@ -37,6 +37,7 @@ Display *dpy;
 Window win;
 Player player;
 Item *ihead = NULL;
+Helmet *hhead = NULL;
 
 //function prototypes
 void initXWindows(void);
@@ -93,6 +94,8 @@ Ppmimage *forestImage = NULL;
 Ppmimage *forestTransImage = NULL;
 Ppmimage *umbrellaImage = NULL;
 Ppmimage *spikeImage = NULL;
+Ppmimage *helmetImage = NULL;
+
 GLuint playerTexture;
 GLuint playerMv1Texture;
 GLuint playerMv2Texture;
@@ -101,6 +104,8 @@ GLuint forestTexture;
 GLuint forestTransTexture;
 GLuint umbrellaTexture;
 GLuint spikeTexture;
+GLuint helmetTexture;
+
 int showPlayer = 0;
 int forest = 1;
 int silhouette = 1;
@@ -109,6 +114,8 @@ int showItems = 0;
 int ndrops = 1;
 int totrain = 0;
 int maxrain = 0;
+int tothelmet = 0;
+
 void cleanupItems(void);
 
 #define UMBRELLA_FLAT 0
@@ -297,6 +304,10 @@ void initOpengl(void)
   //Spike Image
   system("convert ./images/Spike.png ./images/Spike.ppm");
   spikeImage = ppm6GetImage("./images/Spike.ppm");
+  //Helmet Image
+  system("convert ./images/helmet.png ./images/helmet.ppm");
+  helmetImage = ppm6GetImage("./images/helmet.ppm");
+
   //create opengl texture elements
   glGenTextures(1, &playerTexture);
   glGenTextures(1, &playerMv1Texture);
@@ -305,6 +316,8 @@ void initOpengl(void)
   glGenTextures(1, &forestTexture);
   glGenTextures(1, &umbrellaTexture);
   glGenTextures(1, &spikeTexture);
+  glGenTextures(1, &helmetTexture);
+
   //-------------------------------------------------------------------------
   //player
   int w = playerImage->width;
@@ -393,6 +406,7 @@ void initOpengl(void)
   //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
   //GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
   //-------------------------------------------------------------------------
+  //spike
   w = spikeImage->width;
   h = spikeImage->height;	
   //
@@ -401,7 +415,18 @@ void initOpengl(void)
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
   glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-      GL_RGB, GL_UNSIGNED_BYTE, spikeImage->data);}
+      GL_RGB, GL_UNSIGNED_BYTE, spikeImage->data);
+  //helmet
+  w = helmetImage->width;
+  h = helmetImage->height; 
+  //
+  glBindTexture(GL_TEXTURE_2D, helmetTexture);
+  //
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+      GL_RGB, GL_UNSIGNED_BYTE, helmetImage->data);
+}
 
 void initSounds(void)
 {
@@ -524,6 +549,9 @@ void checkItems()
   if (random(100) < 15) {
     createItems(ndrops, xres, yres);
   }
+  if (random(200) < 2) {
+      createHelmets(ndrops, xres, yres);
+  }
   //move items
   Item *node = ihead;
   while (node) {
@@ -540,12 +568,29 @@ void checkItems()
     }
     node = node->next;
   }
+
+  Helmet *helmet = hhead;
+  while (helmet) {
+    //force is toward the ground
+    helmet->vel[1] += gravity;
+    VecCopy(helmet->pos, helmet->lastpos);
+
+    {
+      helmet->pos[0] += helmet->vel[0] * timeslice;
+      helmet->pos[1] += helmet->vel[1] * timeslice;
+      if (fabs(helmet->vel[1]) > helmet->maxvel[1])
+        helmet->vel[1] *= 0.96;
+      helmet->vel[0] *= 0.999;
+    }
+    helmet = helmet->next;
+  }
+
   //check items
-  int n=0;
+  int n = 0;
   node = ihead;
   while (node) {
     n++;
-#ifdef USE_SOUND
+    #ifdef USE_SOUND
     if (node->pos[1] < 0.0f) {
       //raindrop hit ground
       if (!node->sound && play_sounds) {
@@ -558,60 +603,7 @@ void checkItems()
         node->sound=1;
       }
     }
-#endif //USE_SOUND
-    /*	//collision detection for raindrop on umbrella
-        if (showUmbrella) {
-        if (umbrella.shape == UMBRELLA_FLAT) {
-        if (node->pos[0] >= (umbrella.pos[0] - umbrella.width2) &&
-        node->pos[0] <= (umbrella.pos[0] + umbrella.width2)) {
-        if (node->lastpos[1] > umbrella.lastpos[1] ||
-
-        node->lastpos[1] > umbrella.pos[1]) {
-        if (node->pos[1] <= umbrella.pos[1] ||
-        node->pos[1] <= umbrella.lastpos[1]) {
-        if (node->linewidth > 1) {
-        Item *savenode = node->next;
-        deleteItem(node);
-        node = savenode;
-        continue;
-        }
-        }
-        }
-        }
-        }
-        if (umbrella.shape == UMBRELLA_ROUND) {
-        float d0 = node->pos[0] - umbrella.pos[0];
-        float d1 = node->pos[1] - umbrella.pos[1];
-        float distance = sqrt((d0*d0)+(d1*d1));
-    //Log("distance: %f  umbrella.radius: %f\n",
-    //							distance,umbrella.radius);
-    if (distance <= umbrella.radius &&
-    node->pos[1] > umbrella.pos[1]) {
-    if (node->linewidth > 1) {
-    if (deflection) {
-    //deflect item
-    double dot;
-    Vec v, up = {0,1,0};
-    VecSub(node->pos, umbrella.pos, v);
-    VecNormalize(v);
-    node->pos[0] =
-    umbrella.pos[0] + v[0] * umbrella.radius;
-    node->pos[1] =
-    umbrella.pos[1] + v[1] * umbrella.radius;
-    dot = VecDot(v,up);
-    dot += 1.0;
-    node->vel[0] += v[0] * dot * 1.0;
-    node->vel[1] += v[1] * dot * 1.0;
-    } else {
-    Item *savenode = node->next;
-    deleteItem(node);
-    node = savenode;
-    continue;
-    }
-    }
-    }
-    }
-    }*/
+    #endif
 
     if (node->pos[1] < -20.0f) {
       //item has hit ground
@@ -622,8 +614,41 @@ void checkItems()
     }
     node = node->next;
   }
-  if (maxrain < n)
+  if (maxrain < n) {
     maxrain = n;
+  }
+
+  n = 0;
+  helmet = hhead;
+  while (helmet) {
+    n++;
+    #ifdef USE_SOUND
+    if (helmet->pos[1] < 0.0f) {
+      //raindrop hit ground
+      if (!helmet->sound && play_sounds) {
+        //small chance that a sound will play
+        int r = random(50);
+        if (r == 1) {
+          //play sound here...
+        }
+        //sound plays once per raindrop
+        helmet->sound = 1;
+      }
+    }
+    #endif
+
+    if (helmet->pos[1] < -20.0f) {
+      //item has hit ground
+      Helmet *savenode = helmet->next;
+      deleteHelmet(helmet);
+      helmet = savenode;
+      continue;
+    }
+    helmet = helmet->next;
+  }
+  if (tothelmet < n) {
+    tothelmet = n;
+  }
 }
 
 void physics(void)
@@ -700,8 +725,9 @@ void render(void)
     }
     glDisable(GL_ALPHA_TEST);
   }
+  drawHelmets();
   drawItems();
-
+ 
   glDisable(GL_TEXTURE_2D);
 
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

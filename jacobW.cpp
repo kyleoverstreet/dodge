@@ -18,6 +18,7 @@ void cleanupPPM(void) {
     system("rm ./images/Spike.ppm");
     system("rm ./images/walking1.ppm");
     system("rm ./images/walking2.ppm");
+    system("rm ./images/helmet.ppm");
 }
 
 void movePlayer(int xres, Player *player) {

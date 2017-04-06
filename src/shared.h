@@ -49,6 +49,19 @@ typedef struct t_item {
 	struct t_item *next;
 } Item;
 
+typedef struct t_helmet {
+	int type;
+	int linewidth;
+	int sound;
+	Vec pos;
+	Vec lastpos;
+	Vec vel;
+	Vec maxvel;
+	Vec force;
+	float length;
+	struct t_helmet *prev;
+	struct t_helmet *next;
+} Helmet;
 
 typedef struct t_umbrella {
 	int shape;
@@ -58,5 +71,6 @@ typedef struct t_umbrella {
 	float width2;
 	float radius;
 } Umbrella;
+
 
 #endif
