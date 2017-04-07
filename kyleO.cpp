@@ -3,6 +3,21 @@
 // Dodge Project
 // Individual source code
 
+/* WEEK 11 (Last edited 04/06/17)
+
+I have made many changes to our main source file (src/dodge.cpp) and have
+cleaned up our project's repository. Removed files, renamed files, etc.
+
+I helped Young with his create items functions (youngO.cpp)
+
+Next up:
+
+Now that we have determined how we to create the different items onto the screen,
+I will be implementing collision detection. From there, we can code the different
+actions (which will be dependent on which item collides with the player)
+
+*/
+
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -23,6 +38,7 @@ void gamelog(string, int);
 void upload_scores();
 
 // TO DO:
+// Detect items collision with player (will also need type of item)
 // Set up gamelog and upload_scores functions to communicate with a webpage
 // Create score display for 2-Player mode (after it's implemented)
 
