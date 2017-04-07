@@ -48,7 +48,6 @@ extern void cleanupPPM(void);
 void cleanupXWindows(void);
 extern void movePlayer(int xres, Player *player);
 void checkResize(XEvent *e);
-//void checkMouse(XEvent *e);
 void checkKeys(XEvent *e);
 extern void init(int, int, Player*);
 void physics(void);
@@ -76,11 +75,11 @@ double physicsCountdown=0.0;
 double timeSpan=0.0;
 unsigned int upause=0;
 double timeDiff(struct timespec *start, struct timespec *end) {
-  return (double)(end->tv_sec - start->tv_sec ) +
-    (double)(end->tv_nsec - start->tv_nsec) * oobillion;
+	return (double)(end->tv_sec - start->tv_sec ) +
+		(double)(end->tv_nsec - start->tv_nsec) * oobillion;
 }
 void timeCopy(struct timespec *dest, struct timespec *source) {
-  memcpy(dest, source, sizeof(struct timespec));
+	memcpy(dest, source, sizeof(struct timespec));
 }
 //-----------------------------------------------------------------------------
 
@@ -90,8 +89,8 @@ int xres = 800, yres = 600;
 Ppmimage *playerImage = NULL;
 Ppmimage *playerImageMv1 = NULL;
 Ppmimage *playerImageMv2 = NULL;
-Ppmimage *forestImage = NULL;
-Ppmimage *forestTransImage = NULL;
+Ppmimage *bgImage = NULL;
+Ppmimage *bgTransImage = NULL;
 Ppmimage *umbrellaImage = NULL;
 Ppmimage *spikeImage = NULL;
 Ppmimage *helmetImage = NULL;
@@ -100,14 +99,14 @@ GLuint playerTexture;
 GLuint playerMv1Texture;
 GLuint playerMv2Texture;
 GLuint silhouetteTexture;
-GLuint forestTexture;
-GLuint forestTransTexture;
+GLuint bgTexture;
+GLuint bgTransTexture;
 GLuint umbrellaTexture;
 GLuint spikeTexture;
 GLuint helmetTexture;
 
 int showPlayer = 0;
-int forest = 1;
+int background = 1;
 int silhouette = 1;
 int trees = 1;
 int showItems = 0;
@@ -121,633 +120,541 @@ void cleanupItems(void);
 #define UMBRELLA_FLAT 0
 #define UMBRELLA_ROUND 1
 
-
 Umbrella umbrella;
 int showUmbrella=0;
 int deflection=0;
 
-
 int main(void)
 {
-  initialize_sounds();
-  logOpen();
-  initXWindows();
-  initOpengl();
-  init(xres, yres, &player);
-  clock_gettime(CLOCK_REALTIME, &timePause);
-  clock_gettime(CLOCK_REALTIME, &timeStart);
-  play_theme();
-  while (!done) {
-    while (XPending(dpy)) {
-      XEvent e;
-      XNextEvent(dpy, &e);
-      //			checkMouse(&e);
-      checkKeys(&e);
-    }
-    //
-    //Below is a process to apply physics at a consistent rate.
-    //1. Get the time right now.
-    clock_gettime(CLOCK_REALTIME, &timeCurrent);
-    //2. How long since we were here last?
-    timeSpan = timeDiff(&timeStart, &timeCurrent);
-    //3. Save the current time as our new starting time.
-    timeCopy(&timeStart, &timeCurrent);
-    //4. Add time-span to our countdown amount.
-    physicsCountdown += timeSpan;
-    //5. Has countdown gone beyond our physics rate? 
-    //       if yes,
-    //           In a loop...
-    //              Apply physics
-    //              Reducing countdown by physics-rate.
-    //              Break when countdown < physics-rate.
-    //       if no,
-    //           Apply no physics this frame.
-    while (physicsCountdown >= physicsRate) {
-      //6. Apply physics
-      physics();
-      //7. Reduce the countdown by our physics-rate
-      physicsCountdown -= physicsRate;
-    }
-    //check_sound();
-    //Always render every frame.
-    render();
-    glXSwapBuffers(dpy, win);
-  }
-  cleanup_sounds();
-  cleanupPPM();
-  cleanupXWindows();
-  cleanup_fonts();
-  logClose();
-  return 0;
+	initialize_sounds();
+	logOpen();
+	initXWindows();
+	initOpengl();
+	init(xres, yres, &player);
+	clock_gettime(CLOCK_REALTIME, &timePause);
+	clock_gettime(CLOCK_REALTIME, &timeStart);
+	play_theme();
+	while (!done) {
+		while (XPending(dpy)) {
+			XEvent e;
+			XNextEvent(dpy, &e);
+			checkKeys(&e);
+		}
+		//Below is a process to apply physics at a consistent rate.
+		//1. Get the time right now.
+		clock_gettime(CLOCK_REALTIME, &timeCurrent);
+		//2. How long since we were here last?
+		timeSpan = timeDiff(&timeStart, &timeCurrent);
+		//3. Save the current time as our new starting time.
+		timeCopy(&timeStart, &timeCurrent);
+		//4. Add time-span to our countdown amount.
+		physicsCountdown += timeSpan;
+		//5. Has countdown gone beyond our physics rate? 
+		//       if yes,
+		//           In a loop...
+		//              Apply physics
+		//              Reducing countdown by physics-rate.
+		//              Break when countdown < physics-rate.
+		//       if no,
+		//           Apply no physics this frame.
+		while (physicsCountdown >= physicsRate) {
+			//6. Apply physics
+			physics();
+			//7. Reduce the countdown by our physics-rate
+			physicsCountdown -= physicsRate;
+		}
+		//check_sound();
+		//Always render every frame.
+		render();
+		glXSwapBuffers(dpy, win);
+	}
+	cleanup_sounds();
+	cleanupPPM();
+	cleanupXWindows();
+	cleanup_fonts();
+	logClose();
+	return 0;
 }
 
 void cleanupXWindows(void) {
-  XDestroyWindow(dpy, win);
-  XCloseDisplay(dpy);
+	XDestroyWindow(dpy, win);
+	XCloseDisplay(dpy);
 }
 
 void setTitle(void)
 {
-  //Set the window title bar.
-  XMapWindow(dpy, win);
-  XStoreName(dpy, win, "Dodge");
+	//Set the window title bar.
+	XMapWindow(dpy, win);
+	XStoreName(dpy, win, "Dodge");
 }
 
 void setupScreenRes(const int w, const int h)
 {
-  xres = w;
-  yres = h;
+	xres = w;
+	yres = h;
 }
 
 void initXWindows(void)
 {
-  GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-  //GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
-  XSetWindowAttributes swa;
+	GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	XSetWindowAttributes swa;
 
-  setupScreenRes(1280, 960);
-  dpy = XOpenDisplay(NULL);
-  if (dpy == NULL) {
-    printf("\n\tcannot connect to X server\n\n");
-    exit(EXIT_FAILURE);
-  }
-  Window root = DefaultRootWindow(dpy);
-  XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
-  if (vi == NULL) {
-    printf("\n\tno appropriate visual found\n\n");
-    exit(EXIT_FAILURE);
-  } 
-  Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
-  swa.colormap = cmap;
-  swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
-    StructureNotifyMask | SubstructureNotifyMask;
-  win = XCreateWindow(dpy, root, 0, 0, xres, yres, 0,
-      vi->depth, InputOutput, vi->visual,
-      CWColormap | CWEventMask, &swa);
-  GLXContext glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
-  glXMakeCurrent(dpy, win, glc);
-  setTitle();
+	setupScreenRes(1280, 960);
+	dpy = XOpenDisplay(NULL);
+	if (dpy == NULL) {
+		printf("\n\tcannot connect to X server\n\n");
+		exit(EXIT_FAILURE);
+	}
+	Window root = DefaultRootWindow(dpy);
+	XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
+	if (vi == NULL) {
+		printf("\n\tno appropriate visual found\n\n");
+		exit(EXIT_FAILURE);
+	} 
+	Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+	swa.colormap = cmap;
+	swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
+		StructureNotifyMask | SubstructureNotifyMask;
+	win = XCreateWindow(dpy, root, 0, 0, xres, yres, 0,
+			vi->depth, InputOutput, vi->visual,
+			CWColormap | CWEventMask, &swa);
+	GLXContext glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
+	glXMakeCurrent(dpy, win, glc);
+	setTitle();
 }
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
-  //add 4th component to RGB stream...
-  int i;
-  int a,b,c;
-  unsigned char *newdata, *ptr;
-  unsigned char *data = (unsigned char *)img->data;
-  newdata = (unsigned char *)malloc(img->width * img->height * 4);
-  ptr = newdata;
-  for (i=0; i<img->width * img->height * 3; i+=3) {
-    a = *(data+0);
-    b = *(data+1);
-    c = *(data+2);
-    *(ptr+0) = a;
-    *(ptr+1) = b;
-    *(ptr+2) = c;
-    //get largest color component...
-    //*(ptr+3) = (unsigned char)((
-    //		(int)*(ptr+0) +
-    //		(int)*(ptr+1) +
-    //		(int)*(ptr+2)) / 3);
-    //d = a;
-    //if (b >= a && b >= c) d = b;
-    //if (c >= a && c >= b) d = c;
-    //*(ptr+3) = d;
-    *(ptr+3) = (a|b|c);
-    ptr += 4;
-    data += 3;
-  }
-  return newdata;
+	//add 4th component to RGB stream...
+	int i;
+	int a,b,c;
+	unsigned char *newdata, *ptr;
+	unsigned char *data = (unsigned char *)img->data;
+	newdata = (unsigned char *)malloc(img->width * img->height * 4);
+	ptr = newdata;
+	for (i=0; i<img->width * img->height * 3; i+=3) {
+		a = *(data+0);
+		b = *(data+1);
+		c = *(data+2);
+		*(ptr+0) = a;
+		*(ptr+1) = b;
+		*(ptr+2) = c;
+		*(ptr+3) = (a|b|c);
+		ptr += 4;
+		data += 3;
+	}
+	return newdata;
 }
 
 void initOpengl(void)
 {
-  //OpenGL initialization
-  glViewport(0, 0, xres, yres);
-  //Initialize matrices
-  glMatrixMode(GL_PROJECTION); glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-  //This sets 2D mode (no perspective)
-  glOrtho(0, xres, 0, yres, -1, 1);
+	//OpenGL initialization
+	glViewport(0, 0, xres, yres);
+	//Initialize matrices
+	glMatrixMode(GL_PROJECTION); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+	//This sets 2D mode (no perspective)
+	glOrtho(0, xres, 0, yres, -1, 1);
 
-  glDisable(GL_LIGHTING);
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_FOG);
-  glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_FOG);
+	glDisable(GL_CULL_FACE);
 
-  //Clear the screen
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  //glClear(GL_COLOR_BUFFER_BIT);
-  //Do this to allow fonts
-  glEnable(GL_TEXTURE_2D);
-  initialize_fonts();
-  //
-  //load the images file into a ppm structure.
-  //
-  //Character Image Left
-  system("convert ./images/standL.png ./images/standL.ppm");
-  playerImage      = ppm6GetImage("./images/standL.ppm");
-  //Character Image Move1
-  system("convert ./images/walking1.png ./images/walking1.ppm");
-  playerImageMv1   = ppm6GetImage("./images/walking1.ppm");
-  //Character Image Move2
-  system("convert ./images/walking2.png ./images/walking2.ppm");
-  playerImageMv2   = ppm6GetImage("./images/walking2.ppm");
-  //Background Image
-  system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
-  forestImage      = ppm6GetImage("./images/PixelBG.ppm");
-  //Transparent Image (since it messes up if I delete it)	
-  forestTransImage = ppm6GetImage("./images/transparent.ppm");
-  //Umbrella Image
-  umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
-  //Spike Image
-  system("convert ./images/Spike.png ./images/Spike.ppm");
-  spikeImage = ppm6GetImage("./images/Spike.ppm");
-  //Helmet Image
-  system("convert ./images/helmet.png ./images/helmet.ppm");
-  helmetImage = ppm6GetImage("./images/helmet.ppm");
+	//Clear the screen
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//Do this to allow fonts
+	glEnable(GL_TEXTURE_2D);
+	initialize_fonts();
+	//load the images file into a ppm structure.
+	//Character Image Left
+	system("convert ./images/standL.png ./images/standL.ppm");
+	playerImage      = ppm6GetImage("./images/standL.ppm");
+	//Character Image Move1
+	system("convert ./images/walking1.png ./images/walking1.ppm");
+	playerImageMv1   = ppm6GetImage("./images/walking1.ppm");
+	//Character Image Move2
+	system("convert ./images/walking2.png ./images/walking2.ppm");
+	playerImageMv2   = ppm6GetImage("./images/walking2.ppm");
+	//Background Image
+	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
+	bgImage      = ppm6GetImage("./images/PixelBG.ppm");
+	//Transparent Image (since it messes up if I delete it)	
+	bgTransImage = ppm6GetImage("./images/transparent.ppm");
+	//Spike Image
+	system("convert ./images/Spike.png ./images/Spike.ppm");
+	spikeImage = ppm6GetImage("./images/Spike.ppm");
+	//Helmet Image
+	system("convert ./images/helmet.png ./images/helmet.ppm");
+	helmetImage = ppm6GetImage("./images/helmet.ppm");
 
-  //create opengl texture elements
-  glGenTextures(1, &playerTexture);
-  glGenTextures(1, &playerMv1Texture);
-  glGenTextures(1, &playerMv2Texture);
-  glGenTextures(1, &silhouetteTexture);
-  glGenTextures(1, &forestTexture);
-  glGenTextures(1, &umbrellaTexture);
-  glGenTextures(1, &spikeTexture);
-  glGenTextures(1, &helmetTexture);
+	//create opengl texture elements
+	glGenTextures(1, &playerTexture);
+	glGenTextures(1, &playerMv1Texture);
+	glGenTextures(1, &playerMv2Texture);
+	glGenTextures(1, &silhouetteTexture);
+	glGenTextures(1, &bgTexture);
+	glGenTextures(1, &spikeTexture);
+	glGenTextures(1, &helmetTexture);
 
-  //-------------------------------------------------------------------------
-  //player
-  int w = playerImage->width;
-  int h = playerImage->height;	
-  //
-  glBindTexture(GL_TEXTURE_2D, playerTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-      GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
-  //-------------------------------------------------------------------------
-  //playerMv1
-  w = playerImageMv1->width;
-  h = playerImageMv1->height;	
-  //
-  glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-      GL_RGB, GL_UNSIGNED_BYTE, playerImageMv1->data);
-  //-------------------------------------------------------------------------
-  //playerMv2
-  w = playerImageMv2->width;
-  h = playerImageMv2->height;	
-  //
-  glBindTexture(GL_TEXTURE_2D, playerMv2Texture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-      GL_RGB, GL_UNSIGNED_BYTE, playerImageMv2->data);
-  //-------------------------------------------------------------------------
-  //silhouette
-  //this is similar to a sprite graphic
-  glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  //
-  //must build a new set of data...
-  unsigned char *silhouetteData = buildAlphaData(playerImage);	
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-      GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-  free(silhouetteData);
-  //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-  //	GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
-  //-------------------------------------------------------------------------
-  //umbrella
-  glBindTexture(GL_TEXTURE_2D, umbrellaTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  //
-  //must build a new set of data...
-  silhouetteData = buildAlphaData(umbrellaImage);	
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-      GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-  free(silhouetteData);
-  //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-  //	GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
-  //-------------------------------------------------------------------------
-  //forest
-  glBindTexture(GL_TEXTURE_2D, forestTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3,
-      forestImage->width, forestImage->height,
-      0, GL_RGB, GL_UNSIGNED_BYTE, forestImage->data);
-  //-------------------------------------------------------------------------
-  //forest transparent part
-  glBindTexture(GL_TEXTURE_2D, forestTransTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  //
-  //must build a new set of data...
-  w = forestTransImage->width;
-  h = forestTransImage->height;
-  unsigned char *ftData = buildAlphaData(forestTransImage);	
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-      GL_RGBA, GL_UNSIGNED_BYTE, ftData);
-  free(ftData);
-  //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-  //GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
-  //-------------------------------------------------------------------------
-  //spike
-  w = spikeImage->width;
-  h = spikeImage->height;	
-  //
-  glBindTexture(GL_TEXTURE_2D, spikeTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-      GL_RGB, GL_UNSIGNED_BYTE, spikeImage->data);
-  //helmet
-  w = helmetImage->width;
-  h = helmetImage->height; 
-  //
-  glBindTexture(GL_TEXTURE_2D, helmetTexture);
-  //
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-      GL_RGB, GL_UNSIGNED_BYTE, helmetImage->data);
+	//-------------------------------------------------------------------------
+	//player
+	int w = playerImage->width;
+	int h = playerImage->height;	
+	glBindTexture(GL_TEXTURE_2D, playerTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
+	//-------------------------------------------------------------------------
+	//playerMv1
+	w = playerImageMv1->width;
+	h = playerImageMv1->height;	
+	glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, playerImageMv1->data);
+	//-------------------------------------------------------------------------
+	//playerMv2
+	w = playerImageMv2->width;
+	h = playerImageMv2->height;	
+	glBindTexture(GL_TEXTURE_2D, playerMv2Texture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, playerImageMv2->data);
+	//-------------------------------------------------------------------------
+	//silhouette
+	//this is similar to a sprite graphic
+	glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	//
+	//must build a new set of data...
+	unsigned char *silhouetteData = buildAlphaData(playerImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+	//-------------------------------------------------------------------------
+	//background
+	glBindTexture(GL_TEXTURE_2D, bgTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+			bgImage->width, bgImage->height,
+			0, GL_RGB, GL_UNSIGNED_BYTE, bgImage->data);
+	//-------------------------------------------------------------------------
+	//background transparent part
+	glBindTexture(GL_TEXTURE_2D, bgTransTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	//must build a new set of data...
+	w = bgTransImage->width;
+	h = bgTransImage->height;
+	unsigned char *ftData = buildAlphaData(bgTransImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, ftData);
+	free(ftData);
+	//-------------------------------------------------------------------------
+	//spike
+	w = spikeImage->width;
+	h = spikeImage->height;	
+	glBindTexture(GL_TEXTURE_2D, spikeTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, spikeImage->data);
+	//helmet
+	w = helmetImage->width;
+	h = helmetImage->height; 
+	glBindTexture(GL_TEXTURE_2D, helmetTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, helmetImage->data);
 }
 
 void initSounds(void)
 {
-  //You may add sound here for some extra credit.
-  //Fmod is not allowed.
-  //OpenAL sound only.
-  //Look for the openalTest folder under /code.
+	// Sound code here??
 }
-
-/*void checkMouse(XEvent *e)
-  {
-//Did the mouse move?
-//Was a mouse button clicked?
-static int savex = 0;
-static int savey = 0;
-//
-if (e->type == ButtonRelease) {
-return;
-}
-if (e->type == ButtonPress) {
-if (e->xbutton.button==1) {
-//Left button is down
-}
-if (e->xbutton.button==3) {
-//Right button is down
-}
-}
-if (savex != e->xbutton.x || savey != e->xbutton.y) {
-//Mouse moved
-savex = e->xbutton.x;
-savey = e->xbutton.y;
-}
-}*/
 
 void checkKeys(XEvent *e)
 {
-  //keyboard input?
-  int shift=0;
-  int key = XLookupKeysym(&e->xkey, 0);
-  if (e->type == KeyRelease) {
-    if (key == XK_Shift_L || key == XK_Shift_R)
-      shift=0;
-    return;
-  }
-  if (e->type == KeyPress) {
-    if (key == XK_Shift_L || key == XK_Shift_R) {
-      shift=1;
-      return;
-    }
-  } else {
-    return;
-  }
-  switch(key) {
-    case XK_b:
-      showPlayer ^= 1;
-      if (showPlayer) {
-        player.pos[0] = xres/2;
-        player.pos[1] = yres-920;
-      }
-      play_helmet_hit();
-      break;
-    case XK_p:
-      play_powerup();
-      break;
-    case XK_Left:
-	keypressL(&player);
-      break;
-    case XK_Right:
-        keypressR(&player);
-      break;
-      /*case XK_Up:
-        VecCopy(umbrella.pos, umbrella.lastpos);
-        umbrella.pos[1] += 10.0;
-        break;
-        case XK_Down:
-        VecCopy(umbrella.pos, umbrella.lastpos);
-        umbrella.pos[1] -= 10.0;
-        break;
-       */
-    case XK_Escape:
-      done=1;
-      break;
-  }
+	//keyboard input?
+	int shift=0;
+	int key = XLookupKeysym(&e->xkey, 0);
+	if (e->type == KeyRelease) {
+		if (key == XK_Shift_L || key == XK_Shift_R)
+			shift=0;
+		return;
+	}
+	if (e->type == KeyPress) {
+		if (key == XK_Shift_L || key == XK_Shift_R) {
+			shift=1;
+			return;
+		}
+	} else {
+		return;
+	}
+	switch(key) {
+		case XK_b:
+			showPlayer ^= 1;
+			if (showPlayer) {
+				player.pos[0] = xres/2;
+				player.pos[1] = yres-920;
+			}
+			play_helmet_hit();
+			break;
+		case XK_p:
+			play_powerup();
+			break;
+		case XK_Left:
+			keypressL(&player);
+			break;
+		case XK_Right:
+			keypressR(&player);
+			break;
+		case XK_Escape:
+			done=1;
+			break;
+	}
 }
 
 Flt VecNormalize(Vec vec)
 {
-  Flt len, tlen;
-  Flt xlen = vec[0];
-  Flt ylen = vec[1];
-  Flt zlen = vec[2];
-  len = xlen*xlen + ylen*ylen + zlen*zlen;
-  if (len == 0.0) {
-    MakeVector(0.0,0.0,1.0,vec);
-    return 1.0;
-  }
-  len = sqrt(len);
-  tlen = 1.0 / len;
-  vec[0] = xlen * tlen;
-  vec[1] = ylen * tlen;
-  vec[2] = zlen * tlen;
-  return(len);
+	Flt len, tlen;
+	Flt xlen = vec[0];
+	Flt ylen = vec[1];
+	Flt zlen = vec[2];
+	len = xlen*xlen + ylen*ylen + zlen*zlen;
+	if (len == 0.0) {
+		MakeVector(0.0,0.0,1.0,vec);
+		return 1.0;
+	}
+	len = sqrt(len);
+	tlen = 1.0 / len;
+	vec[0] = xlen * tlen;
+	vec[1] = ylen * tlen;
+	vec[2] = zlen * tlen;
+	return(len);
 }
 
 void cleanupItems(void)
 {
-  Item *s;
-  while (ihead) {
-    s = ihead->next;
-    free(ihead);
-    ihead = s;
-  }
-  ihead = NULL;
+	Item *s;
+	while (ihead) {
+		s = ihead->next;
+		free(ihead);
+		ihead = s;
+	}
+	ihead = NULL;
 }
 
 void checkItems()
 {
-  // if (!showItems)
-  // 	return;
-  if (random(100) < 15) {
-    createItems(ndrops, xres, yres);
-  }
-  if (random(200) < 2) {
-      createHelmets(ndrops, xres, yres);
-  }
-  //move items
-  Item *node = ihead;
-  while (node) {
-    //force is toward the ground
-    node->vel[1] += gravity;
-    VecCopy(node->pos, node->lastpos);
+	// if (!showItems)
+	// 	return;
+	if (random(100) < 15) {
+		createItems(ndrops, xres, yres);
+	}
+	if (random(200) < 2) {
+		createHelmets(ndrops, xres, yres);
+	}
+	//move items
+	Item *node = ihead;
+	while (node) {
+		//force is toward the ground
+		node->vel[1] += gravity;
+		VecCopy(node->pos, node->lastpos);
 
-    {
-      node->pos[0] += node->vel[0] * timeslice;
-      node->pos[1] += node->vel[1] * timeslice;
-      if (fabs(node->vel[1]) > node->maxvel[1])
-        node->vel[1] *= 0.96;
-      node->vel[0] *= 0.999;
-    }
-    node = node->next;
-  }
+		{
+			node->pos[0] += node->vel[0] * timeslice;
+			node->pos[1] += node->vel[1] * timeslice;
+			if (fabs(node->vel[1]) > node->maxvel[1])
+				node->vel[1] *= 0.96;
+			node->vel[0] *= 0.999;
+		}
+		node = node->next;
+	}
 
-  Helmet *helmet = hhead;
-  while (helmet) {
-    //force is toward the ground
-    helmet->vel[1] += gravity;
-    VecCopy(helmet->pos, helmet->lastpos);
+	Helmet *helmet = hhead;
+	while (helmet) {
+		//force is toward the ground
+		helmet->vel[1] += gravity;
+		VecCopy(helmet->pos, helmet->lastpos);
 
-    {
-      helmet->pos[0] += helmet->vel[0] * timeslice;
-      helmet->pos[1] += helmet->vel[1] * timeslice;
-      if (fabs(helmet->vel[1]) > helmet->maxvel[1])
-        helmet->vel[1] *= 0.96;
-      helmet->vel[0] *= 0.999;
-    }
-    helmet = helmet->next;
-  }
+		{
+			helmet->pos[0] += helmet->vel[0] * timeslice;
+			helmet->pos[1] += helmet->vel[1] * timeslice;
+			if (fabs(helmet->vel[1]) > helmet->maxvel[1])
+				helmet->vel[1] *= 0.96;
+			helmet->vel[0] *= 0.999;
+		}
+		helmet = helmet->next;
+	}
 
-  //check items
-  int n = 0;
-  node = ihead;
-  while (node) {
-    n++;
-    #ifdef USE_SOUND
-    if (node->pos[1] < 0.0f) {
-      //raindrop hit ground
-      if (!node->sound && play_sounds) {
-        //small chance that a sound will play
-        int r = random(50);
-        if (r==1) {
-          //play sound here...
-        }
-        //sound plays once per raindrop
-        node->sound=1;
-      }
-    }
-    #endif
+	//check items
+	int n = 0;
+	node = ihead;
+	while (node) {
+		n++;
+#ifdef USE_SOUND
+		if (node->pos[1] < 0.0f) {
+			//raindrop hit ground
+			if (!node->sound && play_sounds) {
+				//small chance that a sound will play
+				int r = random(50);
+				if (r==1) {
+					//play sound here...
+				}
+				//sound plays once per raindrop
+				node->sound=1;
+			}
+		}
+#endif
 
-    if (node->pos[1] < -20.0f) {
-      //item has hit ground
-      Item *savenode = node->next;
-      deleteItem(node);
-      node = savenode;
-      continue;
-    }
-    node = node->next;
-  }
-  if (maxrain < n) {
-    maxrain = n;
-  }
+		if (node->pos[1] < -20.0f) {
+			//item has hit ground
+			Item *savenode = node->next;
+			deleteItem(node);
+			node = savenode;
+			continue;
+		}
+		node = node->next;
+	}
+	if (maxrain < n) {
+		maxrain = n;
+	}
 
-  n = 0;
-  helmet = hhead;
-  while (helmet) {
-    n++;
-    #ifdef USE_SOUND
-    if (helmet->pos[1] < 0.0f) {
-      //raindrop hit ground
-      if (!helmet->sound && play_sounds) {
-        //small chance that a sound will play
-        int r = random(50);
-        if (r == 1) {
-          //play sound here...
-        }
-        //sound plays once per raindrop
-        helmet->sound = 1;
-      }
-    }
-    #endif
+	n = 0;
+	helmet = hhead;
+	while (helmet) {
+		n++;
+#ifdef USE_SOUND
+		if (helmet->pos[1] < 0.0f) {
+			//raindrop hit ground
+			if (!helmet->sound && play_sounds) {
+				//small chance that a sound will play
+				int r = random(50);
+				if (r == 1) {
+					//play sound here...
+				}
+				//sound plays once per raindrop
+				helmet->sound = 1;
+			}
+		}
+#endif
 
-    if (helmet->pos[1] < -20.0f) {
-      //item has hit ground
-      Helmet *savenode = helmet->next;
-      deleteHelmet(helmet);
-      helmet = savenode;
-      continue;
-    }
-    helmet = helmet->next;
-  }
-  if (tothelmet < n) {
-    tothelmet = n;
-  }
+		if (helmet->pos[1] < -20.0f) {
+			//item has hit ground
+			Helmet *savenode = helmet->next;
+			deleteHelmet(helmet);
+			helmet = savenode;
+			continue;
+		}
+		helmet = helmet->next;
+	}
+	if (tothelmet < n) {
+		tothelmet = n;
+	}
 }
 
 void physics(void)
 {
-  if (showPlayer)
-    movePlayer(xres, &player);
-  checkItems();
+	if (showPlayer)
+		movePlayer(xres, &player);
+	checkItems();
 }
 
 void render(void)
 {
-  Rect r;
+	Rect r;
 
-  //Clear the screen
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT);
-  //
-  //
-  //draw a quad with texture
-  float wid = 40.0f;
-  glColor3f(1.0, 1.0, 1.0);
-  if (forest) {
-    glBindTexture(GL_TEXTURE_2D, forestTexture);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-    glEnd();
-  }
-  if (showPlayer) {
-    glPushMatrix();
-    glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
-    if (!silhouette) {
-      glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
-    }
-    //set up a timer depending on keypress
-    //use an animation span for a certain amount of seconds to display each image
-    //combine images into one, and use vertices to display each image individually
-    //if stand then keys are not pressed 
-    //if left check for left keypress
-    //if right check for right keypress
-    //at end of render grab time and add to animation span
+	//Clear the screen
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-    else {
-      glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
-      glEnable(GL_ALPHA_TEST);
-      glAlphaFunc(GL_GREATER, 0.0f);
-      glColor4ub(255,255,255,255);
-    } 
-    glBegin(GL_QUADS);
-    if (player.LR == false) {
-      glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-      glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-      glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-      glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-    } else {
-      glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
-      glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
-      glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
-      glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
-    }
-    glEnd();
-    glPopMatrix();
+	//draw a quad with texture
+	float wid = 40.0f;
+	glColor3f(1.0, 1.0, 1.0);
+	if (background) {
+		glBindTexture(GL_TEXTURE_2D, bgTexture);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+		glEnd();
+	}
+	if (showPlayer) {
+		glPushMatrix();
+		glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
+		if (!silhouette) {
+			glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
+		}
+		//set up a timer depending on keypress
+		//use an animation span for a certain amount of seconds to display each image
+		//combine images into one, and use vertices to display each image individually
+		//if stand then keys are not pressed 
+		//if left check for left keypress
+		//if right check for right keypress
+		//at end of render grab time and add to animation span
 
-    if (trees && silhouette) {
-      glBindTexture(GL_TEXTURE_2D, forestTransTexture);
-      glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-      glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-      glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-      glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-      glEnd();
-    }
-    glDisable(GL_ALPHA_TEST);
-  }
-  drawHelmets();
-  drawItems();
- 
-  glDisable(GL_TEXTURE_2D);
+		else {
+			glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+		} 
+		glBegin(GL_QUADS);
+		if (player.LR == false) {
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+		} else {
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
+		}
+		glEnd();
+		glPopMatrix();
 
-  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_BLEND);
-  //if (showItems)
+		if (trees && silhouette) {
+			glBindTexture(GL_TEXTURE_2D, bgTransTexture);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+			glEnd();
+		}
+		glDisable(GL_ALPHA_TEST);
+	}
+	drawHelmets();
+	drawItems();
 
-  glDisable(GL_BLEND);
-  glEnable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);
 
-  r.bot = yres - 20;
-  r.left = 10;
-  r.center = 0;
-  unsigned int color = 0x00dddd00;
-  ggprint8b(&r, 16, color, "B - Player");
-  ggprint8b(&r, 16, color, "D - Deflection");
-  ggprint8b(&r, 16, color, "N - Sounds");
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
 
-  // Display score to top right of screen
-  display_score(xres, yres);
+	r.bot = yres - 20;
+	r.left = 10;
+	r.center = 0;
+	unsigned int color = 0x00dddd00;
+	ggprint8b(&r, 16, color, "B - Player");
+	ggprint8b(&r, 16, color, "D - Deflection");
+	ggprint8b(&r, 16, color, "N - Sounds");
 
-  // Display collision count (for testing)
-  display_collisions(xres, yres);
+	// Display score to top right of screen
+	display_score(xres, yres);
+
+	// Display collision count (for testing)
+	display_collisions(xres, yres);
 }
