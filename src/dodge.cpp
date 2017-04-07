@@ -30,7 +30,6 @@ extern "C" {
 
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
-#define ALPHA 1
 
 //X Windows variables
 Display *dpy;
@@ -39,25 +38,22 @@ Player player;
 Item *ihead = NULL;
 Helmet *hhead = NULL;
 
-//function prototypes
 void initXWindows(void);
 void initOpengl(void);
-extern void keypressL(Player *player);
-extern void keypressR(Player *player);
-extern void cleanupPPM(void);
 void cleanupXWindows(void);
-extern void movePlayer(int xres, Player *player);
-void checkResize(XEvent *e);
-void checkKeys(XEvent *e);
-extern void init(int, int, Player*);
 void physics(void);
 void render(void);
-extern void printChristian();
+void checkResize(XEvent *e);
+void checkKeys(XEvent *e);
+extern void cleanupPPM(void);
+extern void init(int, int, Player*);
+extern void keypressR(Player *player);
+extern void keypressL(Player *player);
+extern void movePlayer(int xres, Player *player);
 extern void deleteItem(Item *node);
 extern void display_score(int, int);
 extern void display_collisions(int, int);
 extern void upload_scores();
-extern void youngsoo();
 extern void initialize_sounds();
 extern void play_helmet_hit();
 extern void play_powerup();
@@ -91,7 +87,6 @@ Ppmimage *playerImageMv1 = NULL;
 Ppmimage *playerImageMv2 = NULL;
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
-Ppmimage *umbrellaImage = NULL;
 Ppmimage *spikeImage = NULL;
 Ppmimage *helmetImage = NULL;
 
@@ -101,7 +96,6 @@ GLuint playerMv2Texture;
 GLuint silhouetteTexture;
 GLuint bgTexture;
 GLuint bgTransTexture;
-GLuint umbrellaTexture;
 GLuint spikeTexture;
 GLuint helmetTexture;
 
@@ -109,20 +103,12 @@ int showPlayer = 0;
 int background = 1;
 int silhouette = 1;
 int trees = 1;
-int showItems = 0;
 int ndrops = 1;
 int totrain = 0;
 int maxrain = 0;
 int tothelmet = 0;
 
 void cleanupItems(void);
-
-#define UMBRELLA_FLAT 0
-#define UMBRELLA_ROUND 1
-
-Umbrella umbrella;
-int showUmbrella=0;
-int deflection=0;
 
 int main(void)
 {
@@ -278,8 +264,8 @@ void initOpengl(void)
 	system("convert ./images/walking2.png ./images/walking2.ppm");
 	playerImageMv2   = ppm6GetImage("./images/walking2.ppm");
 	//Background Image
-	system("convert ./images/PixelBG.jpg ./images/PixelBG.ppm");
-	bgImage      = ppm6GetImage("./images/PixelBG.ppm");
+	system("convert ./images/background1.jpg ./images/background1.ppm");
+	bgImage      = ppm6GetImage("./images/background1.ppm");
 	//Transparent Image (since it messes up if I delete it)	
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
 	//Spike Image
@@ -456,8 +442,6 @@ void cleanupItems(void)
 
 void checkItems()
 {
-	// if (!showItems)
-	// 	return;
 	if (random(100) < 15) {
 		createItems(ndrops, xres, yres);
 	}
@@ -640,7 +624,6 @@ void render(void)
 	drawItems();
 
 	glDisable(GL_TEXTURE_2D);
-
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
@@ -649,7 +632,6 @@ void render(void)
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "B - Player");
-	ggprint8b(&r, 16, color, "D - Deflection");
 	ggprint8b(&r, 16, color, "N - Sounds");
 
 	// Display score to top right of screen
