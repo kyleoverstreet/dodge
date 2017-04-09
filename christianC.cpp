@@ -80,13 +80,15 @@ extern void renderMenu(Menu *myMenu)
 		glVertex2i( w,-h);
 		glEnd();
 		glPopMatrix();
-	Rect r;
+	
+	// causing error because not used
+	/*Rect r;
 	r.bot = s->center.y + 80;
 	r.left = s->center.x;
 	r.center = s->center.y;
 	unsigned int color = 0xc13c47;
 	//ggprint13(&r, 10, color, "Welcome to the DODGE game menu!");
-	glEnd();
+	glEnd();*/
 
 }
 

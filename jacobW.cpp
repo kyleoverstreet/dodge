@@ -36,6 +36,7 @@ void movePlayer(int xres, Player *player) {
 	player->vel[0] = 0;
     }
 
+    // kyle wrote this for testing
     cout << "Player x position: " << player->pos[0] << endl;
 
     if (player->vel[0] < -3) { 

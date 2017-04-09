@@ -370,17 +370,18 @@ void initSounds(void)
 
 void checkKeys(XEvent *e)
 {
-	//keyboard input?
-	int shift=0;
 	int key = XLookupKeysym(&e->xkey, 0);
+	
+	//causing warnings - don't think we need code below
+	//int shift=0;
 	if (e->type == KeyRelease) {
 		if (key == XK_Shift_L || key == XK_Shift_R)
-			shift=0;
+			//shift=0;
 		return;
 	}
 	if (e->type == KeyPress) {
 		if (key == XK_Shift_L || key == XK_Shift_R) {
-			shift=1;
+			//shift=1;
 			return;
 		}
 	} else {
