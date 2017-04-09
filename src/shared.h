@@ -35,7 +35,7 @@ typedef struct t_player {
     };
 } Player;
 
-typedef struct t_item {
+typedef struct t_spike {
 	int type;
 	int linewidth;
 	int sound;
@@ -45,9 +45,9 @@ typedef struct t_item {
 	Vec maxvel;
 	Vec force;
 	float length;
-	struct t_item *prev;
-	struct t_item *next;
-} Item;
+	struct t_spike *prev;
+	struct t_spike *next;
+} Spike;
 
 typedef struct t_helmet {
 	int type;

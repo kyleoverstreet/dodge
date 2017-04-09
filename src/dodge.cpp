@@ -35,7 +35,7 @@ const float gravity = -0.2f;
 Display *dpy;
 Window win;
 Player player;
-Item *ihead = NULL;
+Spike *sphead = NULL;
 Helmet *hhead = NULL;
 
 void initXWindows(void);
@@ -50,7 +50,7 @@ extern void init(int, int, Player*);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
 extern int movePlayer(int xres, Player *player);
-extern void deleteItem(Item *node);
+extern void deleteSpike(Spike *node);
 extern void display_score(int, int);
 extern void display_collisions(int, int, int, int);
 extern void upload_scores();
@@ -106,8 +106,7 @@ int trees = 1;
 int ndrops = 1;
 int spike_collisions = 0;
 int helm_collisions = 0;
-
-void cleanupItems(void);
+//bool helm_status = false;
 
 int main(void)
 {
@@ -426,27 +425,16 @@ Flt VecNormalize(Vec vec)
 	return(len);
 }
 
-void cleanupItems(void)
-{
-	Item *s;
-	while (ihead) {
-		s = ihead->next;
-		free(ihead);
-		ihead = s;
-	}
-	ihead = NULL;
-}
-
 void checkItems()
 {
 	if (random(100) < 15) {
-		createItems(ndrops, xres, yres);
+		createSpikes(ndrops, xres, yres);
 	}
 	if (random(200) < 2) {
 		createHelmets(ndrops, xres, yres);
 	}
 	//move items
-	Item *node = ihead;
+	Spike *node = sphead;
 	while (node) {
 		//force is toward the ground
 		node->vel[1] += gravity;
@@ -477,19 +465,19 @@ void checkItems()
 	}
 
 	//check items
-	node = ihead;
+	node = sphead;
 	while (node) {
 		if (((node->pos[1] > 0 && node->pos[1] < 80)) &&
 			((node->pos[0] > (movePlayer(xres, &player)-40)) &&
 			(node->pos[0] < (movePlayer(xres, &player)+40)))) {
 			//spike is in same position as player
 			spike_collisions++;
-			deleteItem(node);
+			deleteSpike(node);
 		}
 		if (node->pos[1] < -20.0f) {
 			//spike has hit ground
-			Item *savenode = node->next;
-			deleteItem(node);
+			Spike *savenode = node->next;
+			deleteSpike(node);
 			node = savenode;
 			continue;
 		}
@@ -518,17 +506,11 @@ void checkItems()
 
 void physics(void)
 {
-	//int x_pos;
 	if (showPlayer) {
-		//x_pos = movePlayer(xres, &player);
-		//cout << "player x_pos = " << x_pos << endl;
 		movePlayer(xres, &player);
 	}
 	
 	checkItems();
-
-	//use player position and items x and y position to determine
-	//if there is a collision
 }
 
 void render(void)
@@ -598,7 +580,7 @@ void render(void)
 		glDisable(GL_ALPHA_TEST);
 	}
 	drawHelmets();
-	drawItems();
+	drawSpikes();
 
 	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

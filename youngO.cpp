@@ -8,19 +8,19 @@
 #include "src/shared.h"
 #include <iostream>
 
-extern Item *ihead;
+extern Spike *sphead;
 extern Helmet *hhead;
 extern Ppmimage *spikeImage;
 extern Ppmimage *helmetImage;
 extern GLuint spikeTexture;
 extern GLuint helmetTexture;
 
-extern void createItems(const int n, const int xres, const int yres)
+extern void createSpikes(const int n, const int xres, const int yres)
 {
 	//create new rain drops...
 	int i;
 	for (i = 0; i < n; i++) {
-		Item *node = (Item *)malloc(sizeof(Item));
+		Spike *node = (Spike *)malloc(sizeof(Spike));
 		if (node == NULL) {
 			Log("error allocating node.\n");
 			exit(EXIT_FAILURE);
@@ -37,16 +37,16 @@ extern void createItems(const int n, const int xres, const int yres)
 		node->maxvel[1] = (float) (node->linewidth*16);
 		node->length = node->maxvel[1] * 0.2f;
 		//put raindrop into linked list
-		node->next = ihead;
-		if (ihead != NULL)
-			ihead->prev = node;
-		ihead = node;
+		node->next = sphead;
+		if (sphead != NULL)
+			sphead->prev = node;
+		sphead = node;
 	}
 }
 
-extern void drawItems(void)
+extern void drawSpikes(void)
 {
-	Item *node = ihead;
+	Spike *node = sphead;
 	while (node) {
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();

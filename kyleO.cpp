@@ -6,22 +6,18 @@
 
 /*
 ====================WEEK 11====================
-I have made many changes to our main source file (src/dodge.cpp) and have
-cleaned up our project's repository. Removed files, renamed files, etc.
-
-I helped Young with his create items functions (youngO.cpp)
+Made many changes to our main source file (src/dodge.cpp).
+Cleaned up project's repo. Removed files, renamed files, etc.
+Helped Young with his create items functions (dodge.cpp and youngO.cpp)
 
 ====================SPRING BREAK====================
-Removed large sound file from project repo.
-Eliminated all compiling errors.
+Removed large sound and ppm files from project repo.
+Fixed all compiling errors.
 Removed unnecessary code from src/dodge.cpp.
 
-I have implemented collision detection with our character and
-the falling items. Currently just displays the collision count
-to the screen but will soon have more functionality
-
-Most of this was done in main source (file src/dodge.cpp)
-I will try to transfer some of my work done to my individual file
+Implemented collision detection. Currently just displays collision count
+to screen but will soon have functionality. Most of this was done in main
+source file (dodge.cpp). I will try to transfer some work to my individual file.
 */
 
 #include <ctime>
@@ -37,7 +33,7 @@ extern "C" {
 
 using namespace std;
 
-void deleteItem(Item *node);
+void deleteSpike(Spike *node);
 void display_score(int, int);
 void display_collisions(int, int, int, int);
 void gamelog(string, int);
@@ -47,19 +43,19 @@ void upload_scores();
 // Set up gamelog and upload_scores functions to communicate with a webpage
 // Create score display for 2-Player mode (after it's implemented)
 
-extern Item *ihead;
+extern Spike *sphead;
 int score = 0;
 
 // Deletes off-screen items and keeps track of player score
-void deleteItem(Item *node)
+void deleteSpike(Spike *node)
 {
     //only
     if (node->prev == NULL && node->next == NULL){
-        ihead = NULL;
+        sphead = NULL;
     }
     //beginning
     else if (node->prev == NULL){
-        ihead = node->next;
+        sphead = node->next;
         node->next->prev = NULL;
     }
     //end
@@ -94,20 +90,20 @@ void display_score(int xres, int yres)
 void display_collisions(int xres, int yres, int spike, int helm)
 {
 	Rect r;
-	r.bot = yres - 50;
+	r.bot = yres - 70;
 	r.left = xres - 198;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "Collisions (for testing):");
 
 	Rect r2;
-	r2.bot = yres - 75;
+	r2.bot = yres - 90;
 	r2.left = xres - 198;
 	r2.center = 0;
 	ggprint8b(&r2, 16, color, "Spikes - %i", spike);
 
 	Rect r3;
-	r3.bot = yres - 100;
+	r3.bot = yres - 105;
 	r3.left = xres - 198;
 	r3.center = 0;
 	ggprint8b(&r3, 16, color, "Helmets - %i", helm);
