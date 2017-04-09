@@ -94,6 +94,13 @@ void display_collisions(int xres, int yres)
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "Collisions (for testing):");
+
+	Rect r2;
+	r2.bot = yres - 882;
+	r2.left = xres - 160;
+	r2.center = 0;
+	unsigned int color2 = 0x000000;
+	ggprint8b(&r2, 16, color2, "y = %i right here", r2.bot);
 }
 
 // Append player name, score, and date to gamelog
