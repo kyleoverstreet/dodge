@@ -49,10 +49,10 @@ extern void cleanupPPM(void);
 extern void init(int, int, Player*);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
-extern void movePlayer(int xres, Player *player);
+extern int movePlayer(int xres, Player *player);
 extern void deleteItem(Item *node);
 extern void display_score(int, int);
-extern void display_collisions(int, int);
+extern void display_collisions(int, int, int, int);
 extern void upload_scores();
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -104,9 +104,8 @@ int background = 1;
 int silhouette = 1;
 int trees = 1;
 int ndrops = 1;
-int totrain = 0;
-int maxrain = 0;
-int tothelmet = 0;
+int spike_collisions = 0;
+int helm_collisions = 0;
 
 void cleanupItems(void);
 
@@ -372,16 +371,13 @@ void checkKeys(XEvent *e)
 {
 	int key = XLookupKeysym(&e->xkey, 0);
 	
-	//causing warnings - don't think we need code below
-	//int shift=0;
 	if (e->type == KeyRelease) {
-		if (key == XK_Shift_L || key == XK_Shift_R)
-			//shift=0;
-		return;
+		if (key == XK_Shift_L || key == XK_Shift_R) {
+			return;
+		}
 	}
 	if (e->type == KeyPress) {
 		if (key == XK_Shift_L || key == XK_Shift_R) {
-			//shift=1;
 			return;
 		}
 	} else {
@@ -455,7 +451,6 @@ void checkItems()
 		//force is toward the ground
 		node->vel[1] += gravity;
 		VecCopy(node->pos, node->lastpos);
-
 		{
 			node->pos[0] += node->vel[0] * timeslice;
 			node->pos[1] += node->vel[1] * timeslice;
@@ -471,7 +466,6 @@ void checkItems()
 		//force is toward the ground
 		helmet->vel[1] += gravity;
 		VecCopy(helmet->pos, helmet->lastpos);
-
 		{
 			helmet->pos[0] += helmet->vel[0] * timeslice;
 			helmet->pos[1] += helmet->vel[1] * timeslice;
@@ -483,27 +477,17 @@ void checkItems()
 	}
 
 	//check items
-	int n = 0;
 	node = ihead;
 	while (node) {
-		n++;
-#ifdef USE_SOUND
-		if (node->pos[1] < 0.0f) {
-			//raindrop hit ground
-			if (!node->sound && play_sounds) {
-				//small chance that a sound will play
-				int r = random(50);
-				if (r==1) {
-					//play sound here...
-				}
-				//sound plays once per raindrop
-				node->sound=1;
-			}
+		if (((node->pos[1] > 0 && node->pos[1] < 80)) &&
+			((node->pos[0] > (movePlayer(xres, &player)-40)) &&
+			(node->pos[0] < (movePlayer(xres, &player)+40)))) {
+			//spike is in same position as player
+			spike_collisions++;
+			deleteItem(node);
 		}
-#endif
-
 		if (node->pos[1] < -20.0f) {
-			//item has hit ground
+			//spike has hit ground
 			Item *savenode = node->next;
 			deleteItem(node);
 			node = savenode;
@@ -511,31 +495,18 @@ void checkItems()
 		}
 		node = node->next;
 	}
-	if (maxrain < n) {
-		maxrain = n;
-	}
 
-	n = 0;
 	helmet = hhead;
 	while (helmet) {
-		n++;
-#ifdef USE_SOUND
-		if (helmet->pos[1] < 0.0f) {
-			//raindrop hit ground
-			if (!helmet->sound && play_sounds) {
-				//small chance that a sound will play
-				int r = random(50);
-				if (r == 1) {
-					//play sound here...
-				}
-				//sound plays once per raindrop
-				helmet->sound = 1;
-			}
+		if (((helmet->pos[1] > 0 && helmet->pos[1] < 80)) &&
+			((helmet->pos[0] > (movePlayer(xres, &player)-40)) &&
+			(helmet->pos[0] < (movePlayer(xres, &player)+40)))) {
+			//helmet is in same position as player
+			helm_collisions++;
+			deleteHelmet(helmet);
 		}
-#endif
-
 		if (helmet->pos[1] < -20.0f) {
-			//item has hit ground
+			//helmet has hit ground
 			Helmet *savenode = helmet->next;
 			deleteHelmet(helmet);
 			helmet = savenode;
@@ -543,16 +514,21 @@ void checkItems()
 		}
 		helmet = helmet->next;
 	}
-	if (tothelmet < n) {
-		tothelmet = n;
-	}
 }
 
 void physics(void)
 {
-	if (showPlayer)
+	//int x_pos;
+	if (showPlayer) {
+		//x_pos = movePlayer(xres, &player);
+		//cout << "player x_pos = " << x_pos << endl;
 		movePlayer(xres, &player);
+	}
+	
 	checkItems();
+
+	//use player position and items x and y position to determine
+	//if there is a collision
 }
 
 void render(void)
@@ -639,5 +615,5 @@ void render(void)
 	display_score(xres, yres);
 
 	// Display collision count (for testing)
-	display_collisions(xres, yres);
+	display_collisions(xres, yres, spike_collisions, helm_collisions);
 }

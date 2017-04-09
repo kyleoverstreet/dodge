@@ -15,9 +15,6 @@ extern Ppmimage *helmetImage;
 extern GLuint spikeTexture;
 extern GLuint helmetTexture;
 
-extern int totrain;
-extern int tothelmet;
-
 extern void createItems(const int n, const int xres, const int yres)
 {
 	//create new rain drops...
@@ -44,7 +41,6 @@ extern void createItems(const int n, const int xres, const int yres)
 		if (ihead != NULL)
 			ihead->prev = node;
 		ihead = node;
-		++totrain;
 	}
 }
 
@@ -95,7 +91,6 @@ extern void createHelmets(const int n, const int xres, const int yres)
 		if (hhead != NULL)
 			hhead->prev = node;
 		hhead = node;
-		++tothelmet;
 	}
 }
 

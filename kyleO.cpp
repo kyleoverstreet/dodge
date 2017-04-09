@@ -2,20 +2,26 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
+// Last edit: 4/09/17
 
-/* WEEK 11 (Last edited 04/06/17)
-
+/*
+====================WEEK 11====================
 I have made many changes to our main source file (src/dodge.cpp) and have
 cleaned up our project's repository. Removed files, renamed files, etc.
 
 I helped Young with his create items functions (youngO.cpp)
 
-Next up:
+====================SPRING BREAK====================
+Removed large sound file from project repo.
+Eliminated all compiling errors.
+Removed unnecessary code from src/dodge.cpp.
 
-Now that we have determined how we to create the different items onto the screen,
-I will be implementing collision detection. From there, we can code the different
-actions (which will be dependent on which item collides with the player)
+I have implemented collision detection with our character and
+the falling items. Currently just displays the collision count
+to the screen but will soon have more functionality
 
+Most of this was done in main source (file src/dodge.cpp)
+I will try to transfer some of my work done to my individual file
 */
 
 #include <ctime>
@@ -33,12 +39,11 @@ using namespace std;
 
 void deleteItem(Item *node);
 void display_score(int, int);
-void display_collisions(int, int);
+void display_collisions(int, int, int, int);
 void gamelog(string, int);
 void upload_scores();
 
 // TO DO:
-// Detect items collision with player (will also need type of item)
 // Set up gamelog and upload_scores functions to communicate with a webpage
 // Create score display for 2-Player mode (after it's implemented)
 
@@ -86,7 +91,7 @@ void display_score(int xres, int yres)
 }
 
 // Displays collision with player - for testing purposes
-void display_collisions(int xres, int yres)
+void display_collisions(int xres, int yres, int spike, int helm)
 {
 	Rect r;
 	r.bot = yres - 50;
@@ -96,11 +101,16 @@ void display_collisions(int xres, int yres)
 	ggprint8b(&r, 16, color, "Collisions (for testing):");
 
 	Rect r2;
-	r2.bot = yres - 882;
-	r2.left = xres - 160;
+	r2.bot = yres - 75;
+	r2.left = xres - 198;
 	r2.center = 0;
-	unsigned int color2 = 0x000000;
-	ggprint8b(&r2, 16, color2, "y = %i right here", r2.bot);
+	ggprint8b(&r2, 16, color, "Spikes - %i", spike);
+
+	Rect r3;
+	r3.bot = yres - 100;
+	r3.left = xres - 198;
+	r3.center = 0;
+	ggprint8b(&r3, 16, color, "Helmets - %i", helm);
 }
 
 // Append player name, score, and date to gamelog
