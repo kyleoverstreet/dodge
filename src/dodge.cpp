@@ -52,7 +52,7 @@ extern void keypressL(Player *player);
 extern int movePlayer(int xres, Player *player);
 extern void deleteSpike(Spike *node);
 extern void display_score(int, int);
-extern void display_collisions(int, int, int, int);
+extern void display_collisions(int, int, int, int, bool);
 extern void upload_scores();
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -106,7 +106,7 @@ int trees = 1;
 int ndrops = 1;
 int spike_collisions = 0;
 int helm_collisions = 0;
-//bool helm_status = false;
+bool helm_status = false;
 
 int main(void)
 {
@@ -361,11 +361,6 @@ void initOpengl(void)
 			GL_RGB, GL_UNSIGNED_BYTE, helmetImage->data);
 }
 
-void initSounds(void)
-{
-	// Sound code here??
-}
-
 void checkKeys(XEvent *e)
 {
 	int key = XLookupKeysym(&e->xkey, 0);
@@ -389,7 +384,6 @@ void checkKeys(XEvent *e)
 				player.pos[0] = xres/2;
 				player.pos[1] = yres-920;
 			}
-			play_helmet_hit();
 			break;
 		case XK_p:
 			play_powerup();
@@ -473,6 +467,7 @@ void checkItems()
 			//spike is in same position as player
 			spike_collisions++;
 			deleteSpike(node);
+			helm_status = false;
 		}
 		if (node->pos[1] < -20.0f) {
 			//spike has hit ground
@@ -490,7 +485,9 @@ void checkItems()
 			((helmet->pos[0] > (movePlayer(xres, &player)-40)) &&
 			(helmet->pos[0] < (movePlayer(xres, &player)+40)))) {
 			//helmet is in same position as player
+			play_helmet_hit();
 			helm_collisions++;
+			helm_status = true;
 			deleteHelmet(helmet);
 		}
 		if (helmet->pos[1] < -20.0f) {
@@ -508,9 +505,8 @@ void physics(void)
 {
 	if (showPlayer) {
 		movePlayer(xres, &player);
+		checkItems();
 	}
-	
-	checkItems();
 }
 
 void render(void)
@@ -590,12 +586,12 @@ void render(void)
 	r.left = 10;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
-	ggprint8b(&r, 16, color, "B - Player");
-	ggprint8b(&r, 16, color, "N - Sounds");
+	ggprint8b(&r, 16, color, "B - Start");
+	//ggprint8b(&r, 16, color, "N - Sounds");
 
 	// Display score to top right of screen
 	display_score(xres, yres);
 
 	// Display collision count (for testing)
-	display_collisions(xres, yres, spike_collisions, helm_collisions);
+	display_collisions(xres, yres, spike_collisions, helm_collisions, helm_status);
 }

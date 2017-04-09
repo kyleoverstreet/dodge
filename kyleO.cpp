@@ -35,7 +35,7 @@ using namespace std;
 
 void deleteSpike(Spike *node);
 void display_score(int, int);
-void display_collisions(int, int, int, int);
+void display_collisions(int, int, int, int, bool);
 void gamelog(string, int);
 void upload_scores();
 
@@ -87,7 +87,7 @@ void display_score(int xres, int yres)
 }
 
 // Displays collision with player - for testing purposes
-void display_collisions(int xres, int yres, int spike, int helm)
+void display_collisions(int xres, int yres, int spike, int helm, bool status)
 {
 	Rect r;
 	r.bot = yres - 70;
@@ -95,18 +95,13 @@ void display_collisions(int xres, int yres, int spike, int helm)
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "Collisions (for testing):");
-
-	Rect r2;
-	r2.bot = yres - 90;
-	r2.left = xres - 198;
-	r2.center = 0;
-	ggprint8b(&r2, 16, color, "Spikes - %i", spike);
-
-	Rect r3;
-	r3.bot = yres - 105;
-	r3.left = xres - 198;
-	r3.center = 0;
-	ggprint8b(&r3, 16, color, "Helmets - %i", helm);
+	ggprint8b(&r, 16, color, "Spikes - %i", spike);
+	ggprint8b(&r, 16, color, "Helmets - %i", helm);
+	if (status == true) {
+		ggprint8b(&r, 16, 0x00ff00, "Helmet ON");
+	} else {
+		ggprint8b(&r, 16, 0xff0000, "No helmet");
+	}
 }
 
 // Append player name, score, and date to gamelog
