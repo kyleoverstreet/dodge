@@ -124,6 +124,7 @@ int main(void)
 			XNextEvent(dpy, &e);
 			checkKeys(&e);
 		}
+		
 		//Below is a process to apply physics at a consistent rate.
 		//1. Get the time right now.
 		clock_gettime(CLOCK_REALTIME, &timeCurrent);
@@ -419,28 +420,30 @@ Flt VecNormalize(Vec vec)
 	return(len);
 }
 
-void checkItems()
+void dropItems(int player_pos)
 {
+	//create items
 	if (random(100) < 15) {
 		createSpikes(ndrops, xres, yres);
 	}
 	if (random(200) < 2) {
 		createHelmets(ndrops, xres, yres);
 	}
+
 	//move items
-	Spike *node = sphead;
-	while (node) {
+	Spike *spike = sphead;
+	while (spike) {
 		//force is toward the ground
-		node->vel[1] += gravity;
-		VecCopy(node->pos, node->lastpos);
+		spike->vel[1] += gravity;
+		VecCopy(spike->pos, spike->lastpos);
 		{
-			node->pos[0] += node->vel[0] * timeslice;
-			node->pos[1] += node->vel[1] * timeslice;
-			if (fabs(node->vel[1]) > node->maxvel[1])
-				node->vel[1] *= 0.96;
-			node->vel[0] *= 0.999;
+			spike->pos[0] += spike->vel[0] * timeslice;
+			spike->pos[1] += spike->vel[1] * timeslice;
+			if (fabs(spike->vel[1]) > spike->maxvel[1])
+				spike->vel[1] *= 0.96;
+			spike->vel[0] *= 0.999;
 		}
-		node = node->next;
+		spike = spike->next;
 	}
 
 	Helmet *helmet = hhead;
@@ -458,33 +461,33 @@ void checkItems()
 		helmet = helmet->next;
 	}
 
-	//check items
-	node = sphead;
-	while (node) {
-		if (((node->pos[1] > 0 && node->pos[1] < 80)) &&
-			((node->pos[0] > (movePlayer(xres, &player)-40)) &&
-			(node->pos[0] < (movePlayer(xres, &player)+40)))) {
-			//spike is in same position as player
+	//check item positions
+	spike = sphead;
+	while (spike) {
+		if (((spike->pos[1] > 0 && spike->pos[1] < 80)) &&
+			((spike->pos[0] > player_pos-40) &&
+			(spike->pos[0] < player_pos+40))) {
+			//spike has hit player
 			spike_collisions++;
-			deleteSpike(node);
+			deleteSpike(spike);
 			helm_status = false;
 		}
-		if (node->pos[1] < -20.0f) {
+		if (spike->pos[1] < -20.0f) {
 			//spike has hit ground
-			Spike *savenode = node->next;
-			deleteSpike(node);
-			node = savenode;
+			Spike *savespike = spike->next;
+			deleteSpike(spike);
+			spike = savespike;
 			continue;
 		}
-		node = node->next;
+		spike = spike->next;
 	}
 
 	helmet = hhead;
 	while (helmet) {
 		if (((helmet->pos[1] > 0 && helmet->pos[1] < 80)) &&
-			((helmet->pos[0] > (movePlayer(xres, &player)-40)) &&
-			(helmet->pos[0] < (movePlayer(xres, &player)+40)))) {
-			//helmet is in same position as player
+			((helmet->pos[0] > player_pos-40) &&
+			(helmet->pos[0] < player_pos+40))) {
+			//helmet has hit player
 			play_helmet_hit();
 			helm_collisions++;
 			helm_status = true;
@@ -492,9 +495,9 @@ void checkItems()
 		}
 		if (helmet->pos[1] < -20.0f) {
 			//helmet has hit ground
-			Helmet *savenode = helmet->next;
+			Helmet *savehelm = helmet->next;
 			deleteHelmet(helmet);
-			helmet = savenode;
+			helmet = savehelm;
 			continue;
 		}
 		helmet = helmet->next;
@@ -503,9 +506,10 @@ void checkItems()
 
 void physics(void)
 {
+	int player_position;
 	if (showPlayer) {
-		movePlayer(xres, &player);
-		checkItems();
+		player_position = movePlayer(xres, &player);
+		dropItems(player_position);
 	}
 }
 
