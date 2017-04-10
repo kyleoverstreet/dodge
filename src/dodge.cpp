@@ -54,7 +54,8 @@ extern int movePlayer(int xres, Player *player);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
 extern void display_score(int, int);
-extern void display_collisions(int, int, int, int, bool, int);
+extern void display_collisions(int, int, int, int, int);
+extern void display_player_status(int, int, bool, bool);
 extern void upload_scores();
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -112,6 +113,7 @@ int spike_collisions = 0;
 int helm_collisions = 0;
 int star_collisions = 0;
 bool helm_status = false;
+bool invincible = false;
 
 int main(void)
 {
@@ -449,6 +451,8 @@ void dropItems(int player_pos)
 	}
 	if (random(200) < 1.5) {
 		createStars(ndrops, xres, yres);
+		// for now, player is invincible until another star drops
+		invincible = false;
 	}
 
 	//move items
@@ -505,8 +509,16 @@ void dropItems(int player_pos)
 			(spike->pos[0] < player_pos+40))) {
 			//spike has hit player
 			spike_collisions++;
+			if (!invincible) {
+				if (helm_status == false) {
+					//game over
+					cout << "game over (console msg only for now)" << endl;
+				} else {
+					play_helmet_hit();
+					helm_status = false;
+				}
+			}
 			deleteSpike(spike);
-			helm_status = false;
 		}
 		if (spike->pos[1] < -20.0f) {
 			//spike has hit ground
@@ -547,6 +559,8 @@ void dropItems(int player_pos)
 			//star has hit player
 			star_collisions++;
 			play_powerup();
+			// need to figure out how to set this for only x seconds
+			invincible = true;
 			deleteStar(star);
 		}
 		if (star->pos[1] < -20.0f) {
@@ -654,6 +668,8 @@ void render(void)
 	display_score(xres, yres);
 
 	// Display collision count (for testing)
-	display_collisions(xres, yres, spike_collisions,
-		helm_collisions, helm_status, star_collisions);
+	display_collisions(xres, yres, spike_collisions, helm_collisions, star_collisions);
+
+	// Display player status (for testing)
+	display_player_status(xres, yres, helm_status, invincible);
 }

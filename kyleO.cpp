@@ -14,16 +14,15 @@ Helped Young with his create items functions (dodge.cpp and youngO.cpp)
 Removed large sound and ppm files from project repo.
 Fixed all compiling errors.
 Removed unnecessary code from src/dodge.cpp.
-
-Implemented collision detection. Currently just displays collision count
-to screen but will soon have functionality. Most of this was done in main
-source file (dodge.cpp). I will try to transfer some work to my individual file.
+Implemented collision detection between player and items.
+Added star item.
 */
 
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <time.h>
 #include <vector>
 #include "src/shared.h"
 
@@ -36,7 +35,8 @@ using namespace std;
 void deleteSpike(Spike *node);
 void deleteStar(Star *node);
 void display_score(int, int);
-void display_collisions(int, int, int, int, bool, int);
+void display_collisions(int, int, int, int, int);
+void display_player_status(int, int, bool, bool);
 void gamelog(string, int);
 void upload_scores();
 
@@ -47,21 +47,17 @@ int score = 0;
 // Deletes off-screen items and keeps track of player score
 void deleteSpike(Spike *node)
 {
-    //only
-    if (node->prev == NULL && node->next == NULL){
+    if (node->prev == NULL && node->next == NULL) {
         sphead = NULL;
     }
-    //beginning
-    else if (node->prev == NULL){
+    else if (node->prev == NULL) {
         sphead = node->next;
         node->next->prev = NULL;
     }
-    //end
-    else if (node->next == NULL){
+    else if (node->next == NULL) {
         node->prev->next = NULL;
     }
-    //node is somewhere else
-    else{
+    else {
         node->next->prev = node->prev;
         node->prev->next = node->next;
     }
@@ -75,21 +71,17 @@ void deleteSpike(Spike *node)
 
 void deleteStar(Star *node)
 {
-    //only
-    if (node->prev == NULL && node->next == NULL){
+    if (node->prev == NULL && node->next == NULL) {
         sthead = NULL;
     }
-    //beginning
-    else if (node->prev == NULL){
+    else if (node->prev == NULL) {
         sthead = node->next;
         node->next->prev = NULL;
     }
-    //end
-    else if (node->next == NULL){
+    else if (node->next == NULL) {
         node->prev->next = NULL;
     }
-    //node is somewhere else
-    else{
+    else {
         node->next->prev = node->prev;
         node->prev->next = node->next;
     }
@@ -110,22 +102,38 @@ void display_score(int xres, int yres)
 	ggprint8b(&r, 16, color, "Score: %i", score);
 }
 
-// Displays collision with player - for testing purposes
-void display_collisions(int xres, int yres, int spike, int helm, bool status, int star)
+// Displays collisions with player (for testing purposes)
+void display_collisions(int xres, int yres, int spike, int helm, int star)
 {
 	Rect r;
 	r.bot = yres - 70;
 	r.left = xres - 198;
 	r.center = 0;
-	unsigned int color = 0x00dddd00;
-	ggprint8b(&r, 16, color, "Collisions (for testing):");
-	ggprint8b(&r, 16, color, "Spikes - %i", spike);
-	ggprint8b(&r, 16, color, "Stars - %i", star);
-	ggprint8b(&r, 16, color, "Helmets - %i", helm);
-	if (status == true) {
-		ggprint8b(&r, 16, 0x00ff00, "Helmet ON");
+	unsigned int white = 0xffffff;
+	ggprint8b(&r, 16, white, "Collisions (for testing):");
+	ggprint8b(&r, 16, white, "Spikes - %i", spike);
+	ggprint8b(&r, 16, white, "Stars - %i", star);
+	ggprint8b(&r, 16, white, "Helmets - %i", helm);
+}
+
+void display_player_status(int xres, int yres, bool helm_status, bool invincibility)
+{
+	Rect r;
+	r.bot = yres - 160;
+	r.left = xres - 198;
+	r.center = 0;
+	unsigned int red = 0xff0000;
+	unsigned int green = 0x00ff00;
+	unsigned int yellow = 0x00dddd00;
+	if (helm_status == true) {
+		ggprint8b(&r, 16, green, "Helmet ON");
 	} else {
-		ggprint8b(&r, 16, 0xff0000, "No helmet");
+		ggprint8b(&r, 16, red, "No helmet");
+	}
+	if (invincibility == true) {
+		ggprint8b(&r, 16, yellow, "Invincible");
+	} else {
+		ggprint8b(&r, 16, red, "Not invincible");
 	}
 }
 
