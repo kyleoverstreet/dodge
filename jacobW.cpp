@@ -19,6 +19,7 @@ void cleanupPPM(void) {
 				system("rm ./images/walking1.ppm");
 				system("rm ./images/walking2.ppm");
 				system("rm ./images/helmet.ppm");
+				system("rm ./images/Star.ppm");;
 }
 
 int movePlayer(int xres, Player *player) {
@@ -36,9 +37,6 @@ int movePlayer(int xres, Player *player) {
 								player->vel[0] = 0;
 				}
 
-				// kyle wrote this for testing
-				//cout << "Player x position: " << player->pos[0] << endl;
-
 				if (player->vel[0] < -3) { 
 								player->vel[0] += 2;
 				} else if (player->vel[0] > 3) {
@@ -47,7 +45,7 @@ int movePlayer(int xres, Player *player) {
 								player->vel[0] = 0;
 				}
 
-				// return player's x-position (needed to detect collision)
+				// return player's x-position (needed to detect collisions)
 				return player->pos[0];	
 }
 

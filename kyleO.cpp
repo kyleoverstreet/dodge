@@ -34,16 +34,14 @@ extern "C" {
 using namespace std;
 
 void deleteSpike(Spike *node);
+void deleteStar(Star *node);
 void display_score(int, int);
-void display_collisions(int, int, int, int, bool);
+void display_collisions(int, int, int, int, bool, int);
 void gamelog(string, int);
 void upload_scores();
 
-// TO DO:
-// Set up gamelog and upload_scores functions to communicate with a webpage
-// Create score display for 2-Player mode (after it's implemented)
-
 extern Spike *sphead;
+extern Star *sthead;
 int score = 0;
 
 // Deletes off-screen items and keeps track of player score
@@ -75,6 +73,32 @@ void deleteSpike(Spike *node)
     score++;
 }
 
+void deleteStar(Star *node)
+{
+    //only
+    if (node->prev == NULL && node->next == NULL){
+        sthead = NULL;
+    }
+    //beginning
+    else if (node->prev == NULL){
+        sthead = node->next;
+        node->next->prev = NULL;
+    }
+    //end
+    else if (node->next == NULL){
+        node->prev->next = NULL;
+    }
+    //node is somewhere else
+    else{
+        node->next->prev = node->prev;
+        node->prev->next = node->next;
+    }
+
+	// Free the node's memory and set node to NULL
+    delete node;
+	node = NULL;
+}
+
 // Displays the player score at top-right of screen
 void display_score(int xres, int yres)
 {
@@ -87,7 +111,7 @@ void display_score(int xres, int yres)
 }
 
 // Displays collision with player - for testing purposes
-void display_collisions(int xres, int yres, int spike, int helm, bool status)
+void display_collisions(int xres, int yres, int spike, int helm, bool status, int star)
 {
 	Rect r;
 	r.bot = yres - 70;
@@ -96,6 +120,7 @@ void display_collisions(int xres, int yres, int spike, int helm, bool status)
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "Collisions (for testing):");
 	ggprint8b(&r, 16, color, "Spikes - %i", spike);
+	ggprint8b(&r, 16, color, "Stars - %i", star);
 	ggprint8b(&r, 16, color, "Helmets - %i", helm);
 	if (status == true) {
 		ggprint8b(&r, 16, 0x00ff00, "Helmet ON");

@@ -10,10 +10,13 @@
 
 extern Spike *sphead;
 extern Helmet *hhead;
+extern Star *sthead;
 extern Ppmimage *spikeImage;
 extern Ppmimage *helmetImage;
+extern Ppmimage *starImage;
 extern GLuint spikeTexture;
 extern GLuint helmetTexture;
+extern GLuint starTexture;
 
 extern void createSpikes(const int n, const int xres, const int yres)
 {
@@ -102,6 +105,56 @@ extern void drawHelmets(void)
 		glPushMatrix();
 		glTranslatef(node->pos[0],node->pos[1],node->pos[2]);
 		glBindTexture(GL_TEXTURE_2D, helmetTexture);
+		float w = 10.0;
+		glBegin(GL_QUADS);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(-w, w);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i( w, w);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i( w,-w);
+		glEnd();
+		glPopMatrix();
+		node = node->next;
+	}
+	glLineWidth(1);
+}
+
+extern void createStars(const int n, const int xres, const int yres)
+{
+	//create new rain drops...
+	int i;
+	for (i = 0; i < n; i++) {
+		Star *node = (Star *)malloc(sizeof(Star));
+		if (node == NULL) {
+			Log("error allocating node.\n");
+			exit(EXIT_FAILURE);
+		}
+		node->prev = NULL;
+		node->next = NULL;
+		node->sound=0;
+		node->pos[0] = rnd() * (float)xres;
+		node->pos[1] = rnd() * 100.0f + (float) yres;
+		VecCopy(node->pos, node->lastpos);
+		node->vel[0] = node->vel[1] = 0.0f;
+		node->linewidth = starImage->width;
+		//larger linewidth = faster speed
+		node->maxvel[1] = (float) (node->linewidth*16);
+		node->length = node->maxvel[1] * 0.2f;
+		//put raindrop into linked list
+		node->next = sthead;
+		if (sthead != NULL)
+			sthead->prev = node;
+		sthead = node;
+	}
+}
+
+extern void drawStars(void)
+{
+	Star *node = sthead;
+	while (node) {
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glPushMatrix();
+		glTranslatef(node->pos[0],node->pos[1],node->pos[2]);
+		glBindTexture(GL_TEXTURE_2D, starTexture);
 		float w = 10.0;
 		glBegin(GL_QUADS);
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);

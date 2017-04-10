@@ -63,6 +63,20 @@ typedef struct t_helmet {
 	struct t_helmet *next;
 } Helmet;
 
+typedef struct t_star {
+	int type;
+	int linewidth;
+	int sound;
+	Vec pos;
+	Vec lastpos;
+	Vec vel;
+	Vec maxvel;
+	Vec force;
+	float length;
+	struct t_star *prev;
+	struct t_star *next;
+} Star;
+
 typedef struct t_umbrella {
 	int shape;
 	Vec pos;

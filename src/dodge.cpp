@@ -37,6 +37,7 @@ Window win;
 Player player;
 Spike *sphead = NULL;
 Helmet *hhead = NULL;
+Star *sthead = NULL;
 
 void initXWindows(void);
 void initOpengl(void);
@@ -51,8 +52,9 @@ extern void keypressR(Player *player);
 extern void keypressL(Player *player);
 extern int movePlayer(int xres, Player *player);
 extern void deleteSpike(Spike *node);
+extern void deleteStar(Star *node);
 extern void display_score(int, int);
-extern void display_collisions(int, int, int, int, bool);
+extern void display_collisions(int, int, int, int, bool, int);
 extern void upload_scores();
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -89,6 +91,7 @@ Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
 Ppmimage *spikeImage = NULL;
 Ppmimage *helmetImage = NULL;
+Ppmimage *starImage = NULL;
 
 GLuint playerTexture;
 GLuint playerMv1Texture;
@@ -98,6 +101,7 @@ GLuint bgTexture;
 GLuint bgTransTexture;
 GLuint spikeTexture;
 GLuint helmetTexture;
+GLuint starTexture;
 
 int showPlayer = 0;
 int background = 1;
@@ -106,6 +110,7 @@ int trees = 1;
 int ndrops = 1;
 int spike_collisions = 0;
 int helm_collisions = 0;
+int star_collisions = 0;
 bool helm_status = false;
 
 int main(void)
@@ -273,6 +278,9 @@ void initOpengl(void)
 	//Helmet Image
 	system("convert ./images/helmet.png ./images/helmet.ppm");
 	helmetImage = ppm6GetImage("./images/helmet.ppm");
+	//Star Image
+	system("convert ./images/Star.png ./images/Star.ppm");
+	starImage = ppm6GetImage("./images/Star.ppm");
 
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
@@ -282,6 +290,7 @@ void initOpengl(void)
 	glGenTextures(1, &bgTexture);
 	glGenTextures(1, &spikeTexture);
 	glGenTextures(1, &helmetTexture);
+	glGenTextures(1, &starTexture);
 
 	//-------------------------------------------------------------------------
 	//player
@@ -360,6 +369,15 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
 			GL_RGB, GL_UNSIGNED_BYTE, helmetImage->data);
+
+	//star
+	w = starImage->width;
+	h = starImage->height; 
+	glBindTexture(GL_TEXTURE_2D, starTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, starImage->data);
 }
 
 void checkKeys(XEvent *e)
@@ -426,8 +444,11 @@ void dropItems(int player_pos)
 	if (random(100) < 15) {
 		createSpikes(ndrops, xres, yres);
 	}
-	if (random(200) < 2) {
+	if (random(200) < 1.5) {
 		createHelmets(ndrops, xres, yres);
+	}
+	if (random(200) < 1.5) {
+		createStars(ndrops, xres, yres);
 	}
 
 	//move items
@@ -459,6 +480,21 @@ void dropItems(int player_pos)
 			helmet->vel[0] *= 0.999;
 		}
 		helmet = helmet->next;
+	}
+
+	Star *star = sthead;
+	while (star) {
+		//force is toward the ground
+		star->vel[1] += gravity;
+		VecCopy(star->pos, star->lastpos);
+		{
+			star->pos[0] += star->vel[0] * timeslice;
+			star->pos[1] += star->vel[1] * timeslice;
+			if (fabs(star->vel[1]) > star->maxvel[1])
+				star->vel[1] *= 0.96;
+			star->vel[0] *= 0.999;
+		}
+		star = star->next;
 	}
 
 	//check item positions
@@ -501,6 +537,26 @@ void dropItems(int player_pos)
 			continue;
 		}
 		helmet = helmet->next;
+	}
+	
+	star = sthead;
+	while (star) {
+		if (((star->pos[1] > 0 && star->pos[1] < 80)) &&
+			((star->pos[0] > player_pos-40) &&
+			(star->pos[0] < player_pos+40))) {
+			//star has hit player
+			star_collisions++;
+			play_powerup();
+			deleteStar(star);
+		}
+		if (star->pos[1] < -20.0f) {
+			//star has hit ground
+			Star *savestar = star->next;
+			deleteStar(star);
+			star = savestar;
+			continue;
+		}
+		star = star->next;
 	}
 }
 
@@ -579,8 +635,9 @@ void render(void)
 		}
 		glDisable(GL_ALPHA_TEST);
 	}
-	drawHelmets();
 	drawSpikes();
+	drawHelmets();
+	drawStars();
 
 	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -597,5 +654,6 @@ void render(void)
 	display_score(xres, yres);
 
 	// Display collision count (for testing)
-	display_collisions(xres, yres, spike_collisions, helm_collisions, helm_status);
+	display_collisions(xres, yres, spike_collisions,
+		helm_collisions, helm_status, star_collisions);
 }
