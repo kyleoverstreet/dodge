@@ -20,6 +20,7 @@ extern GLuint starTexture;
 extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
+int score = 0;
 
 extern void createSpikes(const int n, const int xres, const int yres)
 {
@@ -75,6 +76,30 @@ extern void drawSpikes(void)
 	glLineWidth(1);
 }
 
+void deleteSpike(Spike *node)
+{
+	if (node->prev == NULL && node->next == NULL) {
+		sphead = NULL;
+	}
+	else if (node->prev == NULL) {
+		sphead = node->next;
+		node->next->prev = NULL;
+	}
+	else if (node->next == NULL) {
+		node->prev->next = NULL;
+	}
+	else {
+		node->next->prev = node->prev;
+		node->prev->next = node->next;
+	}
+
+	// Free the node's memory and set node to NULL
+	delete node;
+	node = NULL;
+
+	score++;
+}
+
 extern void createHelmets(const int n, const int xres, const int yres)
 {
 	//create new rain drops...
@@ -126,6 +151,31 @@ extern void drawHelmets(void)
 		node = node->next;
 	}
 	glLineWidth(1);
+}
+
+extern void deleteHelmet(Helmet *node)
+{
+	//only
+	if (node->prev == NULL && node->next == NULL) {
+		hhead = NULL;
+	}
+	//beginning
+	else if (node->prev == NULL){
+		hhead = node->next;
+		node->next->prev = NULL;
+	}
+	//end
+	else if (node->next == NULL){
+		node->prev->next = NULL;
+	}
+	//node is somewhere else
+	else{
+		node->next->prev = node->prev;
+		node->prev->next = node->next;
+	}
+	// Free the node's memory and set node to NULL
+	delete node;
+	node = NULL;
 }
 
 extern void createStars(const int n, const int xres, const int yres)
@@ -180,27 +230,25 @@ extern void drawStars(void)
 	glLineWidth(1);
 }
 
-extern void deleteHelmet(Helmet *node)
+void deleteStar(Star *node)
 {
-    //only
-    if (node->prev == NULL && node->next == NULL) {
-        hhead = NULL;
-    }
-    //beginning
-    else if (node->prev == NULL){
-        hhead = node->next;
-        node->next->prev = NULL;
-    }
-    //end
-    else if (node->next == NULL){
-        node->prev->next = NULL;
-    }
-    //node is somewhere else
-    else{
-        node->next->prev = node->prev;
-        node->prev->next = node->next;
-    }
+	if (node->prev == NULL && node->next == NULL) {
+		sthead = NULL;
+	}
+	else if (node->prev == NULL) {
+		sthead = node->next;
+		node->next->prev = NULL;
+	}
+	else if (node->next == NULL) {
+		node->prev->next = NULL;
+	}
+	else {
+		node->next->prev = node->prev;
+		node->prev->next = node->next;
+	}
+
 	// Free the node's memory and set node to NULL
-    delete node;
+	delete node;
 	node = NULL;
 }
+

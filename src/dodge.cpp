@@ -28,9 +28,6 @@ extern "C" {
 #include "fonts.h"
 }
 
-const float timeslice = 1.0f;
-const float gravity = -0.2f;
-
 //X Windows variables
 Display *dpy;
 Window win;
@@ -51,6 +48,7 @@ extern void init(int, int, Player*);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
 extern int movePlayer(int xres, Player *player);
+extern void dropItems(int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
 extern void display_score(int, int);
@@ -108,12 +106,11 @@ int showPlayer = 0;
 int background = 1;
 int silhouette = 1;
 int trees = 1;
-int ndrops = 1;
-int spike_collisions = 0;
-int helm_collisions = 0;
-int star_collisions = 0;
-bool helm_status = false;
-bool invincible = false;
+extern int spike_collisions;
+extern int helm_collisions;
+extern int star_collisions;
+extern bool helm_status;
+extern bool invincible;
 
 int main(void)
 {
@@ -446,143 +443,12 @@ Flt VecNormalize(Vec vec)
 	return(len);
 }
 
-void dropItems(int player_pos)
-{
-	// Create the items
-	if (random(100) < 15) {
-		createSpikes(ndrops, xres, yres);
-	}
-	if (random(200) < 1.5) {
-		createHelmets(ndrops, xres, yres);
-	}
-	if (random(200) < 1.5) {
-		createStars(ndrops, xres, yres);
-		// For now, player is invincible until another star drops
-		invincible = false;
-	}
-
-	// Move items on screen
-	Spike *spike = sphead;
-	while (spike) {
-		// Force is toward the ground
-		spike->vel[1] += gravity;
-		VecCopy(spike->pos, spike->lastpos);
-		spike->pos[0] += spike->vel[0] * timeslice;
-		spike->pos[1] += spike->vel[1] * timeslice;
-		if (fabs(spike->vel[1]) > spike->maxvel[1]) {
-			spike->vel[1] *= 0.96;
-		}
-		spike->vel[0] *= 0.999;
-		spike = spike->next;
-	}
-
-	Helmet *helmet = hhead;
-	while (helmet) {
-		// Force is toward the ground
-		helmet->vel[1] += gravity;
-		VecCopy(helmet->pos, helmet->lastpos);
-		helmet->pos[0] += helmet->vel[0] * timeslice;
-		helmet->pos[1] += helmet->vel[1] * timeslice;
-		if (fabs(helmet->vel[1]) > helmet->maxvel[1]) {
-			helmet->vel[1] *= 0.96;
-		}
-		helmet->vel[0] *= 0.999;
-		helmet = helmet->next;
-	}
-
-	Star *star = sthead;
-	while (star) {
-		// Force is toward the ground
-		star->vel[1] += gravity;
-		VecCopy(star->pos, star->lastpos);
-		star->pos[0] += star->vel[0] * timeslice;
-		star->pos[1] += star->vel[1] * timeslice;
-		if (fabs(star->vel[1]) > star->maxvel[1]) {
-			star->vel[1] *= 0.96;
-		}
-		star->vel[0] *= 0.999;
-		star = star->next;
-	}
-
-	// Check item positions (for collision with player or off-screen)
-	spike = sphead;
-	while (spike) {
-		if (((spike->pos[1] > 0 && spike->pos[1] < 80)) &&
-			((spike->pos[0] > player_pos-40) &&
-			(spike->pos[0] < player_pos+40))) {
-			// Spike has hit player
-			spike_collisions++;
-			if (!invincible) {
-				if (helm_status == false) {
-					// Spike hit vulnerable player - game over
-					cout << "game over (console msg only for now)" << endl;
-				} else {
-					play_helmet_hit();
-					helm_status = false;
-				}
-			}
-			deleteSpike(spike);
-		}
-		if (spike->pos[1] < -20.0f) {
-			// Spike has hit ground
-			Spike *savespike = spike->next;
-			deleteSpike(spike);
-			spike = savespike;
-			continue;
-		}
-		spike = spike->next;
-	}
-
-	helmet = hhead;
-	while (helmet) {
-		if (((helmet->pos[1] > 0 && helmet->pos[1] < 80)) &&
-			((helmet->pos[0] > player_pos-40) &&
-			(helmet->pos[0] < player_pos+40))) {
-			// Helmet has hit player
-			play_helmet_hit();
-			helm_collisions++;
-			helm_status = true;
-			deleteHelmet(helmet);
-		}
-		if (helmet->pos[1] < -20.0f) {
-			// Helmet has hit ground
-			Helmet *savehelm = helmet->next;
-			deleteHelmet(helmet);
-			helmet = savehelm;
-			continue;
-		}
-		helmet = helmet->next;
-	}
-	
-	star = sthead;
-	while (star) {
-		if (((star->pos[1] > 0 && star->pos[1] < 80)) &&
-			((star->pos[0] > player_pos-40) &&
-			(star->pos[0] < player_pos+40))) {
-			// Star has hit player
-			star_collisions++;
-			play_powerup();
-			// TO DO: set invincibility for x seconds
-			invincible = true;
-			deleteStar(star);
-		}
-		if (star->pos[1] < -20.0f) {
-			// Star has hit ground
-			Star *savestar = star->next;
-			deleteStar(star);
-			star = savestar;
-			continue;
-		}
-		star = star->next;
-	}
-}
-
 void physics(void)
 {
 	int player_position;
 	if (showPlayer) {
 		player_position = movePlayer(xres, &player);
-		dropItems(player_position);
+		dropItems(player_position, xres, yres);
 	}
 }
 
