@@ -255,7 +255,6 @@ void initOpengl(void)
 
 	//Clear the screen
 	glClearColor(1.0, 1.0, 1.0, 1.0);
-	//glClear(GL_COLOR_BUFFER_BIT);
 	//Do this to allow fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
@@ -355,7 +354,6 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, ftData);
 	free(ftData);
 	
-	//-------------------------------------------------------------------------
 	//spike
 	w = spikeImage->width;
 	h = spikeImage->height;	
@@ -450,7 +448,7 @@ Flt VecNormalize(Vec vec)
 
 void dropItems(int player_pos)
 {
-	//create items
+	// Create the items
 	if (random(100) < 15) {
 		createSpikes(ndrops, xres, yres);
 	}
@@ -459,67 +457,64 @@ void dropItems(int player_pos)
 	}
 	if (random(200) < 1.5) {
 		createStars(ndrops, xres, yres);
-		// for now, player is invincible until another star drops
+		// For now, player is invincible until another star drops
 		invincible = false;
 	}
 
-	//move items
+	// Move items on screen
 	Spike *spike = sphead;
 	while (spike) {
-		//force is toward the ground
+		// Force is toward the ground
 		spike->vel[1] += gravity;
 		VecCopy(spike->pos, spike->lastpos);
-		{
-			spike->pos[0] += spike->vel[0] * timeslice;
-			spike->pos[1] += spike->vel[1] * timeslice;
-			if (fabs(spike->vel[1]) > spike->maxvel[1])
-				spike->vel[1] *= 0.96;
-			spike->vel[0] *= 0.999;
+		spike->pos[0] += spike->vel[0] * timeslice;
+		spike->pos[1] += spike->vel[1] * timeslice;
+		if (fabs(spike->vel[1]) > spike->maxvel[1]) {
+			spike->vel[1] *= 0.96;
 		}
+		spike->vel[0] *= 0.999;
 		spike = spike->next;
 	}
 
 	Helmet *helmet = hhead;
 	while (helmet) {
-		//force is toward the ground
+		// Force is toward the ground
 		helmet->vel[1] += gravity;
 		VecCopy(helmet->pos, helmet->lastpos);
-		{
-			helmet->pos[0] += helmet->vel[0] * timeslice;
-			helmet->pos[1] += helmet->vel[1] * timeslice;
-			if (fabs(helmet->vel[1]) > helmet->maxvel[1])
-				helmet->vel[1] *= 0.96;
-			helmet->vel[0] *= 0.999;
+		helmet->pos[0] += helmet->vel[0] * timeslice;
+		helmet->pos[1] += helmet->vel[1] * timeslice;
+		if (fabs(helmet->vel[1]) > helmet->maxvel[1]) {
+			helmet->vel[1] *= 0.96;
 		}
+		helmet->vel[0] *= 0.999;
 		helmet = helmet->next;
 	}
 
 	Star *star = sthead;
 	while (star) {
-		//force is toward the ground
+		// Force is toward the ground
 		star->vel[1] += gravity;
 		VecCopy(star->pos, star->lastpos);
-		{
-			star->pos[0] += star->vel[0] * timeslice;
-			star->pos[1] += star->vel[1] * timeslice;
-			if (fabs(star->vel[1]) > star->maxvel[1])
-				star->vel[1] *= 0.96;
-			star->vel[0] *= 0.999;
+		star->pos[0] += star->vel[0] * timeslice;
+		star->pos[1] += star->vel[1] * timeslice;
+		if (fabs(star->vel[1]) > star->maxvel[1]) {
+			star->vel[1] *= 0.96;
 		}
+		star->vel[0] *= 0.999;
 		star = star->next;
 	}
 
-	//check item positions
+	// Check item positions (for collision with player or off-screen)
 	spike = sphead;
 	while (spike) {
 		if (((spike->pos[1] > 0 && spike->pos[1] < 80)) &&
 			((spike->pos[0] > player_pos-40) &&
 			(spike->pos[0] < player_pos+40))) {
-			//spike has hit player
+			// Spike has hit player
 			spike_collisions++;
 			if (!invincible) {
 				if (helm_status == false) {
-					//game over
+					// Spike hit vulnerable player - game over
 					cout << "game over (console msg only for now)" << endl;
 				} else {
 					play_helmet_hit();
@@ -529,7 +524,7 @@ void dropItems(int player_pos)
 			deleteSpike(spike);
 		}
 		if (spike->pos[1] < -20.0f) {
-			//spike has hit ground
+			// Spike has hit ground
 			Spike *savespike = spike->next;
 			deleteSpike(spike);
 			spike = savespike;
@@ -543,14 +538,14 @@ void dropItems(int player_pos)
 		if (((helmet->pos[1] > 0 && helmet->pos[1] < 80)) &&
 			((helmet->pos[0] > player_pos-40) &&
 			(helmet->pos[0] < player_pos+40))) {
-			//helmet has hit player
+			// Helmet has hit player
 			play_helmet_hit();
 			helm_collisions++;
 			helm_status = true;
 			deleteHelmet(helmet);
 		}
 		if (helmet->pos[1] < -20.0f) {
-			//helmet has hit ground
+			// Helmet has hit ground
 			Helmet *savehelm = helmet->next;
 			deleteHelmet(helmet);
 			helmet = savehelm;
@@ -564,15 +559,15 @@ void dropItems(int player_pos)
 		if (((star->pos[1] > 0 && star->pos[1] < 80)) &&
 			((star->pos[0] > player_pos-40) &&
 			(star->pos[0] < player_pos+40))) {
-			//star has hit player
+			// Star has hit player
 			star_collisions++;
 			play_powerup();
-			// need to figure out how to set this for only x seconds
+			// TO DO: set invincibility for x seconds
 			invincible = true;
 			deleteStar(star);
 		}
 		if (star->pos[1] < -20.0f) {
-			//star has hit ground
+			// Star has hit ground
 			Star *savestar = star->next;
 			deleteStar(star);
 			star = savestar;
@@ -602,15 +597,16 @@ void render(void)
 	//draw a quad with texture
 	float wid = 40.0f;
 	glColor3f(1.0, 1.0, 1.0);
-	if (background) {
-		glBindTexture(GL_TEXTURE_2D, bgTexture);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-		glEnd();
-	}
+	
+	//set background
+	glBindTexture(GL_TEXTURE_2D, bgTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+	glEnd();
+	
 	if (showPlayer) {
 		glPushMatrix();
 		glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
@@ -627,7 +623,6 @@ void render(void)
 
 		else {
 			glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
-			//glBindTexture(GL_TEXTURE_2D, silhouetteTexture2);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
