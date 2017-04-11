@@ -17,6 +17,9 @@ extern Ppmimage *starImage;
 extern GLuint spikeTexture;
 extern GLuint helmetTexture;
 extern GLuint starTexture;
+extern GLuint silhouetteSpike;
+extern GLuint silhouetteHelm;
+extern GLuint silhouetteStar;
 
 extern void createSpikes(const int n, const int xres, const int yres)
 {
@@ -54,7 +57,11 @@ extern void drawSpikes(void)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(node->pos[0],node->pos[1],node->pos[2]);
-		glBindTexture(GL_TEXTURE_2D, spikeTexture);
+		glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+
 		float w = 10.0;
 		glBegin(GL_QUADS);
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
@@ -104,7 +111,10 @@ extern void drawHelmets(void)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(node->pos[0],node->pos[1],node->pos[2]);
-		glBindTexture(GL_TEXTURE_2D, helmetTexture);
+		glBindTexture(GL_TEXTURE_2D, silhouetteHelm);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
 		float w = 10.0;
 		glBegin(GL_QUADS);
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
@@ -154,7 +164,9 @@ extern void drawStars(void)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(node->pos[0],node->pos[1],node->pos[2]);
-		glBindTexture(GL_TEXTURE_2D, starTexture);
+		glBindTexture(GL_TEXTURE_2D, silhouetteStar);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
 		float w = 10.0;
 		glBegin(GL_QUADS);
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);

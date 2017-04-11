@@ -98,11 +98,11 @@ GLuint playerTexture;
 GLuint playerMv1Texture;
 GLuint playerMv2Texture;
 GLuint silhouetteTexture;
+GLuint silhouetteSpike;
+GLuint silhouetteHelm;
+GLuint silhouetteStar;
 GLuint bgTexture;
 GLuint bgTransTexture;
-GLuint spikeTexture;
-GLuint helmetTexture;
-GLuint starTexture;
 
 int showPlayer = 0;
 int background = 1;
@@ -289,10 +289,10 @@ void initOpengl(void)
 	glGenTextures(1, &playerMv1Texture);
 	glGenTextures(1, &playerMv2Texture);
 	glGenTextures(1, &silhouetteTexture);
+	glGenTextures(1, &silhouetteSpike);
+	glGenTextures(1, &silhouetteHelm);
+	glGenTextures(1, &silhouetteStar);
 	glGenTextures(1, &bgTexture);
-	glGenTextures(1, &spikeTexture);
-	glGenTextures(1, &helmetTexture);
-	glGenTextures(1, &starTexture);
 
 	//-------------------------------------------------------------------------
 	//player
@@ -354,32 +354,40 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, ftData);
 	free(ftData);
+	
 	//-------------------------------------------------------------------------
 	//spike
 	w = spikeImage->width;
 	h = spikeImage->height;	
-	glBindTexture(GL_TEXTURE_2D, spikeTexture);
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, spikeImage->data);
+	silhouetteData = buildAlphaData(spikeImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+	
 	//helmet
 	w = helmetImage->width;
 	h = helmetImage->height; 
-	glBindTexture(GL_TEXTURE_2D, helmetTexture);
+	glBindTexture(GL_TEXTURE_2D, silhouetteHelm);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, helmetImage->data);
-
+	silhouetteData = buildAlphaData(helmetImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+	
 	//star
 	w = starImage->width;
 	h = starImage->height; 
-	glBindTexture(GL_TEXTURE_2D, starTexture);
+	glBindTexture(GL_TEXTURE_2D, silhouetteStar);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, starImage->data);
+	silhouetteData = buildAlphaData(starImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
 }
 
 void checkKeys(XEvent *e)
@@ -619,6 +627,7 @@ void render(void)
 
 		else {
 			glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
+			//glBindTexture(GL_TEXTURE_2D, silhouetteTexture2);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
