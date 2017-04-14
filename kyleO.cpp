@@ -2,12 +2,12 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/10/17
+// Last edit: 4/14/17
 
 /*
 
  *************** NOTE TO GORDON *****************
- Young did half of the work writing the dropItems function!
+ Young helped write the dropItems function below
 
  ====================WEEK 11====================
  -Made many changes to our main source file (src/dodge.cpp).
@@ -22,6 +22,7 @@
  -Added star item.
  -Added player "status" display for testing purposes.
  -Fixed black box behind falling items!!! (finally)
+ -Implemented image of player with helmet on.
  */
 
 #include <ctime>
