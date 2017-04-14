@@ -357,8 +357,8 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	
 	//player with helm
-	w = playerImage->width;
-	h = playerImage->height;
+	w = playerhelmImage->width;
+	h = playerhelmImage->height;
 	glBindTexture(GL_TEXTURE_2D, playerhelmTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -501,9 +501,10 @@ void render(void)
 		//at end of render grab time and add to animation span
 
 		if (helm_status == true) {
+			// display character with helmet
 			glBindTexture(GL_TEXTURE_2D, playerhelmTexture);
 		} else {
-		// with helm
+		// display character without helmet
 		glBindTexture(GL_TEXTURE_2D, playerTexture);
 		}
 

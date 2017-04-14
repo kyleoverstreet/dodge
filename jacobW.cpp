@@ -13,7 +13,6 @@
 using namespace std;
 
 void cleanupPPM(void) {
-				system("rm ./images/standL.ppm");
 				system("rm ./images/background1.ppm");
 				system("rm ./images/standL.ppm");
 				system("rm ./images/standhelmL.ppm");

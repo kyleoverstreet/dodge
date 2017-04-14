@@ -144,7 +144,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 			if (!invincible) {
 				if (helm_status == false) {
 					// Spike hit vulnerable player - game over
-					cout << "game over (console msg only for now)" << endl;
+					cout << "Game over! (console msg only for now)" << endl;
+					cout << "Score: " << score << endl << endl;
+					score = 0;
 				} else {
 					play_helmet_hit();
 					helm_status = false;
