@@ -216,7 +216,7 @@ void display_score(int xres, int yres)
 	r.left = xres - 100;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
-	ggprint8b(&r, 16, color, "Score: %i", score);
+	ggprint13(&r, 16, color, "Score: %i", score);
 }
 
 // Displays collisions with player (for testing purposes)
