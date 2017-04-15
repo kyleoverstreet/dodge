@@ -55,6 +55,7 @@ extern void display_score(int, int);
 extern void display_collisions(int, int, int, int, int);
 extern void display_player_status(int, int, bool, bool);
 extern void upload_scores();
+#ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
 extern void play_powerup();
@@ -62,6 +63,7 @@ extern void play_GetShield();
 extern void cleanup_sounds();
 extern void check_sound();
 extern void play_theme();
+#endif
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 30.0;
@@ -115,14 +117,18 @@ extern bool invincible;
 
 int main(void)
 {
+#ifdef USE_OPENAL_SOUND
 	initialize_sounds();
+#endif
 	logOpen();
 	initXWindows();
 	initOpengl();
 	init(xres, yres, &player);
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
+#ifdef USE_OPENAL_SOUND
 	play_theme();
+#endif
 	while (!done) {
 		while (XPending(dpy)) {
 			XEvent e;
@@ -158,7 +164,9 @@ int main(void)
 		render();
 		glXSwapBuffers(dpy, win);
 	}
+#ifdef USE_OPENAL_SOUND
 	cleanup_sounds();
+#endif
 	cleanupPPM();
 	cleanupXWindows();
 	cleanup_fonts();
@@ -425,7 +433,6 @@ void checkKeys(XEvent *e)
 			}
 			break;
 		case XK_p:
-			play_powerup();
 			break;
 		case XK_Left:
 			keypressL(&player);

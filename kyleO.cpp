@@ -49,8 +49,11 @@ void display_player_status(int, int, bool, bool);
 void gamelog(string, int);
 void upload_scores();
 
+#ifdef USE_OPENAL_SOUND
 extern void play_helmet_hit();
 extern void play_powerup();
+extern void play_game_over();
+#endif
 extern void createSpikes(const int, const int, const int);
 extern void drawSpikes(void);
 extern void deleteSpike(Spike*);
@@ -144,11 +147,16 @@ void dropItems(int player_pos, const int xres, const int yres)
 			if (!invincible) {
 				if (helm_status == false) {
 					// Spike hit vulnerable player - game over
+#ifdef USE_OPENAL_SOUND
+					play_game_over();
+#endif
 					cout << "Game over! (console msg only for now)" << endl;
 					cout << "Score: " << score << endl << endl;
 					score = 0;
 				} else {
+#ifdef USE_OPENAL_SOUND
 					play_helmet_hit();
+#endif
 					helm_status = false;
 				}
 			}
@@ -170,7 +178,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 				((helmet->pos[0] > player_pos-40) &&
 				 (helmet->pos[0] < player_pos+40))) {
 			// Helmet has hit player
+#ifdef USE_OPENAL_SOUND
 			play_helmet_hit();
+#endif
 			helm_collisions++;
 			helm_status = true;
 			deleteHelmet(helmet);
@@ -192,7 +202,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 				 (star->pos[0] < player_pos+40))) {
 			// Star has hit player
 			star_collisions++;
+#ifdef USE_OPENAL_SOUND
 			play_powerup();
+#endif
 			// TO DO: set invincibility for x seconds
 			invincible = true;
 			deleteStar(star);
