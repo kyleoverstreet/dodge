@@ -55,6 +55,7 @@ extern void display_score(int, int);
 extern void display_collisions(int, int, int, int, int);
 extern void display_player_status(int, int, bool, bool);
 extern void upload_scores();
+//extern void end_credits(int xres, int yres);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -433,6 +434,7 @@ void checkKeys(XEvent *e)
 			}
 			break;
 		case XK_p:
+			//end_credits(xres, yres);
 			break;
 		case XK_Left:
 			keypressL(&player);

@@ -11,6 +11,13 @@
 #include <sys/stat.h>
 #include </usr/include/AL/alut.h>
 #include <stdlib.h>
+#include <vector>
+#include "src/shared.h"
+#include <GL/gl.h>
+
+extern "C" {
+	#include "src/fonts.h"
+}
 
 #ifdef USE_OPENAL_SOUND
 ALuint alSource;
@@ -203,3 +210,29 @@ extern void play_game_over()
 	alSourcePlay(alSource);
 }
 #endif
+
+/* end credits scene
+
+extern void end_credits(int xres, int yres) {
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	float wid = 40.0f;
+        glColor3f(1.0, 1.0, 1.0);
+
+	glBindTexture(GL_TEXTURE_2D, bdTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
+
+	Rect r;
+	r.bot = 400 - 30;
+	r.left = 300 - 100
+	r.center = 0;
+	unsigned int color = 0x00dddd00;
+	ggprint13(&r, 16, color, "This is a test");
+}
+*/
