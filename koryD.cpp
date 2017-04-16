@@ -14,6 +14,7 @@
 #include <vector>
 #include "src/shared.h"
 #include <GL/gl.h>
+#include <time.h>
 
 extern "C" {
 	#include "src/fonts.h"
@@ -210,6 +211,13 @@ extern void play_game_over()
 	alSourcePlay(alSource);
 }
 #endif
+
+extern void spike_bounce(Spike* spike) {
+	srand(time(NULL));
+	spike->pos[1] += 3;
+	spike->vel[1] = 11;
+	spike->vel[0] = rand() % 21 + (-10);
+}
 
 /* end credits scene
 

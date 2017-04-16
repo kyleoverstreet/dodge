@@ -63,6 +63,7 @@ extern void deleteHelmet(Helmet*);
 extern void createStars(const int, const int, const int);
 extern void drawStars(void);
 extern void deleteStar(Star*);
+extern void spike_bounce(Spike* spike);
 
 extern Spike *sphead;
 extern Helmet *hhead;
@@ -153,14 +154,15 @@ void dropItems(int player_pos, const int xres, const int yres)
 					cout << "Game over! (console msg only for now)" << endl;
 					cout << "Score: " << score << endl << endl;
 					score = 0;
+					deleteSpike(spike);
 				} else {
 #ifdef USE_OPENAL_SOUND
 					play_helmet_hit();
 #endif
+					spike_bounce(spike);
 					helm_status = false;
 				}
 			}
-			deleteSpike(spike);
 		}
 		if (spike->pos[1] < -20.0f) {
 			// Spike has hit ground
