@@ -1,3 +1,7 @@
+//Young Soo Oh
+// CMPS 3350
+// Dodge Project
+
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
