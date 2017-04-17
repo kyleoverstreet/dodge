@@ -35,6 +35,7 @@ Player player;
 Spike *sphead = NULL;
 Helmet *hhead = NULL;
 Star *sthead = NULL;
+Heart *hearthead = NULL;
 
 void initXWindows(void);
 void initOpengl(void);
@@ -51,6 +52,7 @@ extern int movePlayer(int xres, Player *player);
 extern void dropItems(int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
+extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
 extern void display_collisions(int, int);
@@ -95,6 +97,7 @@ Ppmimage *bgTransImage = NULL;
 Ppmimage *spikeImage = NULL;
 Ppmimage *helmetImage = NULL;
 Ppmimage *starImage = NULL;
+Ppmimage *heartImage = NULL;
 
 GLuint playerTexture;
 GLuint playerhelmTexture;
@@ -102,6 +105,7 @@ GLuint playerInvincibleTexture;
 GLuint silhouetteSpike;
 GLuint silhouetteHelm;
 GLuint silhouetteStar;
+GLuint silhouetteHeart;
 GLuint bgTexture;
 GLuint bgTransTexture;
 
@@ -112,6 +116,7 @@ int trees = 1;
 extern int spike_collisions;
 extern int helm_collisions;
 extern int star_collisions;
+//extern int Heart_collisions;
 extern bool helm_status;
 extern bool invincible;
 
@@ -289,7 +294,9 @@ void initOpengl(void)
     //Star Image
     system("convert ./images/Star.png ./images/Star.ppm");
     starImage = ppm6GetImage("./images/Star.ppm");
-
+    //Heart Image
+    system("convert ./images/heart.png ./images/heart.ppm");
+    heartImage = ppm6GetImage("./images/heart.ppm");
     //create opengl texture elements
     glGenTextures(1, &playerTexture);
     glGenTextures(1, &playerhelmTexture);
@@ -297,6 +304,7 @@ void initOpengl(void)
     glGenTextures(1, &silhouetteSpike);
     glGenTextures(1, &silhouetteHelm);
     glGenTextures(1, &silhouetteStar);
+    glGenTextures(1, &silhouetteHeart);
     glGenTextures(1, &bgTexture);
 
 
@@ -413,6 +421,18 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 	    GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
     free(silhouetteData);
+
+    //heart
+    w = heartImage->width;
+    h = heartImage->height; 
+    glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    silhouetteData = buildAlphaData(heartImage); 
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+    free(silhouetteData);
+
 }
 
 void checkKeys(XEvent *e)
@@ -559,6 +579,7 @@ void render(void)
     drawSpikes();
     drawHelmets();
     drawStars();
+    drawHeart();
 
     glDisable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

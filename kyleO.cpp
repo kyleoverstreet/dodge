@@ -64,10 +64,14 @@ extern void createStars(const int, const int, const int);
 extern void drawStars(void);
 extern void deleteStar(Star*);
 extern void spike_bounce(Spike* spike);
+extern void createHeart(const int, const int, const int);
+extern void drawHeart(void);
+extern void deleteHeart(Heart*);
 
 extern Spike *sphead;
 extern Helmet *hhead;
 extern Star *sthead;
+extern Heart *hearthead;
 extern int score;
 
 const float timeslice = 1.0f;
@@ -92,9 +96,12 @@ void dropItems(int player_pos, const int xres, const int yres)
 	}
 	if (random(200) < 1.5) {
 		createStars(drop_rate, xres, yres);
+	}
+	if (random(200) < 1.5)
+		createHeart(drop_rate, xres, yres);
 		// For now, player is invincible until another star drops
 		invincible = false;
-	}
+	
 
 	// Move items on screen
 	Spike *spike = sphead;
@@ -139,7 +146,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 		star = star->next;
 	}
 
-	/*Heart *heart = rhead;
+	Heart *heart = hearthead;
 	while (heart) {
 		// Force is toward the ground
 		heart->vel[1] += gravity;
@@ -151,7 +158,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 		}
 		heart->vel[0] *= 0.999;
 		heart = heart->next;
-	}*/
+	}
 
 	// Check item positions (for collision with player or off-screen)
 	spike = sphead;
