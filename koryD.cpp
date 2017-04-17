@@ -1,8 +1,10 @@
 // Author: Kory Despot 
-// sound functions for dodge program
+// sound functions
+// One function to bounce spike when the player is hit with the helmet
+// Working on end credits screen
 //
 //
-
+//
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -80,20 +82,6 @@ extern void play_helmet_hit()
 	}
 	
 	alSourcePlay(alSource);
-	usleep(50000);
-
-	//alDeleteSources(1, &alSource);
-
-	//alDeleteBuffers(1, &alBuffer);
-	
-	//ALCcontext *Context = alcGetCurrentContext();
-	//ALCdevice *Device = alcGetContextsDevice(Context);
-
-	//alcMakeContextCurrent(NULL);
-
-	//alcDestroyContext(Context);
-
-	//alcCloseDevice(Device);
 }
 
 
@@ -116,19 +104,6 @@ extern void play_powerup()
 	}
 	
 	alSourcePlay(alSource);
-
-	//alDeleteSources(1, &alSource);
-
-	//alDeleteBuffers(1, &alBuffer);
-	
-	//ALCcontext *Context = alcGetCurrentContext();
-	//ALCdevice *Device = alcGetContextsDevice(Context);
-
-	//alcMakeContextCurrent(NULL);
-
-	//alcDestroyContext(Context);
-
-	//alcCloseDevice(Device);
 }
 
 extern void play_GetShield() 
@@ -161,19 +136,6 @@ extern void play_GetShield()
 	}
 	
 	alSourcePlay(alSource);
-
-	//alDeleteSources(1, &alSource);
-
-	//alDeleteBuffers(1, &alBuffer);
-	
-	//ALCcontext *Context = alcGetCurrentContext();
-	//ALCdevice *Device = alcGetContextsDevice(Context);
-
-	//alcMakeContextCurrent(NULL);
-
-	//alcDestroyContext(Context);
-
-	//alcCloseDevice(Device);
 }
 
 extern void play_theme()
@@ -238,7 +200,7 @@ extern void end_credits(int xres, int yres) {
 
 	Rect r;
 	r.bot = 400 - 30;
-	r.left = 300 - 100
+	r.left = 300 - 100;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint13(&r, 16, color, "This is a test");
