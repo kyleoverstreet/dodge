@@ -96,12 +96,13 @@ void dropItems(int player_pos, const int xres, const int yres)
 	}
 	if (random(200) < 1.5) {
 		createStars(drop_rate, xres, yres);
-	}
-	if (random(200) < 1.5)
-		createHeart(drop_rate, xres, yres);
 		// For now, player is invincible until another star drops
 		invincible = false;
 	
+	}
+	if (random(200) < 1.5) {
+		createHeart(drop_rate, xres, yres);
+	}
 
 	// Move items on screen
 	Spike *spike = sphead;
@@ -163,15 +164,14 @@ void dropItems(int player_pos, const int xres, const int yres)
 	// Check item positions (for collision with player or off-screen)
 	spike = sphead;
 	while (spike) {
-		// old was y < 80 and x-radius of 40
-		if (((spike->pos[1] > 0 && spike->pos[1] < 70)) &&
-				((spike->pos[0] > player_pos-40) &&
-				 (spike->pos[0] < player_pos+40))) {
+		if (((spike->pos[1] > 0 && spike->pos[1] < 68)) &&
+				((spike->pos[0] > player_pos-38) &&
+				 (spike->pos[0] < player_pos+38))) {
 			// Spike has hit player
 			spike_collisions++;
 			if (!invincible) {
 				if (helm_status == false) {
-					// Spike hit vulnerable player - game over
+					// Spike hit vulnerable player
 					health--;
 					if (health == 0) {
 #ifdef USE_OPENAL_SOUND
@@ -204,9 +204,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 
 	helmet = hhead;
 	while (helmet) {
-		if (((helmet->pos[1] > 0 && helmet->pos[1] < 70)) &&
-				((helmet->pos[0] > player_pos-40) &&
-				 (helmet->pos[0] < player_pos+40))) {
+		if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
+				((helmet->pos[0] > player_pos-38) &&
+				 (helmet->pos[0] < player_pos+38))) {
 			// Helmet has hit player
 #ifdef USE_OPENAL_SOUND
 			play_helmet_hit();
@@ -227,9 +227,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 
 	star = sthead;
 	while (star) {
-		if (((star->pos[1] > 0 && star->pos[1] < 70)) &&
-				((star->pos[0] > player_pos-40) &&
-				 (star->pos[0] < player_pos+40))) {
+		if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
+				((star->pos[0] > player_pos-38) &&
+				 (star->pos[0] < player_pos+38))) {
 			// Star has hit player
 			star_collisions++;
 #ifdef USE_OPENAL_SOUND
@@ -251,9 +251,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 
 	heart = hearthead;
 	while (heart) {
-		if (((heart->pos[1] > 0 && heart->pos[1] < 70)) &&
-				((heart->pos[0] > player_pos-40) &&
-				 (heart->pos[0] < player_pos+40))) {
+		if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
+				((heart->pos[0] > player_pos-38) &&
+				 (heart->pos[0] < player_pos+38))) {
 			// Heart has hit player
 			heart_collisions++;
 			
