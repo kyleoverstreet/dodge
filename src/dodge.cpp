@@ -197,6 +197,7 @@ void initXWindows(void)
     GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
     XSetWindowAttributes swa;
 
+    //OLD RES WAS 1280 X 960
     setupScreenRes(900, 600);
     dpy = XOpenDisplay(NULL);
     if (dpy == NULL) {
