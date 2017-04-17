@@ -87,9 +87,8 @@ int done = 0;
 int xres = 800, yres = 600;
 
 Ppmimage *playerImage = NULL;
-//Ppmimage *playerImageMv1 = NULL;
-//Ppmimage *playerImageMv2 = NULL;
 Ppmimage *playerhelmImage = NULL;
+Ppmimage *playerInvincibleImage = NULL;
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
 Ppmimage *spikeImage = NULL;
@@ -97,9 +96,8 @@ Ppmimage *helmetImage = NULL;
 Ppmimage *starImage = NULL;
 
 GLuint playerTexture;
-//GLuint playerMv1Texture;
-//GLuint playerMv2Texture;
 GLuint playerhelmTexture;
+GLuint playerInvincibleTexture;
 GLuint silhouetteSpike;
 GLuint silhouetteHelm;
 GLuint silhouetteStar;
@@ -269,15 +267,12 @@ void initOpengl(void)
 	//Character Image Left
 	system("convert ./images/standL.png ./images/standL.ppm");
 	playerImage      = ppm6GetImage("./images/standL.ppm");
-	/*//Character Image Move1
-	system("convert ./images/walking1.png ./images/walking1.ppm");
-	playerImageMv1   = ppm6GetImage("./images/walking1.ppm");
-	//Character Image Move2
-	system("convert ./images/walking2.png ./images/walking2.ppm");
-	playerImageMv2   = ppm6GetImage("./images/walking2.ppm");*/
 	//Character with Helm
 	system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
 	playerhelmImage   = ppm6GetImage("./images/standhelmL.ppm");
+	//Invincible Character
+	system("convert ./images/starplayer.png ./images/starplayer.ppm");
+	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
 	//Background Image
 	system("convert ./images/background1.jpg ./images/background1.ppm");
 	bgImage      = ppm6GetImage("./images/background1.ppm");
@@ -295,9 +290,8 @@ void initOpengl(void)
 
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
-	//glGenTextures(1, &playerMv1Texture);
-	//glGenTextures(1, &playerMv2Texture);
 	glGenTextures(1, &playerhelmTexture);
+	glGenTextures(1, &playerInvincibleTexture);
 	glGenTextures(1, &silhouetteSpike);
 	glGenTextures(1, &silhouetteHelm);
 	glGenTextures(1, &silhouetteStar);
@@ -372,6 +366,16 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	silhouetteData = buildAlphaData(playerhelmImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+	//player with invincibility
+	w = playerInvincibleImage->width;
+	h = playerInvincibleImage->height;
+	glBindTexture(GL_TEXTURE_2D, playerInvincibleTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(playerInvincibleImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
@@ -512,6 +516,9 @@ void render(void)
 		if (helm_status == true) {
 			// display character with helmet
 			glBindTexture(GL_TEXTURE_2D, playerhelmTexture);
+		} else if (invincible == true) {
+			// display invincible char
+			glBindTexture(GL_TEXTURE_2D, playerInvincibleTexture);
 		} else {
 		// display character without helmet
 		glBindTexture(GL_TEXTURE_2D, playerTexture);

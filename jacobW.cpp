@@ -16,6 +16,7 @@ void cleanupPPM(void) {
 				system("rm ./images/background1.ppm");
 				system("rm ./images/standL.ppm");
 				system("rm ./images/standhelmL.ppm");
+				system("rm ./images/starplayer.ppm");
 				system("rm ./images/Spike.ppm");
 				//system("rm ./images/walking1.ppm");
 				//system("rm ./images/walking2.ppm");
