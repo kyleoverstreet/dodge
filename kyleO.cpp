@@ -164,7 +164,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	spike = sphead;
 	while (spike) {
 		// old was y < 80 and x-radius of 40
-		if (((spike->pos[1] > 0 && spike->pos[1] < 80)) &&
+		if (((spike->pos[1] > 0 && spike->pos[1] < 70)) &&
 				((spike->pos[0] > player_pos-40) &&
 				 (spike->pos[0] < player_pos+40))) {
 			// Spike has hit player
@@ -204,7 +204,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 
 	helmet = hhead;
 	while (helmet) {
-		if (((helmet->pos[1] > 0 && helmet->pos[1] < 80)) &&
+		if (((helmet->pos[1] > 0 && helmet->pos[1] < 70)) &&
 				((helmet->pos[0] > player_pos-40) &&
 				 (helmet->pos[0] < player_pos+40))) {
 			// Helmet has hit player
@@ -227,7 +227,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 
 	star = sthead;
 	while (star) {
-		if (((star->pos[1] > 0 && star->pos[1] < 80)) &&
+		if (((star->pos[1] > 0 && star->pos[1] < 70)) &&
 				((star->pos[0] > player_pos-40) &&
 				 (star->pos[0] < player_pos+40))) {
 			// Star has hit player
@@ -249,9 +249,9 @@ void dropItems(int player_pos, const int xres, const int yres)
 		star = star->next;
 	}
 
-	/*heart = rhead;
+	heart = hearthead;
 	while (heart) {
-		if (((heart->pos[1] > 0 && heart->pos[1] < 80)) &&
+		if (((heart->pos[1] > 0 && heart->pos[1] < 70)) &&
 				((heart->pos[0] > player_pos-40) &&
 				 (heart->pos[0] < player_pos+40))) {
 			// Heart has hit player
@@ -273,7 +273,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 			continue;
 		}
 		heart = heart->next;
-	}*/
+	}
 }
 
 // Display player health at top-center
@@ -325,7 +325,7 @@ void display_collisions(int xres, int yres)
 	ggprint8b(&r, 16, white, "Spikes - %i", spike_collisions);
 	ggprint8b(&r, 16, white, "Stars - %i", star_collisions);
 	ggprint8b(&r, 16, white, "Helmets - %i", helm_collisions);
-	//ggprint8b(&r, 16, white, "Hearts - %i", heart_collisions);
+	ggprint8b(&r, 16, white, "Hearts - %i", heart_collisions);
 }
 
 // Displays helmet and invincibility status (for testing purposes)
