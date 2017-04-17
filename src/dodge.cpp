@@ -197,7 +197,7 @@ void initXWindows(void)
     GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
     XSetWindowAttributes swa;
 
-    setupScreenRes(1280, 960);
+    setupScreenRes(900, 600);
     dpy = XOpenDisplay(NULL);
     if (dpy == NULL) {
 	printf("\n\tcannot connect to X server\n\n");
@@ -435,7 +435,7 @@ void checkKeys(XEvent *e)
 	    showPlayer ^= 1;
 	    if (showPlayer) {
 		player.pos[0] = xres/2;
-		player.pos[1] = yres-920;
+		player.pos[1] = 30;
 	    }
 	    break;
 	case XK_p:
@@ -490,7 +490,7 @@ void render(void)
     glClear(GL_COLOR_BUFFER_BIT);
 
     //draw a quad with texture
-    float wid = 40.0f;
+    float wid = 30.0f;
     glColor3f(1.0, 1.0, 1.0);
 
     //set background
