@@ -77,6 +77,20 @@ typedef struct t_star {
 	struct t_star *next;
 } Star;
 
+typedef struct t_heart {
+	int type;
+	int linewidth;
+	int sound;
+	Vec pos;
+	Vec lastpos;
+	Vec vel;
+	Vec maxvel;
+	Vec force;
+	float length;
+	struct t_heart *prev;
+	struct t_heart *next;
+} Heart;
+
 typedef struct t_umbrella {
 	int shape;
 	Vec pos;

@@ -1,3 +1,7 @@
+// Young Soo Oh
+// CMPS 3350
+// Dodge Project
+
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -11,15 +15,19 @@
 extern Spike *sphead;
 extern Helmet *hhead;
 extern Star *sthead;
+extern Heart *hearthead;
 extern Ppmimage *spikeImage;
 extern Ppmimage *helmetImage;
 extern Ppmimage *starImage;
+extern Ppmimage *heartImage;
 extern GLuint spikeTexture;
 extern GLuint helmetTexture;
 extern GLuint starTexture;
+extern GLuint heartTexture;
 extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
+extern GLuint silhouetteHeart;
 int score = 0;
 
 extern void createSpikes(const int n, const int xres, const int yres)
@@ -251,4 +259,77 @@ void deleteStar(Star *node)
 	delete node;
 	node = NULL;
 }
+//----------- create heart ---------------
+extern void createHeart(const int n, const int xres, const int yres)
+{
+	//create new rain drops...
+	int i;
+	for (i = 0; i < n; i++) {
+		Heart *node = (Heart *)malloc(sizeof(Heart));
+		if (node == NULL) {
+			Log("error allocating node.\n");
+			exit(EXIT_FAILURE);
+		}
+		node->prev = NULL;
+		node->next = NULL;
+		node->sound=0;
+		node->pos[0] = rnd() * (float)xres;
+		node->pos[1] = rnd() * 100.0f + (float) yres;
+		VecCopy(node->pos, node->lastpos);
+		node->vel[0] = node->vel[1] = 0.0f;
+		node->linewidth = heartImage->width;
+		//larger linewidth = faster speed
+		node->maxvel[1] = (float) (node->linewidth*16);
+		node->length = node->maxvel[1] * 0.2f;
+		//put raindrop into linked list
+		node->next = hearthead;
+		if (hearthead != NULL)
+			hearthead->prev = node;
+		hearthead = node;
+	}
+}
 
+extern void drawHeart(void)
+{
+	Heart *node = hearthead;
+	while (node) {
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glPushMatrix();
+		glTranslatef(node->pos[0],node->pos[1],node->pos[2]);
+		glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		float w = 10.0;
+		glBegin(GL_QUADS);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(-w, w);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i( w, w);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i( w,-w);
+		glEnd();
+		glPopMatrix();
+		node = node->next;
+	}
+	glLineWidth(1);
+}
+
+void deleteHeart(Heart *node)
+{
+	if (node->prev == NULL && node->next == NULL) {
+		hearthead = NULL;
+	}
+	else if (node->prev == NULL) {
+		hearthead = node->next;
+		node->next->prev = NULL;
+	}
+	else if (node->next == NULL) {
+		node->prev->next = NULL;
+	}
+	else {
+		node->next->prev = node->prev;
+		node->prev->next = node->next;
+	}
+
+	// Free the node's memory and set node to NULL
+	delete node;
+	node = NULL;
+}

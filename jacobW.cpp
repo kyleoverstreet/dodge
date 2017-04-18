@@ -24,30 +24,30 @@ void cleanupPPM(void) {
 
 int movePlayer(int xres, Player *player) {
 
-player->pos[0] += player->vel[0];
+    player->pos[0] += player->vel[0];
 
-//Check if edge left
-if (player->pos[0] <= 40) {
-    player->pos[0] = 40;
-    player->vel[0] = 0;
-}
+    //Check if edge left
+    if (player->pos[0] <= 40) {
+        player->pos[0] = 40;
+        player->vel[0] = 0;
+    }
 
-//Check if edge right
-if (player->pos[0] >= xres-40) {
-    player->pos[0] = xres-40;
-    player->vel[0] = 0;
-}
+    //Check if edge right
+    if (player->pos[0] >= xres-40) {
+        player->pos[0] = xres-40;
+        player->vel[0] = 0;
+    }
 
-if (player->vel[0] < -3) { 
-    player->vel[0] += 2;
-} else if (player->vel[0] > 3) {
-    player->vel[0] += -2;
-} else if (player->vel[0] <= 3 && player->vel[0] >= -3) {
-    player->vel[0] = 0;
-}
+    if (player->vel[0] < -3) { 
+        player->vel[0] += 2;
+    } else if (player->vel[0] > 3) {
+        player->vel[0] += -2;
+    } else if (player->vel[0] <= 3 && player->vel[0] >= -3) {
+        player->vel[0] = 0;
+    }
 
-// return player's x-position (needed to detect collisions)
-return player->pos[0];	
+    //return player's x-position (needed to detect collisions)
+    return player->pos[0];	
 }
 
 void init(int xres, int yres, Player *player) {
