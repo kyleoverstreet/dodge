@@ -14,7 +14,7 @@
  -Cleaned up project's repo. Removed files, renamed files, etc.
  -Helped Young with his create items functions (dodge.cpp and youngO.cpp)
 
- ====================SPRING BREAK====================
+ ====================SPRING BREAK===============
  -Removed large sound/images files from project repo.
  -Fixed all compiling errors.
  -Removed unnecessary code from src/dodge.cpp.
@@ -23,6 +23,11 @@
  -Added player "status" display for testing purposes.
  -Fixed black box behind falling items!!! (finally)
  -Implemented image of player with helmet on.
+
+ =====================WEEK 12====================
+ -Created heart image and implemented heart collision detection
+ -Currently working on communication with web server
+	(see cs.csubak.edu/~koverstreet/3350/dodge for addtl work)
  */
 
 #include <ctime>
@@ -30,6 +35,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include <sstream>
 #include <string>
 #include <time.h>
 #include <vector>
@@ -46,8 +52,7 @@ void dropItems(int, const int, const int);
 void display_score(int, int);
 void display_collisions(int, int);
 void display_player_status(int, int);
-void gamelog(string, int);
-void upload_scores();
+void gamelog();
 
 #ifdef USE_OPENAL_SOUND
 extern void play_helmet_hit();
@@ -73,6 +78,7 @@ extern Helmet *hhead;
 extern Star *sthead;
 extern Heart *hearthead;
 extern int score;
+extern string player_name;
 
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -98,7 +104,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 		createStars(drop_rate, xres, yres);
 		// For now, player is invincible until another star drops
 		invincible = false;
-	
+
 	}
 	if (random(200) < 1.5) {
 		createHeart(drop_rate, xres, yres);
@@ -177,6 +183,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 #ifdef USE_OPENAL_SOUND
 						play_game_over();
 #endif
+						gamelog();
 						cout << "Game over! (console msg only for now)" << endl;
 						cout << "Score: " << score << endl << endl;
 						score = 0;
@@ -256,10 +263,10 @@ void dropItems(int player_pos, const int xres, const int yres)
 				 (heart->pos[0] < player_pos+38))) {
 			// Heart has hit player
 			heart_collisions++;
-			
+
 			if (health != 3) {
 #ifdef USE_OPENAL_SOUND
-			//some sound here;
+				//some sound here;
 #endif
 				health++;
 			}
@@ -281,7 +288,6 @@ void display_health(int xres, int yres)
 {	
 	Rect r;
 	r.bot = yres - 35;
-	//r.left = xres - 722;
 	r.left = xres/2 - 55;
 	r.center = 0;
 	unsigned int red = 0xff0000;
@@ -293,7 +299,6 @@ void display_score(int xres, int yres)
 {
 	Rect r;
 	r.bot = yres - 50;
-	//r.left = xres - 700;
 	r.left = xres/2 - 27;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
@@ -304,18 +309,18 @@ void display_score(int xres, int yres)
 void display_collisions(int xres, int yres)
 {
 	/*//this was to check player height/width
-	Rect r2;
-	r2.bot = yres  112;
-	r2.left = xres - 500;
-	r2.center = 0;
-	ggprint8b(&r2, 16, 0xff0000, "w");
+	  Rect r2;
+	  r2.bot = yres  112;
+	  r2.left = xres - 500;
+	  r2.center = 0;
+	  ggprint8b(&r2, 16, 0xff0000, "w");
 
-	Rect r3;
-	r3.bot = yres  112;
-	r3.left = xres - 564;
-	r3.center = 0;
-	ggprint8b(&r3, 16, 0xff0000, "w");*/
-	
+	  Rect r3;
+	  r3.bot = yres  112;
+	  r3.left = xres - 564;
+	  r3.center = 0;
+	  ggprint8b(&r3, 16, 0xff0000, "w");*/
+
 	Rect r;
 	r.bot = yres - 20;
 	r.left = xres - 198;
@@ -351,100 +356,18 @@ void display_player_status(int xres, int yres)
 	}
 }
 
-/** The following two functions do not yet work as intended!! **/
-
-// Append player name, score, and date to gamelog
-void gamelog(string p1, int score1)
+// Append player name, score, and date to gamelog via PHP script
+// Viewable at cs.csubak.edu/~koverstreet/3350/dodge/scores.txt
+void gamelog()
 {
-	// Setup for date output
-	tm *my_time;
-	time_t t = time(NULL);
-	my_time = localtime(&t);
+	stringstream ss;
+	ss << score;
+	string score_str = ss.str();
 
-	ofstream f;
-	f.open("gamelog.txt", ofstream::app);
-	f << p1 << " "
-		<< score1 << " "
-		<< my_time->tm_mon+1 << "/"
-		<< my_time->tm_mday << "/"
-		<< my_time->tm_year+1900 << endl;
-	f.close();
-}
+	string command =
+		"curl http://cs.csubak.edu/\\~koverstreet/3350/dodge/update_scores.php";
+	command += "\\?name=" + player_name;
+	command += "\\&score=" + score_str;
 
-// Upload the gamelog to an html webpage
-void upload_scores()
-{
-	cout << "Ran Kyle's upload_scores function." << endl
-		<< "See \"scores.html\". This file will eventually upload to web server" << endl
-		<< "Webpage will look like this: http://cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl;
-
-	vector<string> players;
-	vector<int> scores;
-	vector<string> dates;
-
-	string p;
-	int s;
-	string d;
-
-	// Store data from gamelog into vectors
-	ifstream ifs("gamelog.txt");
-	while (true) {
-		ifs >> p >> s >> d;
-		if (ifs.eof()) {
-			break;
-		}
-		players.push_back(p);
-		scores.push_back(s);
-		dates.push_back(d);
-	}
-	ifs.close();
-
-	ofstream ofs("scores.html");
-	ofs << 
-		"<html>\n"
-		"<head>\n"
-		"<script src=\"sorttable.js\" type=\"text/javascript\"></script>\n"
-		"<title>Dodge Scores</title>\n"
-		"<style>\n"
-		"body {\n"
-		"    background-color: #75b3ad;\n"
-		"}\n"
-		"table {\n"
-		"    font-family: arial, sans-serif;\n"
-		"    border-collapse: collapse;\n"
-		"    width: 100%\n"
-		"}\n"
-		"td, th {\n"
-		"    border: 1px solid #dddddd;\n"
-		"    text-align: left;\n"
-		"    padding: 8px\n"
-		"}\n"
-		"tr:nth-child(even) {\n"
-		"    background-color: #dddddd;"
-		"}\n"
-		"</style>\n"
-		"</head>\n"
-		"<body>\n"
-		"<h2>Dodge Scores</h2>\n"
-		"<table>\n"
-		"<table class=\"sortable\">\n"
-		"<tr>\n"
-		"<th>Player</th>\n"
-		"<th>Score</th>\n"
-		"<th>Date</th>\n"
-		"</tr>\n";
-	// Setup table row for each line in gamelog
-	for (int i = players.size()-1; i >= 0; i--) {
-		ofs << 
-			"<tr>\n"
-			"<td>" << players[i] << "</td>\n"
-			"<td>" << scores[i] << "</td>\n"
-			"<td>" << dates[i] << "</td>\n"
-			"</tr>\n";
-	}
-	ofs <<
-		"</table>\n"
-		"</body>\n"
-		"</html>";
-	ofs.close();
+	system(command.c_str());
 }
