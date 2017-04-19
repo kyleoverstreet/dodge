@@ -182,7 +182,8 @@ int main(void)
 	cleanup_fonts();
 	logClose();
 	cout << endl << "To view a list of all game scores, go to:" << endl
-		<< "cs.csubak.edu/~koverstreet/3350/dodge/scores.txt" << endl;
+		<< "cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl
+		<< "(work in progress) << endl;
 	return 0;
 }
 
@@ -313,38 +314,6 @@ void initOpengl(void)
 	glGenTextures(1, &silhouetteStar);
 	glGenTextures(1, &silhouetteHeart);
 	glGenTextures(1, &bgTexture);
-
-
-	/*
-	//-------------------------------------------------------------------------
-	//player
-	int w = playerImage->width;
-	int h = playerImage->height;	
-	glBindTexture(GL_TEXTURE_2D, playerTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-	GL_RGB, GL_UNSIGNED_BYTE, playerImage->data);
-	//-------------------------------------------------------------------------
-	//playerMv1
-	w = playerImageMv1->width;
-	h = playerImageMv1->height;	
-	glBindTexture(GL_TEXTURE_2D, playerMv1Texture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-	GL_RGB, GL_UNSIGNED_BYTE, playerImageMv1->data);
-	//-------------------------------------------------------------------------
-	//playerMv2
-	w = playerImageMv2->width;
-	h = playerImageMv2->height;	
-	glBindTexture(GL_TEXTURE_2D, playerMv2Texture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-	GL_RGB, GL_UNSIGNED_BYTE, playerImageMv2->data);
-	//-------------------------------------------------------------------------
-	 */
 
 	//background
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
