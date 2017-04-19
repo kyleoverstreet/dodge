@@ -57,7 +57,6 @@ extern void display_health(int, int);
 extern void display_score(int, int);
 extern void display_collisions(int, int);
 extern void display_player_status(int, int);
-extern void upload_scores();
 //extern void end_credits(int xres, int yres);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
