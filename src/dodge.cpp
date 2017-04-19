@@ -181,8 +181,7 @@ int main(void)
 	cleanup_fonts();
 	logClose();
 	cout << endl << "To view a list of all game scores, go to:" << endl
-		<< "cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl
-		<< "(work in progress) << endl;
+		<< "cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl;
 	return 0;
 }
 
