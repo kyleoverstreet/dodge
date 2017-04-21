@@ -2,7 +2,7 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/17/17
+// Last edit: 4/20/17
 
 /*
 
@@ -27,7 +27,7 @@
  =====================WEEK 12====================
  -Created heart image and implemented heart collision detection
  -Currently working on communication with web server
-	(see cs.csubak.edu/~koverstreet/3350/dodge for addtl work)
+ (see cs.csubak.edu/~koverstreet/3350/dodge for addtl work)
  */
 
 #include <ctime>
@@ -48,6 +48,10 @@ extern "C" {
 
 using namespace std;
 
+int movePlayer2(int, Player *player2);
+void init2(int, int, Player *player2);
+void keypressA(Player *player2);
+void keypressD(Player *player2);
 void dropItems(int, const int, const int);
 void display_score(int, int);
 void display_collisions(int, int);
@@ -90,6 +94,51 @@ int heart_collisions = 0;
 bool helm_status = false;
 bool invincible = false;
 int health = 3;
+
+int movePlayer2(int xres, Player *player2) {
+	player2->pos[0] += player2->vel[0];
+
+	//Check if edge left
+	if (player2->pos[0] <= 40) {
+		player2->pos[0] = 40;
+		player2->vel[0] = 0;
+	}
+
+	//Check if edge right
+	if (player2->pos[0] >= xres-40) {
+		player2->pos[0] = xres-40;
+		player2->vel[0] = 0;
+	}
+
+	if (player2->vel[0] < -3) {
+		player2->vel[0] += 2;
+	} else if (player2->vel[0] > 3) {
+		player2->vel[0] += -2;
+	} else if (player2->vel[0] <= 3 && player2->vel[0] >= -3) {
+		player2->vel[0] = 0;
+	}
+
+	//return player2's x-position (needed to detect collisions)
+	return player2->pos[0];
+}
+
+void init2(int xres, int yres, Player *player2) {
+    player2->pos[0] = xres/1.4;
+    player2->pos[1] = yres/920;
+    VecCopy(player2->pos, player2->lastpos);
+    MakeVector(-150.0, 180.0, 0.0, player2->pos);
+    MakeVector(0.0,0.0,0.0, player2->vel);
+}
+
+void keypressA(Player *player2) {
+    player2->vel[0] -= 3.5;
+    player2->LR = false;
+}
+
+void keypressD(Player *player2) {
+    player2->vel[0] += 3.5;
+    player2->LR = true;
+}
 
 void dropItems(int player_pos, const int xres, const int yres)
 {

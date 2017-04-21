@@ -32,6 +32,7 @@ extern "C" {
 Display *dpy;
 Window win;
 Player player;
+Player player2;
 Spike *sphead = NULL;
 Helmet *hhead = NULL;
 Star *sthead = NULL;
@@ -46,9 +47,13 @@ void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void cleanupPPM(void);
 extern void init(int, int, Player*);
+extern void init2(int, int, Player*);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
+extern void keypressA(Player *player2);
+extern void keypressD(Player *player2);
 extern int movePlayer(int xres, Player *player);
+extern int movePlayer2(int xres, Player *player2);
 extern void dropItems(int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
@@ -87,10 +92,12 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 
 int done = 0;
 int xres = 800, yres = 600;
+bool two_player = true;
 
 Ppmimage *playerImage = NULL;
 Ppmimage *playerhelmImage = NULL;
 Ppmimage *playerInvincibleImage = NULL;
+Ppmimage *playerImage2 = NULL;
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
 Ppmimage *spikeImage = NULL;
@@ -101,6 +108,7 @@ Ppmimage *heartImage = NULL;
 GLuint playerTexture;
 GLuint playerhelmTexture;
 GLuint playerInvincibleTexture;
+GLuint playerTexture2;
 GLuint silhouetteSpike;
 GLuint silhouetteHelm;
 GLuint silhouetteStar;
@@ -116,7 +124,6 @@ int trees = 1;
 extern int spike_collisions;
 extern int helm_collisions;
 extern int star_collisions;
-//extern int Heart_collisions;
 extern bool helm_status;
 extern bool invincible;
 
@@ -133,6 +140,9 @@ int main(void)
 	initXWindows();
 	initOpengl();
 	init(xres, yres, &player);
+	if (two_player) {
+		init2(xres, yres, &player2);
+	}
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
@@ -277,15 +287,22 @@ void initOpengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 	//load the images file into a ppm structure.
-	//Character Image Left
+	//Character1
 	system("convert ./images/standL.png ./images/standL.ppm");
 	playerImage      = ppm6GetImage("./images/standL.ppm");
-	//Character with Helm
+	//Character1 with Helm
 	system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
 	playerhelmImage   = ppm6GetImage("./images/standhelmL.ppm");
-	//Invincible Character
+	//Character1 with Invincibility
 	system("convert ./images/starplayer.png ./images/starplayer.ppm");
 	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
+
+	if (two_player) {
+		//Character2 Image
+		system("convert ./images/player2.png ./images/player2.ppm");
+		playerImage2      = ppm6GetImage("./images/player2.ppm");
+	}
+
 	//Background Image
 	system("convert ./images/background1.jpg ./images/background1.ppm");
 	bgImage      = ppm6GetImage("./images/background1.ppm");
@@ -307,6 +324,9 @@ void initOpengl(void)
 	glGenTextures(1, &playerTexture);
 	glGenTextures(1, &playerhelmTexture);
 	glGenTextures(1, &playerInvincibleTexture);
+	if (two_player) {
+		glGenTextures(1, &playerTexture2);
+	}
 	glGenTextures(1, &silhouetteSpike);
 	glGenTextures(1, &silhouetteHelm);
 	glGenTextures(1, &silhouetteStar);
@@ -362,6 +382,18 @@ void initOpengl(void)
 	silhouetteData = buildAlphaData(playerInvincibleImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+	if (two_player) {
+		//player2
+		w = playerImage2->width;
+		h = playerImage2->height;
+		glBindTexture(GL_TEXTURE_2D, playerTexture2);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		silhouetteData = buildAlphaData(playerImage2);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	}
 
 	//spike
 	w = spikeImage->width;
@@ -431,6 +463,10 @@ void checkKeys(XEvent *e)
 			if (showPlayer) {
 				player.pos[0] = xres/2;
 				player.pos[1] = 30;
+				if (two_player) {
+					player2.pos[0] = xres/1.4;
+					player2.pos[1] = 30;
+				}
 			}
 			break;
 		case XK_p:
@@ -441,6 +477,12 @@ void checkKeys(XEvent *e)
 			break;
 		case XK_Right:
 			keypressR(&player);
+			break;
+		case XK_a:
+			keypressA(&player2);
+			break;
+		case XK_d:
+			keypressD(&player2);
 			break;
 		case XK_Escape:
 			done=1;
@@ -470,8 +512,10 @@ Flt VecNormalize(Vec vec)
 void physics(void)
 {
 	int player_position;
+	//int player2_position;
 	if (showPlayer) {
 		player_position = movePlayer(xres, &player);
+		//player2_position = movePlayer2(xres, &player2);
 		dropItems(player_position, xres, yres);
 	}
 }
@@ -519,7 +563,7 @@ void render(void)
 			// display character without helmet
 			glBindTexture(GL_TEXTURE_2D, playerTexture);
 		}
-
+		
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -536,8 +580,31 @@ void render(void)
 			glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
 			glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
 		}
+
 		glEnd();
 		glPopMatrix();
+
+		/*if (two_player) {
+			glTranslatef(player2.pos[0], player2.pos[1], player2.pos[2]);
+			glBindTexture(GL_TEXTURE_2D, playerTexture2);
+
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+
+			glBegin(GL_QUADS);
+			if (player2.LR == false) {
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+				glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+			} else {
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
+				glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
+			}
+		}*/
 
 		if (trees && silhouette) {
 			glBindTexture(GL_TEXTURE_2D, bgTransTexture);
@@ -564,7 +631,6 @@ void render(void)
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "B - Start");
-	//ggprint8b(&r, 16, color, "N - Sounds");
 
 	// Display player info to screen
 	display_health(xres, yres);
