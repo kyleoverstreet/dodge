@@ -22,6 +22,9 @@ extern "C" {
 	#include "src/fonts.h"
 }
 
+timespec helm_start, helm_current;
+timespec power_start, power_current;
+
 #ifdef USE_OPENAL_SOUND
 ALuint alSource;
 ALuint alBuffer;
@@ -180,6 +183,37 @@ extern void spike_bounce(Spike* spike) {
 	spike->vel[1] = 11;
 	spike->vel[0] = rand() % 21 + (-10);
 }
+
+extern bool start_helm_timer() {
+	clock_gettime(CLOCK_REALTIME, &helm_start);
+	return true;
+}
+extern bool check_helm_timer(bool helm) {
+	if(helm == false) 
+		return false;
+	clock_gettime(CLOCK_REALTIME, &helm_current);
+	int timediff = helm_current.tv_sec - helm_start.tv_sec;
+	if( timediff < 5) 
+		return true;
+	else 
+		return false;
+}
+extern bool start_powerup_timer() {
+	clock_gettime(CLOCK_REALTIME, &power_start);
+	return true;
+}
+extern bool check_powerup_timer(bool powerup) {
+	if(powerup == false) 
+		return false;
+	clock_gettime(CLOCK_REALTIME, &power_current);
+	int timediff = power_current.tv_sec - power_start.tv_sec;
+	if( timediff < 5) 
+		return true;
+	else 
+		return false;	
+}
+
+
 
 /* end credits scene
 

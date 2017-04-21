@@ -47,11 +47,11 @@ void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void cleanupPPM(void);
 extern void init(int, int, Player*);
-extern void init2(int, int, Player*);
+//extern void init2(int, int, Player*);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
-extern void keypressA(Player *player2);
-extern void keypressD(Player *player2);
+//extern void keypressA(Player *player2);
+//extern void keypressD(Player *player2);
 extern int movePlayer(int xres, Player *player);
 extern int movePlayer2(int xres, Player *player2);
 extern void dropItems(int, const int, const int);
@@ -140,9 +140,9 @@ int main(void)
 	initXWindows();
 	initOpengl();
 	init(xres, yres, &player);
-	if (two_player) {
-		init2(xres, yres, &player2);
-	}
+//	if (two_player) {
+//		init2(xres, yres, &player2);
+//	}
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
@@ -479,10 +479,10 @@ void checkKeys(XEvent *e)
 			keypressR(&player);
 			break;
 		case XK_a:
-			keypressA(&player2);
+			//keypressA(&player2);
 			break;
 		case XK_d:
-			keypressD(&player2);
+			//keypressD(&player2);
 			break;
 		case XK_Escape:
 			done=1;
