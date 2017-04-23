@@ -96,8 +96,9 @@ int xres = 800, yres = 600;
 bool two_player = true;
 
 Ppmimage *playerImage = NULL;
-Ppmimage *playerhelmImage = NULL;
+Ppmimage *playerHelmImage = NULL;
 Ppmimage *playerInvincibleImage = NULL;
+Ppmimage *playerHelmInvincImage = NULL;
 Ppmimage *playerImage2 = NULL;
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
@@ -107,8 +108,9 @@ Ppmimage *starImage = NULL;
 Ppmimage *heartImage = NULL;
 
 GLuint playerTexture;
-GLuint playerhelmTexture;
+GLuint playerHelmTexture;
 GLuint playerInvincibleTexture;
+GLuint playerHelmInvincTexture;
 GLuint playerTexture2;
 GLuint silhouetteSpike;
 GLuint silhouetteHelm;
@@ -294,10 +296,13 @@ void initOpengl(void)
 	playerImage      = ppm6GetImage("./images/standL.ppm");
 	//Character1 with Helm
 	system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
-	playerhelmImage   = ppm6GetImage("./images/standhelmL.ppm");
+	playerHelmImage   = ppm6GetImage("./images/standhelmL.ppm");
 	//Character1 with Invincibility
 	system("convert ./images/starplayer.png ./images/starplayer.ppm");
 	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
+	//Character1 with Helm and Invincibility
+	system("convert ./images/invinciblehelm.png ./images/invinciblehelm.ppm");
+	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
 
 	if (two_player) {
 		//Character2 Image
@@ -324,8 +329,9 @@ void initOpengl(void)
 	heartImage = ppm6GetImage("./images/heart.ppm");
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
-	glGenTextures(1, &playerhelmTexture);
+	glGenTextures(1, &playerHelmTexture);
 	glGenTextures(1, &playerInvincibleTexture);
+	glGenTextures(1, &playerHelmInvincTexture);
 	if (two_player) {
 		glGenTextures(1, &playerTexture2);
 	}
@@ -366,12 +372,12 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	//player with helm
-	w = playerhelmImage->width;
-	h = playerhelmImage->height;
-	glBindTexture(GL_TEXTURE_2D, playerhelmTexture);
+	w = playerHelmImage->width;
+	h = playerHelmImage->height;
+	glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(playerhelmImage);	
+	silhouetteData = buildAlphaData(playerHelmImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
@@ -385,6 +391,16 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
+	//player with helm and invincibility
+	w = playerHelmInvincImage->width;
+	h = playerHelmInvincImage->height;
+	glBindTexture(GL_TEXTURE_2D, playerHelmInvincTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(playerHelmInvincImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	
 	if (two_player) {
 		//player2
 		w = playerImage2->width;
@@ -558,14 +574,17 @@ void render(void)
 		//if right check for right keypress
 		//at end of render grab time and add to animation span
 
-		if (helm_status == true) {
+		if (helm_status == true && !invincible) {
 			// display character with helmet
-			glBindTexture(GL_TEXTURE_2D, playerhelmTexture);
-		} else if (invincible == true) {
-			// display invincible char
+			glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
+		} else if (helm_status == true && invincible) {
+			// display character with helmet and invincibility
+			glBindTexture(GL_TEXTURE_2D, playerHelmInvincTexture);
+		} else if (helm_status == false && invincible) {
+			// display invincible character
 			glBindTexture(GL_TEXTURE_2D, playerInvincibleTexture);
 		} else {
-			// display character without helmet
+			// display vulnerable (normal) character
 			glBindTexture(GL_TEXTURE_2D, playerTexture);
 		}
 		

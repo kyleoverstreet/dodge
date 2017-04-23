@@ -27,6 +27,7 @@
  -Created heart image and implemented heart collision detection
  -Implemented communication with webpage
 	(see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
+ -Added tutorial
  */
 
 #include <X11/Xlib.h>
