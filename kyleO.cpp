@@ -47,6 +47,7 @@ extern "C" {
 
 using namespace std;
 
+void tutorial(const int, const int);
 void dropItems(int, const int, const int);
 void display_score(int, int);
 void display_collisions(int, int);
@@ -93,6 +94,46 @@ int heart_collisions = 0;
 bool helm_status = false;
 bool invincible = false;
 int health = 3;
+
+void tutorial(const int xres, const int yres)
+{
+
+	unsigned int red = 0xff0000;
+	//unsigned int green = 0x00ff00;
+	//unsigned int yellow = 0x00dddd00;
+	unsigned int white = 0xffffff;
+
+	Rect temp;
+	temp.bot = yres - 300;
+	temp.left = xres/10;
+	temp.center = 0;
+	ggprint8b(&temp, 16, red, "TUTORIAL IS CURRENTLY A WORK-IN-PROGRESS");
+	
+	Rect r;
+	r.bot = yres - 70;
+	r.left = xres/10;
+	r.center = 0;
+	ggprint8b(&r, 16, white, "The goal in Dodge is to move the character");
+	ggprint8b(&r, 16, white, "to avoid falling spikes for as long as possible");
+
+	Rect r2;
+	r2.bot = yres - 130;
+	r2.left = xres/10;
+	r2.center = 0;
+	ggprint8b(&r2, 16, white, "Key controls:");
+	ggprint8b(&r2, 16, white, "Left arrow - moves character left");
+	ggprint8b(&r2, 16, white, "Right arrow - moves character right");
+
+	Rect r3;
+	r3.bot = yres - 200;
+	r3.left = xres/10;
+	r3.center = 0;
+	ggprint8b(&r3, 16, white, "Items:");
+	ggprint8b(&r3, 16, white, "Spike - hurts the player (removes 1/4 hp per hit)");
+	ggprint8b(&r3, 16, white, "Star - gives the player invincibility for 5 seconds");
+	ggprint8b(&r3, 16, white, "Helmet - protects the player from one spike hit");
+	ggprint8b(&r3, 16, white, "Heart - player regains 1/4 hp if not full hp");
+}
 
 void dropItems(int player_pos, const int xres, const int yres)
 {

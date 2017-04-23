@@ -46,6 +46,7 @@ void render(void);
 void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void cleanupPPM(void);
+extern void tutorial(const int, const int);
 extern void init(int, int, Player*);
 //extern void init2(int, int, Player*);
 extern void keypressR(Player *player);
@@ -116,6 +117,7 @@ GLuint silhouetteHeart;
 GLuint bgTexture;
 GLuint bgTransTexture;
 
+int display_tutorial = 0;
 int showPlayer = 0;
 string player_name;
 int background = 1;
@@ -469,6 +471,9 @@ void checkKeys(XEvent *e)
 				}
 			}
 			break;
+		case XK_t:
+			display_tutorial ^= 1;
+			break;
 		case XK_p:
 			//end_credits(xres, yres);
 			break;
@@ -631,10 +636,17 @@ void render(void)
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "B - Start");
+	ggprint8b(&r, 16, color, "T - Tutorial");
 
+	if (display_tutorial && !showPlayer) {
+		tutorial(xres, yres);
+	}
+
+	if (!display_tutorial && showPlayer) {
 	// Display player info to screen
-	display_health(xres, yres);
-	display_score(xres, yres);
-	display_collisions(xres, yres);
-	display_player_status(xres, yres);
+		display_health(xres, yres);
+		display_score(xres, yres);
+		display_collisions(xres, yres);
+		display_player_status(xres, yres);
+	}
 }
