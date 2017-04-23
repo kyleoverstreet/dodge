@@ -29,6 +29,10 @@
 	(see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
  */
 
+#include <X11/Xlib.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glx.h>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -38,6 +42,7 @@
 #include <string>
 #include <time.h>
 #include <vector>
+#include "src/ppm.h"
 #include "src/shared.h"
 #include "src/youngO.h"
 
@@ -77,6 +82,11 @@ extern bool start_helm_timer();
 extern bool start_powerup_timer();
 extern bool check_powerup_timer(bool powerup);
 
+extern GLuint silhouetteSpike;
+extern GLuint silhouetteHelm;
+extern GLuint silhouetteStar;
+extern GLuint silhouetteHeart;
+
 extern Spike *sphead;
 extern Helmet *hhead;
 extern Star *sthead;
@@ -104,11 +114,11 @@ void tutorial(const int xres, const int yres)
 	unsigned int white = 0xffffff;
 
 	Rect temp;
-	temp.bot = yres - 300;
-	temp.left = xres/10;
+	temp.bot = yres - 150;
+	temp.left = xres/2 + 100;
 	temp.center = 0;
 	ggprint8b(&temp, 16, red, "TUTORIAL IS CURRENTLY A WORK-IN-PROGRESS");
-	
+		
 	Rect r;
 	r.bot = yres - 70;
 	r.left = xres/10;
@@ -129,10 +139,101 @@ void tutorial(const int xres, const int yres)
 	r3.left = xres/10;
 	r3.center = 0;
 	ggprint8b(&r3, 16, white, "Items:");
-	ggprint8b(&r3, 16, white, "Spike - hurts the player (removes 1/4 hp per hit)");
-	ggprint8b(&r3, 16, white, "Star - gives the player invincibility for 5 seconds");
-	ggprint8b(&r3, 16, white, "Helmet - protects the player from one spike hit");
-	ggprint8b(&r3, 16, white, "Heart - player regains 1/4 hp if not full hp");
+
+	float w = 10.0;
+	
+	// Draw spike
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef((xres/10)+10,yres-215,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w, w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i( w, w);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w,-w);
+	glEnd();
+	glPopMatrix();
+
+	// Spike description
+	Rect item1;
+	item1.bot = yres - 220;
+	item1.left = xres/10 + 30;
+	item1.center = 0;
+	ggprint8b(&item1, 16, white, "Spike - hurts the player (removes 1/4 hp per hit)");
+
+
+	// Draw star
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef((xres/10)+10,yres-240,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteStar);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w, w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i( w, w);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w,-w);
+	glEnd();
+	glPopMatrix();
+
+	// Star description
+	Rect item2;
+	item2.bot = yres - 245;
+	item2.left = xres/10 + 30;
+	item2.center = 0;
+	ggprint8b(&item2, 16, white, "Star - gives the player invincibility for 5 seconds");
+
+	// Draw helmet
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef((xres/10)+10,yres-265,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteHelm);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w, w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i( w, w);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w,-w);
+	glEnd();
+	glPopMatrix();
+
+	// Helmet description
+	Rect item3;
+	item3.bot = yres - 270;
+	item3.left = xres/10 + 30;
+	item3.center = 0;
+	ggprint8b(&item3, 16, white, "Helmet - protects the player from one spike hit");
+
+	// Draw heart
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef((xres/10)+10,yres-290,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(-w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w, w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i( w, w);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w,-w);
+	glEnd();
+	glPopMatrix();
+
+	// Heart description
+	Rect item4;
+	item4.bot = yres - 295;
+	item4.left = xres/10 + 30;
+	item4.center = 0;
+	ggprint8b(&item4, 16, white, "Heart - player regains 1/4 hp if not full hp");
 }
 
 void dropItems(int player_pos, const int xres, const int yres)
