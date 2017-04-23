@@ -54,7 +54,7 @@ extern void keypressL(Player *player);
 extern void keypressA(Player *player2);
 extern void keypressD(Player *player2);
 extern int movePlayer(int xres, Player *player);
-extern int movePlayer2(int xres, Player *player2);
+extern void movePlayer2(int xres, Player *player2);
 extern void dropItems(int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
@@ -476,15 +476,22 @@ void checkKeys(XEvent *e)
 		return;
 	}
 	switch(key) {
-		case XK_b:
+		case XK_1:
+			two_player = false;
 			showPlayer ^= 1;
 			if (showPlayer) {
 				player.pos[0] = xres/2;
 				player.pos[1] = 30;
-				if (two_player) {
-					player2.pos[0] = 100;
-					player2.pos[1] = 30;
-				}
+			}
+			break;
+		case XK_2:
+			two_player = true;
+			showPlayer ^= 1 ;
+			if (showPlayer) {
+				player.pos[0] = xres/2 - 50;
+				player.pos[1] = 30;
+				player2.pos[0] = xres/2 + 50;
+				player2.pos[1] = 30;
 			}
 			break;
 		case XK_t:
@@ -537,9 +544,10 @@ void physics(void)
 		player_position = movePlayer(xres, &player);
 		dropItems(player_position, xres, yres);
 		if (two_player) {
-			int player2_position;
-			player2_position = movePlayer2(xres, &player2);
+			//int player2_position;
+			//player2_position = movePlayer2(xres, &player2);
 			//need dropItems to take player2 pos parameter
+			movePlayer2(xres, &player2);
 		}
 	}
 }
@@ -658,7 +666,8 @@ void render(void)
 	r.left = 10;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
-	ggprint8b(&r, 16, color, "B - Start");
+	ggprint8b(&r, 16, color, "1 - 1-player");
+	ggprint8b(&r, 16, color, "2 - 2-player (work in progress)");
 	ggprint8b(&r, 16, color, "T - Tutorial");
 
 	if (display_tutorial && !showPlayer) {

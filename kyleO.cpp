@@ -57,7 +57,7 @@ void tutorial(const int, const int);
 void init2(int, int, Player*);
 void keypressA(Player*);
 void keypressD(Player*);
-int movePlayer2(int, Player*);
+void movePlayer2(int, Player*);
 void dropItems(int, const int, const int);
 void display_score(int, int);
 void display_collisions(int, int);
@@ -259,7 +259,7 @@ void keypressD(Player *player2) {
         player2->LR = true;
 }
 
-int movePlayer2(int xres, Player *player2) {
+void movePlayer2(int xres, Player *player2) {
 
         player2->pos[0] += player2->vel[0];
 
@@ -284,7 +284,7 @@ int movePlayer2(int xres, Player *player2) {
         }
 
         //return player2's x-position (needed to detect collisions)
-        return player2->pos[0];
+        //return player2->pos[0];
 }
 	
 void dropItems(int player_pos, const int xres, const int yres)
