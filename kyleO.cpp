@@ -180,18 +180,25 @@ void dropItems(int player_pos, const int xres, const int yres)
 				if (helm_status == false) {
 					// Spike hit vulnerable player
 					health--;
-					if (health == 0) {
+					if (health > 0) {
+#ifdef USE_OPENAL_SOUNDD
+						// PLAY SPIKE SOUND HERE
+#endif
+					} else {
+						// Player has no health
 #ifdef USE_OPENAL_SOUND
 						play_game_over();
 #endif
 						gamelog();
-						cout << "Game over! (console msg only for now)" << endl;
-						cout << "Score: " << score << endl << endl;
+						cout << "Game over!" << endl;
+						cout << "Score: " << score;
+						cout << endl << endl;
 						score = 0;
 						health = 3;
 					}
 					deleteSpike(spike);
 				} else {
+					// Spike hit helmet
 #ifdef USE_OPENAL_SOUND
 					play_helmet_hit();
 #endif
@@ -266,7 +273,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 
 			if (health != 3) {
 #ifdef USE_OPENAL_SOUND
-				//some sound here;
+				// PLAY HEALTH SOUND HERE
 #endif
 				health++;
 			}
@@ -281,7 +288,8 @@ void dropItems(int player_pos, const int xres, const int yres)
 		}
 		heart = heart->next;
 	}
-	//check the timers for the powerup and helmet
+	
+	// Check the timers for the powerup and helmet
 	helm_status = check_helm_timer(helm_status);
 	invincible = check_powerup_timer(invincible);
 }
