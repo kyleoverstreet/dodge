@@ -48,11 +48,11 @@ void checkKeys(XEvent *e);
 extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void init(int, int, Player*);
-//extern void init2(int, int, Player*);
+extern void init2(int, int, Player*);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
-//extern void keypressA(Player *player2);
-//extern void keypressD(Player *player2);
+extern void keypressA(Player *player2);
+extern void keypressD(Player *player2);
 extern int movePlayer(int xres, Player *player);
 extern int movePlayer2(int xres, Player *player2);
 extern void dropItems(int, const int, const int);
@@ -144,9 +144,9 @@ int main(void)
 	initXWindows();
 	initOpengl();
 	init(xres, yres, &player);
-//	if (two_player) {
-//		init2(xres, yres, &player2);
-//	}
+	if (two_player) {
+		init2(xres, yres, &player2);
+	}
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
@@ -482,7 +482,7 @@ void checkKeys(XEvent *e)
 				player.pos[0] = xres/2;
 				player.pos[1] = 30;
 				if (two_player) {
-					player2.pos[0] = xres/1.4;
+					player2.pos[0] = 100;
 					player2.pos[1] = 30;
 				}
 			}
@@ -500,10 +500,10 @@ void checkKeys(XEvent *e)
 			keypressR(&player);
 			break;
 		case XK_a:
-			//keypressA(&player2);
+			keypressA(&player2);
 			break;
 		case XK_d:
-			//keypressD(&player2);
+			keypressD(&player2);
 			break;
 		case XK_Escape:
 			done=1;
@@ -533,11 +533,14 @@ Flt VecNormalize(Vec vec)
 void physics(void)
 {
 	int player_position;
-	//int player2_position;
 	if (showPlayer) {
 		player_position = movePlayer(xres, &player);
-		//player2_position = movePlayer2(xres, &player2);
 		dropItems(player_position, xres, yres);
+		if (two_player) {
+			int player2_position;
+			player2_position = movePlayer2(xres, &player2);
+			//need dropItems to take player2 pos parameter
+		}
 	}
 }
 
@@ -608,14 +611,13 @@ void render(void)
 		glEnd();
 		glPopMatrix();
 
-		/*if (two_player) {
-			glTranslatef(player2.pos[0], player2.pos[1], player2.pos[2]);
+		if (two_player) {
+			glPushMatrix();
+			glTranslatef(player2.pos[0], player2.pos[1], 0);
 			glBindTexture(GL_TEXTURE_2D, playerTexture2);
-
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
-
 			glBegin(GL_QUADS);
 			if (player2.LR == false) {
 				glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
@@ -628,7 +630,9 @@ void render(void)
 				glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
 				glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
 			}
-		}*/
+			glEnd();
+			glPopMatrix();
+		}
 
 		if (trees && silhouette) {
 			glBindTexture(GL_TEXTURE_2D, bgTransTexture);

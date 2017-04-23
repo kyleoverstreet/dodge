@@ -54,6 +54,10 @@ extern "C" {
 using namespace std;
 
 void tutorial(const int, const int);
+void init2(int, int, Player*);
+void keypressA(Player*);
+void keypressD(Player*);
+int movePlayer2(int, Player*);
 void dropItems(int, const int, const int);
 void display_score(int, int);
 void display_collisions(int, int);
@@ -166,7 +170,6 @@ void tutorial(const int xres, const int yres)
 	item1.center = 0;
 	ggprint8b(&item1, 16, white, "Spike - hurts the player (removes 1/4 hp per hit)");
 
-
 	// Draw star
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
@@ -237,6 +240,53 @@ void tutorial(const int xres, const int yres)
 	ggprint8b(&item4, 16, white, "Heart - player regains 1/4 hp if not full hp");
 }
 
+void init2(int xres, int yres, Player *player2)
+{
+	player2->pos[0] = xres/2 + 80;
+	player2->pos[1] = yres/920;
+	VecCopy(player2->pos, player2->lastpos);
+        MakeVector(-150.0, 180.0, 0.0, player2->pos);
+        MakeVector(0.0,0.0,0.0, player2->vel);
+}
+
+void keypressA(Player *player2) {
+        player2->vel[0] -= 3.5;
+        player2->LR = false;
+}
+
+void keypressD(Player *player2) {
+        player2->vel[0] += 3.5;
+        player2->LR = true;
+}
+
+int movePlayer2(int xres, Player *player2) {
+
+        player2->pos[0] += player2->vel[0];
+
+        //Check if edge left
+        if (player2->pos[0] <= 40) {
+                player2->pos[0] = 40;
+                player2->vel[0] = 0;
+        }
+
+        //Check if edge right
+        if (player2->pos[0] >= xres-40) {
+                player2->pos[0] = xres-40;
+                player2->vel[0] = 0;
+        }
+
+        if (player2->vel[0] < -3) {
+                player2->vel[0] += 2;
+        } else if (player2->vel[0] > 3) {
+                player2->vel[0] += -2;
+        } else if (player2->vel[0] <= 3 && player2->vel[0] >= -3) {
+                player2->vel[0] = 0;
+        }
+
+        //return player2's x-position (needed to detect collisions)
+        return player2->pos[0];
+}
+	
 void dropItems(int player_pos, const int xres, const int yres)
 {
 	// Create the items
