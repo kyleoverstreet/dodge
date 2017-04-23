@@ -2,10 +2,9 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/17/17
+// Last edit: 4/23/17
 
 /*
-
  *************** NOTE TO GORDON *****************
  Young helped write the dropItems function below
 
@@ -26,8 +25,8 @@
 
  =====================WEEK 12====================
  -Created heart image and implemented heart collision detection
- -Currently working on communication with web server
-	(see cs.csubak.edu/~koverstreet/3350/dodge for addtl work)
+ -Implemented communication with webpage
+	(see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
  */
 
 #include <ctime>
@@ -101,16 +100,14 @@ void dropItems(int player_pos, const int xres, const int yres)
 	if (random(100) < 15) {
 		createSpikes(drop_rate, xres, yres);
 	}
-	if (random(200) < 1.5) {
+	if (random(200) < 1.3) {
 		createHelmets(drop_rate, xres, yres);
 	}
-	if (random(200) < 1.5) {
+	if (random(200) < 1.3) {
 		createStars(drop_rate, xres, yres);
-		// For now, player is invincible until another star drops
-		invincible = false;
 
 	}
-	if (random(200) < 1.5) {
+	if (random(200) < 1.3) {
 		createHeart(drop_rate, xres, yres);
 	}
 
@@ -176,7 +173,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (spike) {
 		if (((spike->pos[1] > 0 && spike->pos[1] < 68)) &&
 				((spike->pos[0] > player_pos-38) &&
-				 (spike->pos[0] < player_pos+38))) {
+				(spike->pos[0] < player_pos+38))) {
 			// Spike has hit player
 			spike_collisions++;
 			if (!invincible) {
@@ -217,7 +214,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (helmet) {
 		if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
 				((helmet->pos[0] > player_pos-38) &&
-				 (helmet->pos[0] < player_pos+38))) {
+				(helmet->pos[0] < player_pos+38))) {
 			// Helmet has hit player
 #ifdef USE_OPENAL_SOUND
 			play_helmet_hit();
@@ -240,13 +237,12 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (star) {
 		if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
 				((star->pos[0] > player_pos-38) &&
-				 (star->pos[0] < player_pos+38))) {
+				(star->pos[0] < player_pos+38))) {
 			// Star has hit player
 			star_collisions++;
 #ifdef USE_OPENAL_SOUND
 			play_powerup();
 #endif
-			// TO DO: set invincibility for x seconds
 			invincible = start_powerup_timer();
 			deleteStar(star);
 		}
@@ -264,7 +260,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (heart) {
 		if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
 				((heart->pos[0] > player_pos-38) &&
-				 (heart->pos[0] < player_pos+38))) {
+				(heart->pos[0] < player_pos+38))) {
 			// Heart has hit player
 			heart_collisions++;
 
@@ -315,19 +311,6 @@ void display_score(int xres, int yres)
 // Displays collisions with player (for testing purposes)
 void display_collisions(int xres, int yres)
 {
-	/*//this was to check player height/width
-	  Rect r2;
-	  r2.bot = yres  112;
-	  r2.left = xres - 500;
-	  r2.center = 0;
-	  ggprint8b(&r2, 16, 0xff0000, "w");
-
-	  Rect r3;
-	  r3.bot = yres  112;
-	  r3.left = xres - 564;
-	  r3.center = 0;
-	  ggprint8b(&r3, 16, 0xff0000, "w");*/
-
 	Rect r;
 	r.bot = yres - 20;
 	r.left = xres - 198;
