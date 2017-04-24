@@ -814,9 +814,9 @@ void render(void)
 
 	if (display_menu && !display_tutorial && !showPlayer) {
 		menu(xres, yres);
-        if (display_credits) {
-            credits(xres, yres);
-        }
+        	if (display_credits) {
+            		credits(xres, yres);
+        	}
 	}
 
 	if (!display_menu && !display_tutorial && showPlayer) {

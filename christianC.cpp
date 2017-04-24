@@ -59,7 +59,6 @@ unsigned int blue = 0x0000ff;
 void menu(const int xres, const int yres)
 {
     float w, h;
-    glClear(GL_COLOR_BUFFER_BIT);
     
     Shape s;
     s.width = 300;
@@ -72,46 +71,54 @@ void menu(const int xres, const int yres)
     w = s.width;
     h = s.height;
     glBegin(GL_QUADS);
-        glVertex2i(-w, -h);
-        glVertex2i(-w, h);
-        glVertex2i(w, h);
-        glVertex2i(w, -h);
-        glEnd();
-        glPopMatrix();
-    //Welcome message
-    Rect welcome;
-    welcome.bot = s.center.y + 90;
-    welcome.left = s.center.x;
-    welcome.center = s.center.y;
-    ggprint8b(&welcome, 16, blue, "WELCOME TO THE DODGE MENU!!!");
+    glVertex2i(-w, -h);
+    glVertex2i(-w, h);
+    glVertex2i(w, h);
+    glVertex2i(w, -h);
+    glEnd();
+    glPopMatrix();
+    //Welcome message Text
+    Rect menu;
+    menu.bot = s.center.y + 90;
+    menu.left = s.center.x;
+    menu.center = s.center.y;
+    ggprint8b(&menu, 16, blue, "WELCOME TO THE DODGE MENU!!!");
     
-    Rect keys;
-    keys.bot = s.center.y + 73;
-    keys.left = s.center.x;
-    keys.center = s.center.y;
-    ggprint8b(&keys, 16, red, "Use the keyboard to navigate through the menu!");
+    //Keyboard Directions
+    menu.bot = s.center.y + 73;
+    menu.left = s.center.x;
+    menu.center = s.center.y;
+    ggprint8b(&menu, 16, red, "Use the keyboard to navigate through the menu!");
     
-    Rect resume;
-    resume.bot = s.center.y;
-    resume.left = s.center.x - 91;
-    resume.center = s.center.y;
-    ggprint8b(&resume, 16, yellow, "<m> Exit Menu");
+    //Exit the menu
+    menu.bot = s.center.y;
+    menu.left = s.center.x - 150;
+    menu.center = s.center.y;
+    ggprint8b(&menu, 16, yellow, "<m> Exit Menu");
 
-    Rect credits;
-    credits.bot = s.center.y - 17;
-    credits.left = s.center.x - 100;
-    credits.center = s.center.y;
-    ggprint8b(&credits, 16, yellow, "<c> Credits");
+    //See the game credits
+    menu.bot = s.center.y - 17;
+    menu.left = s.center.x - 159;
+    menu.center = s.center.y;
+    ggprint8b(&menu, 16, yellow, "<c> Credits");
 
+    //Change/view the audio settings
+    menu.bot = s.center.y - 34;
+    menu.left = s.center.x - 139;
+    menu.center = s.center.y;
+    ggprint8b(&menu, 16, yellow, "<a> Audio Settings");
 
-
+    //Chnage view the game mode
+    menu.bot = s.center.y - 51;
+    menu.left = s.center.x - 145;
+    menu.center = s.center.y;
+    ggprint8b(&menu, 16, yellow, "<g> Game Modes");
 }
 
 
 void credits(const int xres, const int yres)
 {
     float w, h;
-    glClear(GL_COLOR_BUFFER_BIT);
     
     Shape s;
     s.width = 300;
