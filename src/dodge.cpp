@@ -147,6 +147,8 @@ extern int star_collisions;
 extern bool helm_status;
 extern bool invincible;
 
+int keys[65536];
+
 int main(void)
 {
 	cout << "(TEMPORARY TO TEST KYLE'S GAMELOG SCRIPT)" << endl;
@@ -593,13 +595,14 @@ void initOpengl(void)
 void checkKeys(XEvent *e)
 {
 	int key = XLookupKeysym(&e->xkey, 0);
-
 	if (e->type == KeyRelease) {
-		if (key == XK_Shift_L || key == XK_Shift_R) {
+	keys[key] = 0;	
+    	    if (key == XK_Shift_L || key == XK_Shift_R) {
 			return;
 		}
 	}
 	if (e->type == KeyPress) {
+	keys[key] = 1;
 		if (key == XK_Shift_L || key == XK_Shift_R) {
 			return;
 		}
@@ -637,7 +640,7 @@ void checkKeys(XEvent *e)
 		case XK_p:
 			//end_credits(xres, yres);
 			break;
-		case XK_Left:
+		case XK_Left: 
 			keypressL(&player);
 			break;
 		case XK_Right:
