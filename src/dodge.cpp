@@ -47,6 +47,8 @@ void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
+extern void menu(const int, const int);
+extern void credits(const int, const int);
 extern void init(int, int, Player*);
 //extern void init2(int, int, Player*);
 extern void keypressR(Player *player);
@@ -118,6 +120,8 @@ GLuint bgTexture;
 GLuint bgTransTexture;
 
 int display_tutorial = 0;
+int display_menu = 0;
+int display_credits = 0;
 int showPlayer = 0;
 string player_name;
 int background = 1;
@@ -474,6 +478,12 @@ void checkKeys(XEvent *e)
 		case XK_t:
 			display_tutorial ^= 1;
 			break;
+		case XK_m:
+			display_menu ^= 1;
+			break;
+		case XK_c:
+			display_credits ^= 1;
+			break;
 		case XK_p:
 			//end_credits(xres, yres);
 			break;
@@ -637,12 +647,20 @@ void render(void)
 	unsigned int color = 0x00dddd00;
 	ggprint8b(&r, 16, color, "B - Start");
 	ggprint8b(&r, 16, color, "T - Tutorial");
+	ggprint8b(&r, 16, color, "M - Menu");
 
 	if (display_tutorial && !showPlayer) {
 		tutorial(xres, yres);
 	}
 
-	if (!display_tutorial && showPlayer) {
+	if (display_menu && !display_tutorial && !showPlayer) {
+		menu(xres, yres);
+        if (display_credits) {
+            credits(xres, yres);
+        }
+	}
+
+	if (!display_menu && !display_tutorial && showPlayer) {
 	// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
