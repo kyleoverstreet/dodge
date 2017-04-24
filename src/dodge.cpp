@@ -51,6 +51,8 @@ extern void menu(const int, const int);
 extern void credits(const int, const int);
 extern void init(int, int, Player*);
 extern void init2(int, int, Player*);
+extern void gamestart1p(Player *player, int);
+extern void gamestart2p(Player *player, Player *player2, int);
 extern void keypressR(Player *player);
 extern void keypressL(Player *player);
 extern void keypressA(Player *player2);
@@ -602,30 +604,26 @@ void checkKeys(XEvent *e)
 		}
 	}
 	if (e->type == KeyPress) {
-	keys[key] = 1;
-		if (key == XK_Shift_L || key == XK_Shift_R) {
-			return;
-		}
-	} else {
+	keys[key] = 1;	    
+	    if (key == XK_Shift_L || key == XK_Shift_R) {
 		return;
+	    }
+	} else {
+	    return;
 	}
 	switch(key) {
 		case XK_1:
 			two_player = false;
 			showPlayer ^= 1;
 			if (showPlayer) {
-				player.pos[0] = xres/2;
-				player.pos[1] = 30;
+				gamestart1p(&player, xres);
 			}
 			break;
 		case XK_2:
 			two_player = true;
 			showPlayer ^= 1 ;
 			if (showPlayer) {
-				player.pos[0] = xres/2 - 50;
-				player.pos[1] = 30;
-				player2.pos[0] = xres/2 + 50;
-				player2.pos[1] = 30;
+				gamestart2p(&player, &player2, xres);
 			}
 			break;
 		case XK_t:
@@ -641,16 +639,12 @@ void checkKeys(XEvent *e)
 			//end_credits(xres, yres);
 			break;
 		case XK_Left: 
-			keypressL(&player);
 			break;
 		case XK_Right:
-			keypressR(&player);
 			break;
 		case XK_a:
-			keypressA(&player2);
 			break;
 		case XK_d:
-			keypressD(&player2);
 			break;
 		case XK_Escape:
 			done=1;
@@ -688,6 +682,18 @@ void physics(void)
 			//player2_position = movePlayer2(xres, &player2);
 			//need dropItems to take player2 pos parameter
 			movePlayer2(xres, &player2);
+		}
+		if (keys[XK_Left]) {
+		    keypressL(&player);
+		}
+		if (keys[XK_Right]) {
+		    keypressR(&player);
+		}
+		if (keys[XK_a]) {
+		    keypressA(&player2);
+		}
+		if (keys[XK_d]) {
+		    keypressD(&player2);
 		}
 	}
 }
