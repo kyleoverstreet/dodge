@@ -76,3 +76,15 @@ void keypressR(Player *player) {
 	player->vel[0] += 3.5;
 	player->LR = true;
 }
+
+void gamestart1p(Player *player, int xres) {
+    player->pos[0] = xres/2;
+    player->pos[1] = 30;
+}
+
+void gamestart2p(Player *player1, Player *player2, int xres) {
+    player1->pos[0] = xres/2 - 50;
+    player1->pos[1] = 30;
+    player2->pos[0] = xres/2 - 50;
+    player2->pos[1] = 30;
+}
