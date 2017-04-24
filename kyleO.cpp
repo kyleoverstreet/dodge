@@ -516,10 +516,10 @@ void display_health(int xres, int yres)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(-32,-7.5);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-32, 7.5);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i( 32, 7.5);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( 32,-7.5);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 	glEnd();
 	glPopMatrix();
     } else if (health == 4) {
@@ -532,10 +532,10 @@ void display_health(int xres, int yres)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(-32,-7.5);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-32, 7.5);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i( 32, 7.5);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( 32,-7.5);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 	glEnd();
 	glPopMatrix();
     } else if (health == 3) {
@@ -548,10 +548,10 @@ void display_health(int xres, int yres)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(-32,-7.5);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-32, 7.5);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i( 32, 7.5);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( 32,-7.5);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 	glEnd();
 	glPopMatrix();
     } else if (health == 2) {
@@ -564,10 +564,10 @@ void display_health(int xres, int yres)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(-32,-7.5);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-32, 7.5);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i( 32, 7.5);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( 32,-7.5);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 	glEnd();
 	glPopMatrix();
     } else if (health == 1) {
@@ -580,10 +580,10 @@ void display_health(int xres, int yres)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(-32,-7.5);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-32, 7.5);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i( 32, 7.5);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( 32,-7.5);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 	glEnd();
 	glPopMatrix();
     } else if (health == 0) {
@@ -596,10 +596,10 @@ void display_health(int xres, int yres)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 	glBegin(GL_QUADS);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(-32,-7.5);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-32, 7.5);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i( 32, 7.5);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( 32,-7.5);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 	glEnd();
 	glPopMatrix();
     }
@@ -610,7 +610,7 @@ void display_score(int xres, int yres)
 {
     Rect r;
     r.bot = yres - 50;
-    r.left = xres/2 - 58;
+    r.left = xres/2 - 63;
     r.center = 0;
     unsigned int color = 0x00dddd00;
     ggprint13(&r, 16, color, "Score: %i", score);
