@@ -19,9 +19,16 @@ void cleanupPPM(void) {
 	system("rm ./images/starplayer.ppm");
 	system("rm ./images/invinciblehelm.ppm");
 	system("rm ./images/player2.ppm");
+	system("rm ./images/full_hp.ppm");
+	system("rm ./images/three_fourths_hp.ppm");
+	system("rm ./images/half_hp.ppm");
+	system("rm ./images/one_fourth_hp.ppm");
+	system("rm ./images/no_hp.ppm");
+	system("rm ./images/invincible_hp.ppm");
 	system("rm ./images/Spike.ppm");
 	system("rm ./images/helmet.ppm");
 	system("rm ./images/Star.ppm");
+	system("rm ./images/heart.ppm");
 }
 
 int movePlayer(int xres, Player *player) {

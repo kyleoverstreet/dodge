@@ -102,6 +102,12 @@ Ppmimage *playerHelmImage = NULL;
 Ppmimage *playerInvincibleImage = NULL;
 Ppmimage *playerHelmInvincImage = NULL;
 Ppmimage *playerImage2 = NULL;
+Ppmimage *full_hpImage = NULL;
+Ppmimage *three_fourths_hpImage = NULL;
+Ppmimage *half_hpImage = NULL;
+Ppmimage *one_fourth_hpImage = NULL;
+Ppmimage *no_hpImage = NULL;
+Ppmimage *invincible_hpImage = NULL;
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
 Ppmimage *spikeImage = NULL;
@@ -114,6 +120,12 @@ GLuint playerHelmTexture;
 GLuint playerInvincibleTexture;
 GLuint playerHelmInvincTexture;
 GLuint playerTexture2;
+GLuint full_hpTexture;
+GLuint three_fourths_hpTexture;
+GLuint half_hpTexture;
+GLuint one_fourth_hpTexture;
+GLuint no_hpTexture;
+GLuint invincible_hpTexture;
 GLuint silhouetteSpike;
 GLuint silhouetteHelm;
 GLuint silhouetteStar;
@@ -319,6 +331,30 @@ void initOpengl(void)
 	bgImage      = ppm6GetImage("./images/background1.ppm");
 	//Transparent Image (since it messes up if I delete it)	
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
+	//Character1 with Invincibility
+	system("convert ./images/starplayer.png ./images/starplayer.ppm");
+	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
+	//Character1 with Helm and Invincibility
+	system("convert ./images/invinciblehelm.png ./images/invinciblehelm.ppm");
+	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
+	// Full HP
+	system("convert ./images/full_hp.png ./images/full_hp.ppm");
+	full_hpImage      = ppm6GetImage("./images/full_hp.ppm");
+	// 3/4 HP
+	system("convert ./images/three_fourths_hp.png ./images/three_fourths_hp.ppm");
+	three_fourths_hpImage   = ppm6GetImage("./images/three_fourths_hp.ppm");
+	// Half HP
+	system("convert ./images/half_hp.png ./images/half_hp.ppm");
+	half_hpImage = ppm6GetImage("./images/half_hp.ppm");
+	// 1/4 HP
+	system("convert ./images/one_fourth_hp.png ./images/one_fourth_hp.ppm");
+	one_fourth_hpImage = ppm6GetImage("./images/one_fourth_hp.ppm");
+	// No HP
+	system("convert ./images/no_hp.png ./images/no_hp.ppm");
+	no_hpImage      = ppm6GetImage("./images/no_hp.ppm");
+	// Invincible HP
+	system("convert ./images/invincible_hp.png ./images/invincible_hp.ppm");
+	invincible_hpImage   = ppm6GetImage("./images/invincible_hp.ppm");
 	//Spike Image
 	system("convert ./images/Spike.png ./images/Spike.ppm");
 	spikeImage = ppm6GetImage("./images/Spike.ppm");
@@ -339,6 +375,12 @@ void initOpengl(void)
 	if (two_player) {
 		glGenTextures(1, &playerTexture2);
 	}
+	glGenTextures(1, &full_hpTexture);
+	glGenTextures(1, &three_fourths_hpTexture);
+	glGenTextures(1, &half_hpTexture);
+	glGenTextures(1, &one_fourth_hpTexture);
+	glGenTextures(1, &no_hpTexture);
+	glGenTextures(1, &invincible_hpTexture);
 	glGenTextures(1, &silhouetteSpike);
 	glGenTextures(1, &silhouetteHelm);
 	glGenTextures(1, &silhouetteStar);
@@ -417,6 +459,70 @@ void initOpengl(void)
 				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	}
 
+	// Full HP
+	w = full_hpImage->width;
+	h = full_hpImage->height;	
+	glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(full_hpImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// 3/4 HP
+	w = three_fourths_hpImage->width;
+	h = three_fourths_hpImage->height; 
+	glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(three_fourths_hpImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// Half HP
+	w = half_hpImage->width;
+	h = half_hpImage->height; 
+	glBindTexture(GL_TEXTURE_2D, half_hpTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(half_hpImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+	// 1/4 HP
+	w = one_fourth_hpImage->width;
+	h = one_fourth_hpImage->height;	
+	glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(one_fourth_hpImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// No HP
+	w = no_hpImage->width;
+	h = no_hpImage->height; 
+	glBindTexture(GL_TEXTURE_2D, no_hpTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(no_hpImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// Invincible HP
+	w = invincible_hpImage->width;
+	h = invincible_hpImage->height; 
+	glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(invincible_hpImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
 	//spike
 	w = spikeImage->width;
 	h = spikeImage->height;	
@@ -440,6 +546,27 @@ void initOpengl(void)
 	free(silhouetteData);
 
 	//star
+	w = starImage->width;
+	h = starImage->height; 
+	glBindTexture(GL_TEXTURE_2D, silhouetteStar);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(starImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	//heart
+	w = heartImage->width;
+	h = heartImage->height; 
+	glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(heartImage); 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
 	w = starImage->width;
 	h = starImage->height; 
 	glBindTexture(GL_TEXTURE_2D, silhouetteStar);

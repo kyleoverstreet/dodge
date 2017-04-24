@@ -26,7 +26,7 @@
  =====================WEEK 12====================
  -Created heart image and implemented heart collision detection
  -Implemented communication with webpage
-	(see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
+ (see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
  -Added tutorial
  */
 
@@ -87,10 +87,19 @@ extern bool start_helm_timer();
 extern bool start_powerup_timer();
 extern bool check_powerup_timer(bool powerup);
 
+
+extern Ppmimage full_hpImage;
+
 extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
 extern GLuint silhouetteHeart;
+extern GLuint full_hpTexture;
+extern GLuint three_fourths_hpTexture;
+extern GLuint half_hpTexture;
+extern GLuint one_fourth_hpTexture;
+extern GLuint no_hpTexture;
+extern GLuint invincible_hpTexture;
 
 extern Spike *sphead;
 extern Helmet *hhead;
@@ -108,7 +117,7 @@ int star_collisions = 0;
 int heart_collisions = 0;
 bool helm_status = false;
 bool invincible = false;
-int health = 3;
+int health = 4;
 
 void tutorial(const int xres, const int yres)
 {
@@ -123,7 +132,7 @@ void tutorial(const int xres, const int yres)
 	temp.left = xres/2 + 100;
 	temp.center = 0;
 	ggprint8b(&temp, 16, red, "TUTORIAL IS CURRENTLY A WORK-IN-PROGRESS");
-		
+
 	Rect r;
 	r.bot = yres - 70;
 	r.left = xres/10;
@@ -146,7 +155,7 @@ void tutorial(const int xres, const int yres)
 	ggprint8b(&r3, 16, white, "Items:");
 
 	float w = 10.0;
-	
+
 	// Draw spike
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
@@ -245,48 +254,48 @@ void init2(int xres, int yres, Player *player2)
 	player2->pos[0] = xres/2 + 80;
 	player2->pos[1] = yres/920;
 	VecCopy(player2->pos, player2->lastpos);
-        MakeVector(-150.0, 180.0, 0.0, player2->pos);
-        MakeVector(0.0,0.0,0.0, player2->vel);
+	MakeVector(-150.0, 180.0, 0.0, player2->pos);
+	MakeVector(0.0,0.0,0.0, player2->vel);
 }
 
 void keypressA(Player *player2) {
-        player2->vel[0] -= 3.5;
-        player2->LR = false;
+	player2->vel[0] -= 3.5;
+	player2->LR = false;
 }
 
 void keypressD(Player *player2) {
-        player2->vel[0] += 3.5;
-        player2->LR = true;
+	player2->vel[0] += 3.5;
+	player2->LR = true;
 }
 
 void movePlayer2(int xres, Player *player2) {
 
-        player2->pos[0] += player2->vel[0];
+	player2->pos[0] += player2->vel[0];
 
-        //Check if edge left
-        if (player2->pos[0] <= 40) {
-                player2->pos[0] = 40;
-                player2->vel[0] = 0;
-        }
+	//Check if edge left
+	if (player2->pos[0] <= 40) {
+		player2->pos[0] = 40;
+		player2->vel[0] = 0;
+	}
 
-        //Check if edge right
-        if (player2->pos[0] >= xres-40) {
-                player2->pos[0] = xres-40;
-                player2->vel[0] = 0;
-        }
+	//Check if edge right
+	if (player2->pos[0] >= xres-40) {
+		player2->pos[0] = xres-40;
+		player2->vel[0] = 0;
+	}
 
-        if (player2->vel[0] < -3) {
-                player2->vel[0] += 2;
-        } else if (player2->vel[0] > 3) {
-                player2->vel[0] += -2;
-        } else if (player2->vel[0] <= 3 && player2->vel[0] >= -3) {
-                player2->vel[0] = 0;
-        }
+	if (player2->vel[0] < -3) {
+		player2->vel[0] += 2;
+	} else if (player2->vel[0] > 3) {
+		player2->vel[0] += -2;
+	} else if (player2->vel[0] <= 3 && player2->vel[0] >= -3) {
+		player2->vel[0] = 0;
+	}
 
-        //return player2's x-position (needed to detect collisions)
-        //return player2->pos[0];
+	//return player2's x-position (needed to detect collisions)
+	//return player2->pos[0];
 }
-	
+
 void dropItems(int player_pos, const int xres, const int yres)
 {
 	// Create the items
@@ -366,7 +375,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (spike) {
 		if (((spike->pos[1] > 0 && spike->pos[1] < 68)) &&
 				((spike->pos[0] > player_pos-38) &&
-				(spike->pos[0] < player_pos+38))) {
+				 (spike->pos[0] < player_pos+38))) {
 			// Spike has hit player
 			spike_collisions++;
 			if (!invincible) {
@@ -387,7 +396,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 						cout << "Score: " << score;
 						cout << endl << endl;
 						score = 0;
-						health = 3;
+						health = 4;
 					}
 					deleteSpike(spike);
 				} else {
@@ -414,7 +423,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (helmet) {
 		if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
 				((helmet->pos[0] > player_pos-38) &&
-				(helmet->pos[0] < player_pos+38))) {
+				 (helmet->pos[0] < player_pos+38))) {
 			// Helmet has hit player
 #ifdef USE_OPENAL_SOUND
 			play_helmet_hit();
@@ -437,7 +446,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (star) {
 		if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
 				((star->pos[0] > player_pos-38) &&
-				(star->pos[0] < player_pos+38))) {
+				 (star->pos[0] < player_pos+38))) {
 			// Star has hit player
 			star_collisions++;
 #ifdef USE_OPENAL_SOUND
@@ -460,11 +469,11 @@ void dropItems(int player_pos, const int xres, const int yres)
 	while (heart) {
 		if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
 				((heart->pos[0] > player_pos-38) &&
-				(heart->pos[0] < player_pos+38))) {
+				 (heart->pos[0] < player_pos+38))) {
 			// Heart has hit player
 			heart_collisions++;
 
-			if (health != 3) {
+			if (health != 4) {
 #ifdef USE_OPENAL_SOUND
 				// PLAY HEALTH SOUND HERE
 #endif
@@ -481,7 +490,7 @@ void dropItems(int player_pos, const int xres, const int yres)
 		}
 		heart = heart->next;
 	}
-	
+
 	// Check the timers for the powerup and helmet
 	helm_status = check_helm_timer(helm_status);
 	invincible = check_powerup_timer(invincible);
@@ -495,7 +504,28 @@ void display_health(int xres, int yres)
 	r.left = xres/2 - 55;
 	r.center = 0;
 	unsigned int red = 0xff0000;
-	ggprint16(&r, 16, red, "Health:  %i / 3", health);
+	ggprint16(&r, 16, red, "Health:  %i / 4", health);
+
+	//work in progress
+	/*float w = 10.0;
+	//if (health == 4) {
+	// Full HP
+	//float w = full_hpImage->width;
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef((xres/2)-55,yres-20,0);
+	glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(-30,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-30, w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i( 30, w);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( 30,-w);
+	glEnd();
+	glPopMatrix();
+	//}*/
 }
 
 // Displays the player score at top-center
