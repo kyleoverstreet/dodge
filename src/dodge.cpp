@@ -59,8 +59,8 @@ extern void keypressL(Player *player);
 extern void keypressA(Player *player2);
 extern void keypressD(Player *player2);
 extern int movePlayer(int xres, Player *player);
-extern void movePlayer2(int xres, Player *player2);
-extern void dropItems(int, const int, const int);
+extern int movePlayer2(int xres, Player *player2);
+extern void dropItems(int, int, bool, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
@@ -657,15 +657,16 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
-	int player_position;
+	int p1_pos;
+	int p2_pos;
 	if (showPlayer) {
-		player_position = movePlayer(xres, &player);
-		dropItems(player_position, xres, yres);
-		if (two_player) {
-			//int player2_position;
-			//player2_position = movePlayer2(xres, &player2);
-			//need dropItems to take player2 pos parameter
-			movePlayer2(xres, &player2);
+		if (!two_player) {
+			p1_pos = movePlayer(xres, &player);
+			dropItems(p1_pos, p2_pos, two_player, xres, yres);
+		} else {
+			p1_pos = movePlayer(xres, &player);
+			p2_pos = movePlayer2(xres, &player2);
+			dropItems(p1_pos, p2_pos, two_player, xres, yres);
 		}
 		if (keys[XK_Left]) {
 		    keypressL(&player);
