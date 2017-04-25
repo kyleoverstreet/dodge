@@ -45,6 +45,7 @@ void physics(void);
 void render(void);
 void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
+extern void convertpng2ppm(void);
 extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
@@ -311,65 +312,48 @@ void initOpengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 	//load the images file into a ppm structure.
+	convertpng2ppm();
 	//Character1
-	system("convert ./images/standL.png ./images/standL.ppm");
-	playerImage      = ppm6GetImage("./images/standL.ppm");
+	playerImage = ppm6GetImage("./images/standL.ppm");
 	//Character1 with Helm
-	system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
-	playerHelmImage   = ppm6GetImage("./images/standhelmL.ppm");
+	playerHelmImage  = ppm6GetImage("./images/standhelmL.ppm");
 	//Character1 with Invincibility
-	system("convert ./images/starplayer.png ./images/starplayer.ppm");
 	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
 	//Character1 with Helm and Invincibility
-	system("convert ./images/invinciblehelm.png ./images/invinciblehelm.ppm");
 	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
 
 	if (two_player) {
-		//Character2 Image
-		system("convert ./images/player2.png ./images/player2.ppm");
-		playerImage2      = ppm6GetImage("./images/player2.ppm");
+	    //Character2 Image
+	    playerImage2 = ppm6GetImage("./images/player2.ppm");
 	}
 
 	//Background Image
-	system("convert ./images/background1.jpg ./images/background1.ppm");
-	bgImage      = ppm6GetImage("./images/background1.ppm");
+	bgImage = ppm6GetImage("./images/background1.ppm");
 	//Transparent Image (since it messes up if I delete it)	
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
 	//Character1 with Invincibility
-	system("convert ./images/starplayer.png ./images/starplayer.ppm");
 	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
 	//Character1 with Helm and Invincibility
-	system("convert ./images/invinciblehelm.png ./images/invinciblehelm.ppm");
 	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
 	// Full HP
-	system("convert ./images/full_hp.png ./images/full_hp.ppm");
-	full_hpImage      = ppm6GetImage("./images/full_hp.ppm");
+	full_hpImage = ppm6GetImage("./images/full_hp.ppm");
 	// 3/4 HP
-	system("convert ./images/three_fourths_hp.png ./images/three_fourths_hp.ppm");
-	three_fourths_hpImage   = ppm6GetImage("./images/three_fourths_hp.ppm");
+	three_fourths_hpImage = ppm6GetImage("./images/three_fourths_hp.ppm");
 	// Half HP
-	system("convert ./images/half_hp.png ./images/half_hp.ppm");
 	half_hpImage = ppm6GetImage("./images/half_hp.ppm");
 	// 1/4 HP
-	system("convert ./images/one_fourth_hp.png ./images/one_fourth_hp.ppm");
 	one_fourth_hpImage = ppm6GetImage("./images/one_fourth_hp.ppm");
 	// No HP
-	system("convert ./images/no_hp.png ./images/no_hp.ppm");
-	no_hpImage      = ppm6GetImage("./images/no_hp.ppm");
+	no_hpImage = ppm6GetImage("./images/no_hp.ppm");
 	// Invincible HP
-	system("convert ./images/invincible_hp.png ./images/invincible_hp.ppm");
-	invincible_hpImage   = ppm6GetImage("./images/invincible_hp.ppm");
+	invincible_hpImage = ppm6GetImage("./images/invincible_hp.ppm");
 	//Spike Image
-	system("convert ./images/Spike.png ./images/Spike.ppm");
 	spikeImage = ppm6GetImage("./images/Spike.ppm");
 	//Helmet Image
-	system("convert ./images/helmet.png ./images/helmet.ppm");
 	helmetImage = ppm6GetImage("./images/helmet.ppm");
 	//Star Image
-	system("convert ./images/Star.png ./images/Star.ppm");
 	starImage = ppm6GetImage("./images/Star.ppm");
 	//Heart Image
-	system("convert ./images/heart.png ./images/heart.ppm");
 	heartImage = ppm6GetImage("./images/heart.ppm");
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
