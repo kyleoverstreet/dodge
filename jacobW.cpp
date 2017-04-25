@@ -31,6 +31,25 @@ void cleanupPPM(void) {
 	system("rm ./images/heart.ppm");
 }
 
+void convertpng2ppm(void) {
+    system("convert ./images/background1.jpg ./images/background1.ppm");
+    system("convert ./images/standL.png ./images/standL.ppm");
+    system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
+    system("convert ./images/starplayer.png ./images/starplayer.ppm");
+    system("convert ./images/invinciblehelm.png ./images/invinciblehelm.ppm");
+    system("convert ./images/player2.png ./images/player2.ppm"); 
+    system("convert ./images/full_hp.png ./images/full_hp.ppm");
+    system("convert ./images/three_fourths_hp.png ./images/three_fourths_hp.ppm");
+    system("convert ./images/half_hp.png ./images/half_hp.ppm");
+    system("convert ./images/one_fourth_hp.png ./images/one_fourth_hp.ppm");
+    system("convert ./images/no_hp.png ./images/no_hp.ppm");
+    system("convert ./images/invincible_hp.png ./images/invincible_hp.ppm");
+    system("convert ./images/Spike.png ./images/Spike.ppm");
+    system("convert ./images/helmet.png ./images/helmet.ppm");
+    system("convert ./images/Star.png ./images/Star.ppm");
+    system("convert ./images/heart.png ./images/heart.ppm");
+}
+
 int movePlayer(int xres, Player *player) {
 
 	player->pos[0] += player->vel[0];
