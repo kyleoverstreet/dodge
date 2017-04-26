@@ -50,8 +50,6 @@ extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
 extern void credits(const int, const int);
-extern void init(int, int, Player*);
-extern void init2(int, int, Player*);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
 extern void keypressR(Player *player);
@@ -60,14 +58,12 @@ extern void keypressA(Player *player2);
 extern void keypressD(Player *player2);
 extern int movePlayer(int xres, Player *player);
 extern int movePlayer2(int xres, Player *player2);
-extern void dropItems(int, int, bool, const int, const int);
+extern void dropItems(int, int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
-extern void display_collisions(int, int);
-extern void display_player_status(int, int);
 //extern void end_credits(int xres, int yres);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
@@ -158,9 +154,6 @@ string player_name;
 int background = 1;
 int silhouette = 1;
 int trees = 1;
-extern int spike_collisions;
-extern int helm_collisions;
-extern int star_collisions;
 extern bool p1_helm;
 extern bool p1_invincible;
 extern bool p2_helm;
@@ -698,11 +691,11 @@ void physics(void)
 	if (showPlayer) {
 		if (!two_player) {
 			p1_pos = movePlayer(xres, &player);
-			dropItems(p1_pos, p2_pos, two_player, xres, yres);
+			dropItems(p1_pos, p2_pos, xres, yres);
 		} else {
 			p1_pos = movePlayer(xres, &player);
 			p2_pos = movePlayer2(xres, &player2);
-			dropItems(p1_pos, p2_pos, two_player, xres, yres);
+			dropItems(p1_pos, p2_pos, xres, yres);
 		}
 		if (keys[XK_Left]) {
 			keypressL(&player);
@@ -731,7 +724,7 @@ void render(void)
 	float wid = 30.0f;
 	glColor3f(1.0, 1.0, 1.0);
 
-	//set background
+	// Set background
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -841,7 +834,7 @@ void render(void)
 		r.center = 0;
 		unsigned int color = 0x00dddd00;
 		ggprint8b(&r, 16, color, "1 - 1-player");
-		ggprint8b(&r, 16, color, "2 - 2-player (work in progress)");
+		ggprint8b(&r, 16, color, "2 - 2-player");
 		ggprint8b(&r, 16, color, "T - Tutorial");
 		ggprint8b(&r, 16, color, "M - Menu");
 	}
@@ -861,7 +854,5 @@ void render(void)
 		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
-		//display_collisions(xres, yres);
-		//display_player_status(xres, yres);
 	}
 }
