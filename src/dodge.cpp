@@ -665,7 +665,7 @@ void physics(void)
 			dropItems(p1_pos, p2_pos, two_player, xres, yres);
 		} else {
 			p1_pos = movePlayer(xres, &player);
-			int p2_pos = movePlayer2(xres, &player2);
+			p2_pos = movePlayer2(xres, &player2);
 			dropItems(p1_pos, p2_pos, two_player, xres, yres);
 		}
 		if (keys[XK_Left]) {
