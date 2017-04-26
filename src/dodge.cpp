@@ -819,7 +819,7 @@ void render(void)
 		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
-		display_collisions(xres, yres);
-		display_player_status(xres, yres);
+		//display_collisions(xres, yres);
+		//display_player_status(xres, yres);
 	}
 }

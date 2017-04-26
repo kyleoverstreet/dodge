@@ -28,7 +28,11 @@ extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
 extern GLuint silhouetteHeart;
-int score = 0;
+extern bool two_player;
+extern int p1_score;
+extern int p2_score;
+extern bool p1_dead;
+extern bool p2_dead;
 
 extern void createSpikes(const int n, const int xres, const int yres)
 {
@@ -104,8 +108,13 @@ void deleteSpike(Spike *node)
 	// Free the node's memory and set node to NULL
 	delete node;
 	node = NULL;
-
-	score++;
+	
+	if (!p1_dead) {
+		p1_score++;
+	}
+	if (two_player && !p2_dead) {
+		p2_score++;
+	}
 }
 
 extern void createHelmets(const int n, const int xres, const int yres)
