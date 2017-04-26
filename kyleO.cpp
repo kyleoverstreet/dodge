@@ -124,6 +124,7 @@ int p1_score = 0;
 bool p1_helm = false;
 bool p1_invincible = false;
 
+extern bool two_player;
 int p2_health = 4;
 int p2_score = 0;
 bool p2_helm = false;
@@ -326,7 +327,6 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	}
 	if (random(200) < 1.3) {
 		createHeart(drop_rate, xres, yres);
-		cout << "HEART" << endl;
 	}
 
 	// Move items on screen
@@ -600,19 +600,28 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 
 // Display player health at top-center
 void display_health(int xres, int yres)
-{	
-	/*Rect r;
-	  r.bot = yres - 35;
-	  r.left = xres/2 - 55;
-	  r.center = 0;
-	  unsigned int red = 0xff0000;
-	  ggprint16(&r, 16, red, "Health:  %i / 4", health);*/
+{
+	int x;
+	int y;
+	int x2;
+	int y2;
+	
+	if (!two_player) {
+		x = (xres/2) - 30;
+		y = yres - 20;
+	} else {
+		x = 100;
+		y = yres - 20;
+
+		x2 = xres - 100;
+		y2 = yres - 20;
+	}
 
 	if (p1_invincible) {
 		// Invincible HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
-		glTranslatef((xres/2)-30,yres-20,0);
+		glTranslatef(x,y,0);
 		glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -628,7 +637,7 @@ void display_health(int xres, int yres)
 		// Full HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
-		glTranslatef((xres/2)-30,yres-20,0);
+		glTranslatef(x,y,0);
 		glBindTexture(GL_TEXTURE_2D, full_hpTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -644,7 +653,7 @@ void display_health(int xres, int yres)
 		// 3/4 HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
-		glTranslatef((xres/2)-30,yres-20,0);
+		glTranslatef(x,y,0);
 		glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -660,7 +669,7 @@ void display_health(int xres, int yres)
 		// 1/2 HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
-		glTranslatef((xres/2)-30,yres-20,0);
+		glTranslatef(x,y,0);
 		glBindTexture(GL_TEXTURE_2D, half_hpTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -676,7 +685,7 @@ void display_health(int xres, int yres)
 		// 1/4 HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
-		glTranslatef((xres/2)-30,yres-20,0);
+		glTranslatef(x,y,0);
 		glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -692,7 +701,7 @@ void display_health(int xres, int yres)
 		// No HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
-		glTranslatef((xres/2)-30,yres-20,0);
+		glTranslatef(x,y,0);
 		glBindTexture(GL_TEXTURE_2D, no_hpTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -704,6 +713,106 @@ void display_health(int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 		glEnd();
 		glPopMatrix();
+	}
+
+	if (two_player) {
+		if (p2_invincible) {
+			// Invincible HP
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(x2,y2,0);
+			glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+			glEnd();
+			glPopMatrix();
+		} else if (p2_health == 4) {
+			// Full HP
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(x2,y2,0);
+			glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+			glEnd();
+			glPopMatrix();
+		} else if (p2_health == 3) {
+			// 3/4 HP
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(x2,y2,0);
+			glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+			glEnd();
+			glPopMatrix();
+		} else if (p2_health == 2) {
+			// 1/2 HP
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(x2,y2,0);
+			glBindTexture(GL_TEXTURE_2D, half_hpTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+			glEnd();
+			glPopMatrix();
+		} else if (p2_health == 1) {
+			// 1/4 HP
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(x2,y2,0);
+			glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+			glEnd();
+			glPopMatrix();
+		} else if (p2_health == 0) {
+			// No HP
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(x2,y2,0);
+			glBindTexture(GL_TEXTURE_2D, no_hpTexture);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+			glEnd();
+			glPopMatrix();
+		}
 	}
 }
 

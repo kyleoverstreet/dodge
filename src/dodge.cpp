@@ -165,9 +165,9 @@ int main(void)
 	initXWindows();
 	initOpengl();
 	/*init(xres, yres, &player);
-	if (two_player) {
-		init2(xres, yres, &player2);
-	}*/
+	  if (two_player) {
+	  init2(xres, yres, &player2);
+	  }*/
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
@@ -323,8 +323,8 @@ void initOpengl(void)
 	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
 
 	if (two_player) {
-	    //Character2 Image
-	    playerImage2 = ppm6GetImage("./images/player2.ppm");
+		//Character2 Image
+		playerImage2 = ppm6GetImage("./images/player2.ppm");
 	}
 
 	//Background Image
@@ -434,7 +434,7 @@ void initOpengl(void)
 	silhouetteData = buildAlphaData(playerHelmInvincImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	
+
 	if (two_player) {
 		//player2
 		w = playerImage2->width;
@@ -582,18 +582,18 @@ void checkKeys(XEvent *e)
 {
 	int key = XLookupKeysym(&e->xkey, 0);
 	if (e->type == KeyRelease) {
-	keys[key] = 0;	
-    	    if (key == XK_Shift_L || key == XK_Shift_R) {
+		keys[key] = 0;	
+		if (key == XK_Shift_L || key == XK_Shift_R) {
 			return;
 		}
 	}
 	if (e->type == KeyPress) {
-	keys[key] = 1;	    
-	    if (key == XK_Shift_L || key == XK_Shift_R) {
-		return;
-	    }
+		keys[key] = 1;	    
+		if (key == XK_Shift_L || key == XK_Shift_R) {
+			return;
+		}
 	} else {
-	    return;
+		return;
 	}
 	switch(key) {
 		case XK_1:
@@ -669,16 +669,16 @@ void physics(void)
 			dropItems(p1_pos, p2_pos, two_player, xres, yres);
 		}
 		if (keys[XK_Left]) {
-		    keypressL(&player);
+			keypressL(&player);
 		}
 		if (keys[XK_Right]) {
-		    keypressR(&player);
+			keypressR(&player);
 		}
 		if (keys[XK_a]) {
-		    keypressA(&player2);
+			keypressA(&player2);
 		}
 		if (keys[XK_d]) {
-		    keypressD(&player2);
+			keypressD(&player2);
 		}
 	}
 }
@@ -729,7 +729,7 @@ void render(void)
 			// display vulnerable (normal) character
 			glBindTexture(GL_TEXTURE_2D, playerTexture);
 		}
-		
+
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -793,14 +793,16 @@ void render(void)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
-	r.bot = yres - 20;
-	r.left = 10;
-	r.center = 0;
-	unsigned int color = 0x00dddd00;
-	ggprint8b(&r, 16, color, "1 - 1-player");
-	ggprint8b(&r, 16, color, "2 - 2-player (work in progress)");
-	ggprint8b(&r, 16, color, "T - Tutorial");
-	ggprint8b(&r, 16, color, "M - Menu");
+	if (!showPlayer) {
+		r.bot = yres - 20;
+		r.left = 10;
+		r.center = 0;
+		unsigned int color = 0x00dddd00;
+		ggprint8b(&r, 16, color, "1 - 1-player");
+		ggprint8b(&r, 16, color, "2 - 2-player (work in progress)");
+		ggprint8b(&r, 16, color, "T - Tutorial");
+		ggprint8b(&r, 16, color, "M - Menu");
+	}
 
 	if (display_tutorial && !showPlayer) {
 		tutorial(xres, yres);
@@ -808,13 +810,13 @@ void render(void)
 
 	if (display_menu && !display_tutorial && !showPlayer) {
 		menu(xres, yres);
-        	if (display_credits) {
-            		credits(xres, yres);
-        	}
+		if (display_credits) {
+			credits(xres, yres);
+		}
 	}
 
 	if (!display_menu && !display_tutorial && showPlayer) {
-	// Display player info to screen
+		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
 		display_collisions(xres, yres);
