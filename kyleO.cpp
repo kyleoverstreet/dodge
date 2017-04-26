@@ -69,6 +69,7 @@ void gamelog();
 extern void play_helmet_hit();
 extern void play_powerup();
 extern void play_game_over();
+extern void play_health_pickup();
 #endif
 extern void createSpikes(const int, const int, const int);
 extern void drawSpikes(void);
@@ -604,7 +605,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 
 				if (p2_health != 4) {
 #ifdef USE_OPENAL_SOUND
-					// PLAY HEALTH SOUND HERE
+					play_health_pickup();
 #endif
 					p2_health++;
 				}
