@@ -102,6 +102,6 @@ void gamestart1p(Player *player, int xres) {
 void gamestart2p(Player *player1, Player *player2, int xres) {
     player1->pos[0] = xres/2 - 50;
     player1->pos[1] = 30;
-    player2->pos[0] = xres/2 - 50;
+    player2->pos[0] = xres/2 + 50;
     player2->pos[1] = 30;
 }
