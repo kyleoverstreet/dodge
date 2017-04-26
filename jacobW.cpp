@@ -78,14 +78,6 @@ int movePlayer(int xres, Player *player) {
 	return player->pos[0];	
 }
 
-void init(int xres, int yres, Player *player) {
-	player->pos[0] = xres/2;
-	player->pos[1] = yres/920;
-	VecCopy(player->pos, player->lastpos);
-	MakeVector(-150.0, 180.0, 0.0, player->pos);
-	MakeVector(0.0,0.0,0.0, player->vel);
-}
-
 void keypressL(Player *player) {
 	player->vel[0] -= 3.5;
 	player->LR = false;
