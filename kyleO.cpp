@@ -91,12 +91,12 @@ extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
 extern GLuint silhouetteHeart;
-extern GLuint full_hpTexture;
-extern GLuint three_fourths_hpTexture;
-extern GLuint half_hpTexture;
-extern GLuint one_fourth_hpTexture;
-extern GLuint no_hpTexture;
-extern GLuint invincible_hpTexture;
+extern GLuint hp4Texture;
+extern GLuint hp3Texture;
+extern GLuint hp2Texture;
+extern GLuint hp1Texture;
+extern GLuint hp0Texture;
+extern GLuint hpiTexture;
 
 extern Player *player;
 extern Player *player2;
@@ -636,7 +636,7 @@ void display_health(int xres, int yres)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
+		glBindTexture(GL_TEXTURE_2D, hpiTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -652,7 +652,7 @@ void display_health(int xres, int yres)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+		glBindTexture(GL_TEXTURE_2D, hp4Texture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -668,7 +668,7 @@ void display_health(int xres, int yres)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
+		glBindTexture(GL_TEXTURE_2D, hp3Texture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -684,7 +684,7 @@ void display_health(int xres, int yres)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, half_hpTexture);
+		glBindTexture(GL_TEXTURE_2D, hp2Texture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -700,7 +700,7 @@ void display_health(int xres, int yres)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
+		glBindTexture(GL_TEXTURE_2D, hp1Texture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -716,7 +716,7 @@ void display_health(int xres, int yres)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, no_hpTexture);
+		glBindTexture(GL_TEXTURE_2D, hp0Texture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -742,7 +742,7 @@ void display_health(int xres, int yres)
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glPushMatrix();
 			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
+			glBindTexture(GL_TEXTURE_2D, hpiTexture);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
@@ -758,7 +758,7 @@ void display_health(int xres, int yres)
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glPushMatrix();
 			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+			glBindTexture(GL_TEXTURE_2D, hp4Texture);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
@@ -774,7 +774,7 @@ void display_health(int xres, int yres)
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glPushMatrix();
 			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
+			glBindTexture(GL_TEXTURE_2D, hp3Texture);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
@@ -790,7 +790,7 @@ void display_health(int xres, int yres)
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glPushMatrix();
 			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, half_hpTexture);
+			glBindTexture(GL_TEXTURE_2D, hp2Texture);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
@@ -806,7 +806,7 @@ void display_health(int xres, int yres)
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glPushMatrix();
 			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
+			glBindTexture(GL_TEXTURE_2D, hp1Texture);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
@@ -822,7 +822,7 @@ void display_health(int xres, int yres)
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glPushMatrix();
 			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, no_hpTexture);
+			glBindTexture(GL_TEXTURE_2D, hp0Texture);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);

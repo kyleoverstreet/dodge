@@ -106,12 +106,12 @@ Ppmimage *player2HelmImage = NULL;
 Ppmimage *player2InvincibleImage = NULL;
 Ppmimage *player2HelmInvincImage = NULL;
 
-Ppmimage *full_hpImage = NULL;
-Ppmimage *three_fourths_hpImage = NULL;
-Ppmimage *half_hpImage = NULL;
-Ppmimage *one_fourth_hpImage = NULL;
-Ppmimage *no_hpImage = NULL;
-Ppmimage *invincible_hpImage = NULL;
+Ppmimage *hp4Image = NULL;
+Ppmimage *hp3Image = NULL;
+Ppmimage *hp2Image = NULL;
+Ppmimage *hp1Image = NULL;
+Ppmimage *hp0Image = NULL;
+Ppmimage *hpiImage = NULL;
 
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
@@ -131,12 +131,12 @@ GLuint player2HelmTexture;
 GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
 
-GLuint full_hpTexture;
-GLuint three_fourths_hpTexture;
-GLuint half_hpTexture;
-GLuint one_fourth_hpTexture;
-GLuint no_hpTexture;
-GLuint invincible_hpTexture;
+GLuint hp4Texture;
+GLuint hp3Texture;
+GLuint hp2Texture;
+GLuint hp1Texture;
+GLuint hp0Texture;
+GLuint hpiTexture;
 
 GLuint bgTexture;
 GLuint bgTransTexture;
@@ -338,12 +338,12 @@ void initOpengl(void)
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
 	
 	// Health bar images
-	full_hpImage = ppm6GetImage("./images/full_hp.ppm");
-	three_fourths_hpImage = ppm6GetImage("./images/three_fourths_hp.ppm");
-	half_hpImage = ppm6GetImage("./images/half_hp.ppm");
-	one_fourth_hpImage = ppm6GetImage("./images/one_fourth_hp.ppm");
-	no_hpImage = ppm6GetImage("./images/no_hp.ppm");
-	invincible_hpImage = ppm6GetImage("./images/invincible_hp.ppm");
+	hp4Image = ppm6GetImage("./images/hp4.ppm");
+	hp3Image = ppm6GetImage("./images/hp3.ppm");
+	hp2Image = ppm6GetImage("./images/hp2.ppm");
+	hp1Image = ppm6GetImage("./images/hp1.ppm");
+	hp0Image = ppm6GetImage("./images/hp0.ppm");
+	hpiImage = ppm6GetImage("./images/hpi.ppm");
 	
 	// Item images
 	spikeImage = ppm6GetImage("./images/Spike.ppm");
@@ -362,12 +362,12 @@ void initOpengl(void)
 		glGenTextures(1, &player2InvincibleTexture);
 		glGenTextures(1, &player2HelmInvincTexture);
 	}
-	glGenTextures(1, &full_hpTexture);
-	glGenTextures(1, &three_fourths_hpTexture);
-	glGenTextures(1, &half_hpTexture);
-	glGenTextures(1, &one_fourth_hpTexture);
-	glGenTextures(1, &no_hpTexture);
-	glGenTextures(1, &invincible_hpTexture);
+	glGenTextures(1, &hp4Texture);
+	glGenTextures(1, &hp3Texture);
+	glGenTextures(1, &hp2Texture);
+	glGenTextures(1, &hp1Texture);
+	glGenTextures(1, &hp0Texture);
+	glGenTextures(1, &hpiTexture);
 	glGenTextures(1, &silhouetteSpike);
 	glGenTextures(1, &silhouetteHelm);
 	glGenTextures(1, &silhouetteStar);
@@ -477,66 +477,66 @@ void initOpengl(void)
 	}
 
 	// Full HP
-	w = full_hpImage->width;
-	h = full_hpImage->height;	
-	glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+	w = hp4Image->width;
+	h = hp4Image->height;	
+	glBindTexture(GL_TEXTURE_2D, hp4Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(full_hpImage);	
+	silhouetteData = buildAlphaData(hp4Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// 3/4 HP
-	w = three_fourths_hpImage->width;
-	h = three_fourths_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
+	w = hp3Image->width;
+	h = hp3Image->height; 
+	glBindTexture(GL_TEXTURE_2D, hp3Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(three_fourths_hpImage);	
+	silhouetteData = buildAlphaData(hp3Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// Half HP
-	w = half_hpImage->width;
-	h = half_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, half_hpTexture);
+	w = hp2Image->width;
+	h = hp2Image->height; 
+	glBindTexture(GL_TEXTURE_2D, hp2Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(half_hpImage);	
+	silhouetteData = buildAlphaData(hp2Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	// 1/4 HP
-	w = one_fourth_hpImage->width;
-	h = one_fourth_hpImage->height;	
-	glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
+	w = hp1Image->width;
+	h = hp1Image->height;	
+	glBindTexture(GL_TEXTURE_2D, hp1Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(one_fourth_hpImage);	
+	silhouetteData = buildAlphaData(hp1Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// No HP
-	w = no_hpImage->width;
-	h = no_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, no_hpTexture);
+	w = hp0Image->width;
+	h = hp0Image->height; 
+	glBindTexture(GL_TEXTURE_2D, hp0Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(no_hpImage);	
+	silhouetteData = buildAlphaData(hp0Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// Invincible HP
-	w = invincible_hpImage->width;
-	h = invincible_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
+	w = hpiImage->width;
+	h = hpiImage->height; 
+	glBindTexture(GL_TEXTURE_2D, hpiTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(invincible_hpImage);	
+	silhouetteData = buildAlphaData(hpiImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
