@@ -14,14 +14,14 @@ using namespace std;
 
 void cleanupPPM(void) {
 	system("rm ./images/background1.ppm");
-	system("rm ./images/standL.ppm");
-	system("rm ./images/standhelmL.ppm");
-	system("rm ./images/player1Invinc.ppm");
-	system("rm ./images/player1HelmInvinc.ppm");
-	system("rm ./images/player2.ppm");
-	system("rm ./images/player2helm.ppm");
-	system("rm ./images/player2Invinc.ppm");
-	system("rm ./images/player2HelmInvinc.ppm");
+	system("rm ./images/p1.ppm");
+	system("rm ./images/p1Helm.ppm");
+	system("rm ./images/p1Invinc.ppm");
+	system("rm ./images/p1HelmInvinc.ppm");
+	system("rm ./images/p2.ppm");
+	system("rm ./images/p2Helm.ppm");
+	system("rm ./images/p2Invinc.ppm");
+	system("rm ./images/p2HelmInvinc.ppm");
 	system("rm ./images/full_hp.ppm");
 	system("rm ./images/three_fourths_hp.ppm");
 	system("rm ./images/half_hp.ppm");
@@ -36,14 +36,14 @@ void cleanupPPM(void) {
 
 void convertpng2ppm(void) {
     system("convert ./images/background1.jpg ./images/background1.ppm");
-    system("convert ./images/standL.png ./images/standL.ppm");
-    system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
-    system("convert ./images/player1Invinc.png ./images/player1Invinc.ppm");
-    system("convert ./images/player1HelmInvinc.png ./images/player1HelmInvinc.ppm");
-    system("convert ./images/player2.png ./images/player2.ppm");
-    system("convert ./images/player2helm.png ./images/player2helm.ppm");
-    system("convert ./images/player2Invinc.png ./images/player2Invinc.ppm");
-    system("convert ./images/player2HelmInvinc.png ./images/player2HelmInvinc.ppm");
+    system("convert ./images/p1.png ./images/p1.ppm");
+    system("convert ./images/p1Helm.png ./images/p1Helm.ppm");
+    system("convert ./images/p1Invinc.png ./images/p1Invinc.ppm");
+    system("convert ./images/p1HelmInvinc.png ./images/p1HelmInvinc.ppm");
+    system("convert ./images/p2.png ./images/p2.ppm");
+    system("convert ./images/p2Helm.png ./images/p2Helm.ppm");
+    system("convert ./images/p2Invinc.png ./images/p2Invinc.ppm");
+    system("convert ./images/p2HelmInvinc.png ./images/p2HelmInvinc.ppm");
     system("convert ./images/full_hp.png ./images/full_hp.ppm");
     system("convert ./images/three_fourths_hp.png ./images/three_fourths_hp.ppm");
     system("convert ./images/half_hp.png ./images/half_hp.ppm");

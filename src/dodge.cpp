@@ -320,17 +320,17 @@ void initOpengl(void)
 	convertpng2ppm();
 	
 	// Player1 images
-	playerImage = ppm6GetImage("./images/standL.ppm");
-	playerHelmImage  = ppm6GetImage("./images/standhelmL.ppm");
-	playerInvincibleImage = ppm6GetImage("./images/player1Invinc.ppm");
-	playerHelmInvincImage = ppm6GetImage("./images/player1HelmInvinc.ppm");
+	playerImage = ppm6GetImage("./images/p1.ppm");
+	playerHelmImage  = ppm6GetImage("./images/p1Helm.ppm");
+	playerInvincibleImage = ppm6GetImage("./images/p1Invinc.ppm");
+	playerHelmInvincImage = ppm6GetImage("./images/p1HelmInvinc.ppm");
 
 	// Player2 images
 	if (two_player) {
-		player2Image = ppm6GetImage("./images/player2.ppm");
-		player2HelmImage = ppm6GetImage("./images/player2helm.ppm");
-		player2InvincibleImage = ppm6GetImage("./images/player2Invinc.ppm");
-		player2HelmInvincImage = ppm6GetImage("./images/player2HelmInvinc.ppm");
+		player2Image = ppm6GetImage("./images/p2.ppm");
+		player2HelmImage = ppm6GetImage("./images/p2Helm.ppm");
+		player2InvincibleImage = ppm6GetImage("./images/p2Invinc.ppm");
+		player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
 	}
 
 	// Background images
