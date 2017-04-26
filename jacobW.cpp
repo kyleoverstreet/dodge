@@ -19,6 +19,7 @@ void cleanupPPM(void) {
 	system("rm ./images/starplayer.ppm");
 	system("rm ./images/invinciblehelm.ppm");
 	system("rm ./images/player2.ppm");
+	system("rm ./images/player2helm.ppm");
 	system("rm ./images/full_hp.ppm");
 	system("rm ./images/three_fourths_hp.ppm");
 	system("rm ./images/half_hp.ppm");
@@ -37,7 +38,8 @@ void convertpng2ppm(void) {
     system("convert ./images/standhelmL.png ./images/standhelmL.ppm");
     system("convert ./images/starplayer.png ./images/starplayer.ppm");
     system("convert ./images/invinciblehelm.png ./images/invinciblehelm.ppm");
-    system("convert ./images/player2.png ./images/player2.ppm"); 
+    system("convert ./images/player2.png ./images/player2.ppm");
+    system("convert ./images/player2helm.png ./images/player2helm.ppm");
     system("convert ./images/full_hp.png ./images/full_hp.ppm");
     system("convert ./images/three_fourths_hp.png ./images/three_fourths_hp.ppm");
     system("convert ./images/half_hp.png ./images/half_hp.ppm");
