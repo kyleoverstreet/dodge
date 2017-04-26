@@ -28,6 +28,7 @@
  -Implemented communication with webpage
  (see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
  -Added tutorial
+ -Implemented second player and added item collision & effects
  */
 
 #include <X11/Xlib.h>
@@ -399,18 +400,18 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 				((spike->pos[0] > player_pos-38) &&
 				(spike->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
-			// Spike has hit player
+			// Spike has hit Player1
 			spike_collisions++;
 			if (!p1_invincible) {
 				if (!p1_helm) {
-					// Spike hit vulnerable player
+					// Player1 is vulnerable
 					p1_health--;
 					if (p1_health > 0) {
 #ifdef USE_OPENAL_SOUNDD
 						// PLAY SPIKE SOUND HERE
 #endif
 					} else {
-						// Player has no health
+						// Player1 has no health
 #ifdef USE_OPENAL_SOUND
 						play_game_over();
 #endif
@@ -430,7 +431,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 					deleteSpike(spike);
 					deleted_spike = true;
 				} else {
-					// Spike hit helmet
+					// Spike hit Player1's helmet
 #ifdef USE_OPENAL_SOUND
 					play_helmet_hit();
 #endif
@@ -443,11 +444,11 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 			if (((spike->pos[1] > 0 && spike->pos[1] < 68)) &&
 					((spike->pos[0] > player2_pos-38) &&
 					(spike->pos[0] < player2_pos+38))) {
-				// Spike has hit player2
+				// Spike has hit Player2
 				spike_collisions++;
 				if (!p2_invincible) {
 					if (!p2_helm) {
-						// Spike hit vulnerable player2
+						// Player2 is vulnerable
 						p2_health--;
 						if (p2_health > 0) {
 #ifdef USE_OPENAL_SOUNDD
@@ -471,7 +472,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 							deleteSpike(spike);
 						}
 					} else {
-						// Spike hit player2 helm
+						// Spike hit Player2's helmet
 #ifdef USE_OPENAL_SOUND
 						play_helmet_hit();
 #endif
@@ -498,7 +499,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 				((helmet->pos[0] > player_pos-38) &&
 				(helmet->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
-			// Helmet has hit player
+			// Helmet has landed on Player1
 #ifdef USE_OPENAL_SOUND
 			play_helmet_hit();
 #endif
@@ -511,7 +512,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 			if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
 					((helmet->pos[0] > player2_pos-38) &&
 					(helmet->pos[0] < player2_pos+38))) {
-				// Helmet has hit player2
+				// Helmet has landed on Player2
 #ifdef USE_OPENAL_SOUND
 				play_helmet_hit();
 #endif
@@ -539,7 +540,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 				((star->pos[0] > player_pos-38) &&
 				(star->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
-			// Star has hit player
+			// Star has hit landed on Player1
 			star_collisions++;
 #ifdef USE_OPENAL_SOUND
 			play_powerup();
@@ -552,7 +553,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 			if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
 					((star->pos[0] > player2_pos-38) &&
 					(star->pos[0] < player2_pos+38))) {
-				// Star has hit player2
+				// Star has landed on Player2
 				star_collisions++;
 #ifdef USE_OPENAL_SOUND
 				play_powerup();
@@ -581,7 +582,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 				((heart->pos[0] > player_pos-38) &&
 				(heart->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
-			// Heart has hit player
+			// Heart has landed on Player1
 			heart_collisions++;
 
 			if (p1_health != 4) {
@@ -598,7 +599,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 			if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
 					((heart->pos[0] > player2_pos-38) &&
 					(heart->pos[0] < player2_pos+38))) {
-				// Heart has hit player
+				// Heart has landed on Player2
 				heart_collisions++;
 
 				if (p2_health != 4) {
@@ -624,7 +625,6 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	}
 
 	// Check the timers for the powerup and helmet
-	
 	p1_helm = check_helm_timer(p1_helm);
 	p1_invincible = check_powerup_timer(p1_invincible);
 	if (two_player) {
@@ -633,16 +633,18 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	}
 }
 
-// Display player health at top-center
+// Display player health(s) at top-center
 void display_health(int xres, int yres)
 {
 	int x;
 	int y;
 	int x2;
 	int y2;
+	unsigned int white = 0xffffff;
 	
+	// Set up coordinates for Player1's health bar based on game mode
 	if (!two_player) {
-		x = (xres/2) - 30;
+		x = xres/2;
 		y = yres - 20;
 	} else {
 		x = 100;
@@ -651,7 +653,14 @@ void display_health(int xres, int yres)
 		x2 = xres - 100;
 		y2 = yres - 20;
 	}
-
+	
+	Rect h;
+	h.bot = y - 10;
+	h.left = x - 65;
+	h.center = 0;
+	ggprint13(&h, 16, white, "HP");
+	
+	// Player1 health bar
 	if (p1_invincible) {
 		// Invincible HP
 		glColor3f(1.0f, 1.0f, 1.0f);
@@ -751,6 +760,13 @@ void display_health(int xres, int yres)
 	}
 
 	if (two_player) {
+		Rect h2;
+		h2.bot = y2 - 10;
+		h2.left = x2 - 65;
+		h2.center = 0;
+		ggprint13(&h2, 16, white, "HP");
+
+		// Player2 health bar
 		if (p2_invincible) {
 			// Invincible HP
 			glColor3f(1.0f, 1.0f, 1.0f);
@@ -851,7 +867,7 @@ void display_health(int xres, int yres)
 	}
 }
 
-// Displays the player score at top-center
+// Displays the player score(s) at top-center
 void display_score(int xres, int yres)
 {
 	unsigned int yellow = 0x00dddd00;
@@ -859,21 +875,21 @@ void display_score(int xres, int yres)
 	if (!two_player) {
 		Rect r;
 		r.bot = yres - 50;
-		r.left = xres/2 - 63;
+		r.left = xres/2 - 25;
 		r.center = 0;
-		ggprint13(&r, 16, yellow, "Score: %i", p1_score);
+		ggprint10(&r, 16, yellow, "Score: %i", p1_score);
 	} else {
 		Rect r;
 		r.bot = yres - 50;
-		r.left = 65;
+		r.left = 75;
 		r.center = 0;
-		ggprint13(&r, 16, yellow, "Score: %i", p1_score);
+		ggprint10(&r, 16, yellow, "Score: %i", p1_score);
 
 		Rect r2;
 		r2.bot = yres - 50;
-		r2.left = xres - 135;
+		r2.left = xres - 125;
 		r2.center = 0;
-		ggprint13(&r2, 16, yellow, "Score: %i", p2_score);
+		ggprint10(&r2, 16, yellow, "Score: %i", p2_score);
 	}
 }
 

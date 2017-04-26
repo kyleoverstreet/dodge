@@ -658,14 +658,14 @@ Flt VecNormalize(Vec vec)
 void physics(void)
 {
 	int p1_pos;
-	int p2_pos;
+	int p2_pos = 0;
 	if (showPlayer) {
 		if (!two_player) {
 			p1_pos = movePlayer(xres, &player);
 			dropItems(p1_pos, p2_pos, two_player, xres, yres);
 		} else {
 			p1_pos = movePlayer(xres, &player);
-			p2_pos = movePlayer2(xres, &player2);
+			int p2_pos = movePlayer2(xres, &player2);
 			dropItems(p1_pos, p2_pos, two_player, xres, yres);
 		}
 		if (keys[XK_Left]) {
