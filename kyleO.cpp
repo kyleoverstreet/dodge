@@ -110,21 +110,25 @@ extern Heart *hearthead;
 extern int score;
 extern string player_name;
 
-int p2_health;
-int p2_score;
-bool p2_helm_status;
-bool p2_invincible;
-
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
 int drop_rate = 1; // use higher num to increase drop rate
+
 int spike_collisions = 0;
 int helm_collisions = 0;
 int star_collisions = 0;
 int heart_collisions = 0;
-bool helm_status = false;
-bool invincible = false;
-int health = 4;
+
+int p1_health = 4;
+int p1_score = 0;
+bool p1_helm = false;
+bool p1_invincible = false;
+
+int p2_health = 4;
+int p2_score = 0;
+bool p2_helm = false;
+bool p2_invincible = false;
+
 
 void tutorial(const int xres, const int yres)
 {
@@ -256,18 +260,18 @@ void tutorial(const int xres, const int yres)
 	ggprint8b(&item4, 16, white, "Heart - player regains 1/4 hp if not full hp");
 }
 
-void init2(int xres, int yres, Player *player2)
-{
-	p2_health = 4;
-	p2_score = 0;
-	p2_helm_status = false;
-	p2_invincible = false;
-	player2->pos[0] = xres/2 + 80;
-	player2->pos[1] = yres/920;
-	VecCopy(player2->pos, player2->lastpos);
-	MakeVector(-150.0, 180.0, 0.0, player2->pos);
-	MakeVector(0.0,0.0,0.0, player2->vel);
-}
+/*void init2(int xres, int yres, Player *player2)
+  {
+  p2_health = 4;
+  p2_score = 0;
+  p2_helm_status = false;
+  p2_invincible = false;
+  player2->pos[0] = xres/2 + 80;
+  player2->pos[1] = yres/920;
+  VecCopy(player2->pos, player2->lastpos);
+  MakeVector(-150.0, 180.0, 0.0, player2->pos);
+  MakeVector(0.0,0.0,0.0, player2->vel);
+  }*/
 
 void keypressA(Player *player2) {
 	player2->vel[0] -= 3.5;
@@ -322,6 +326,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	}
 	if (random(200) < 1.3) {
 		createHeart(drop_rate, xres, yres);
+		cout << "HEART" << endl;
 	}
 
 	// Move items on screen
@@ -389,11 +394,11 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 				 (spike->pos[0] < player_pos+38))) {
 			// Spike has hit player
 			spike_collisions++;
-			if (invincible) {
-				if (helm_status == false) {
+			if (!p1_invincible) {
+				if (!p1_helm) {
 					// Spike hit vulnerable player
-					health--;
-					if (health > 0) {
+					p1_health--;
+					if (p1_health > 0) {
 #ifdef USE_OPENAL_SOUNDD
 						// PLAY SPIKE SOUND HERE
 #endif
@@ -404,10 +409,10 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 #endif
 						gamelog();
 						cout << "Game over!" << endl;
-						cout << "Score: " << score;
+						cout << "Score: " << p1_score;
 						cout << endl << endl;
-						score = 0;
-						health = 4;
+						p1_score = 0;
+						p1_health = 4;
 					}
 					deleteSpike(spike);
 				} else {
@@ -416,7 +421,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 					play_helmet_hit();
 #endif
 					spike_bounce(spike);
-					helm_status = false;
+					p1_helm = false;
 				}
 			}
 		}
@@ -425,17 +430,17 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 					((spike->pos[0] > player2_pos-38) &&
 					 (spike->pos[0] < player2_pos+38))) {
 				// Spike has hit player2
-				//spike_collisions++;
-				if (p2_invincible == false) {
-					if (p2_helm_status == false) {
-						// Spike hit vulnerable player
+				spike_collisions++;
+				if (!p2_invincible) {
+					if (!p2_helm) {
+						// Spike hit vulnerable player2
 						p2_health--;
 						if (p2_health > 0) {
 #ifdef USE_OPENAL_SOUNDD
 							// PLAY SPIKE SOUND HERE
 #endif
 						} else {
-							// Player has no health
+							// Player2 has no health
 #ifdef USE_OPENAL_SOUND
 							play_game_over();
 #endif
@@ -448,12 +453,12 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 						}
 						deleteSpike(spike);
 					} else {
-						// Spike hit helmet
+						// Spike hit player2 helm
 #ifdef USE_OPENAL_SOUND
 						play_helmet_hit();
 #endif
 						spike_bounce(spike);
-						p2_helm_status = false;
+						p2_helm = false;
 					}
 				}
 			}
@@ -478,8 +483,21 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 			play_helmet_hit();
 #endif
 			helm_collisions++;
-			helm_status = start_helm_timer();
+			p1_helm = start_helm_timer();
 			deleteHelmet(helmet);
+		}
+		if (two_player) {
+			if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
+					((helmet->pos[0] > player2_pos-38) &&
+					 (helmet->pos[0] < player2_pos+38))) {
+				// Helmet has hit player2
+#ifdef USE_OPENAL_SOUND
+				play_helmet_hit();
+#endif
+				helm_collisions++;
+				p2_helm = start_helm_timer();
+				deleteHelmet(helmet);
+			}
 		}
 		if (helmet->pos[1] < -20.0f) {
 			// Helmet has hit ground
@@ -501,8 +519,22 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 #ifdef USE_OPENAL_SOUND
 			play_powerup();
 #endif
-			invincible = start_powerup_timer();
+			p1_invincible = start_powerup_timer();
 			deleteStar(star);
+		}
+		if (two_player) {
+			if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
+					((star->pos[0] > player2_pos-38) &&
+					 (star->pos[0] < player2_pos+38))) {
+				// Star has hit player2
+				star_collisions++;
+#ifdef USE_OPENAL_SOUND
+				play_powerup();
+#endif
+				p2_invincible = start_powerup_timer();
+				deleteStar(star);
+			}
+
 		}
 		if (star->pos[1] < -20.0f) {
 			// Star has hit ground
@@ -522,13 +554,30 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 			// Heart has hit player
 			heart_collisions++;
 
-			if (health != 4) {
+			if (p1_health != 4) {
 #ifdef USE_OPENAL_SOUND
 				// PLAY HEALTH SOUND HERE
 #endif
-				health++;
+				p1_health++;
 			}
 			deleteHeart(heart);
+		}
+		if (two_player) {
+
+			if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
+					((heart->pos[0] > player2_pos-38) &&
+					 (heart->pos[0] < player2_pos+38))) {
+				// Heart has hit player
+				heart_collisions++;
+
+				if (p2_health != 4) {
+#ifdef USE_OPENAL_SOUND
+					// PLAY HEALTH SOUND HERE
+#endif
+					p2_health++;
+				}
+				deleteHeart(heart);
+			}
 		}
 		if (heart->pos[1] < -20.0f) {
 			// Heart has hit ground
@@ -541,8 +590,12 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	}
 
 	// Check the timers for the powerup and helmet
-	helm_status = check_helm_timer(helm_status);
-	invincible = check_powerup_timer(invincible);
+	p1_helm = check_helm_timer(p1_helm);
+	p1_invincible = check_powerup_timer(p1_invincible);
+	if (two_player) {
+		p2_helm = check_helm_timer(p2_helm);
+		p2_invincible = check_powerup_timer(p2_invincible);
+	}
 }
 
 // Display player health at top-center
@@ -555,7 +608,7 @@ void display_health(int xres, int yres)
 	  unsigned int red = 0xff0000;
 	  ggprint16(&r, 16, red, "Health:  %i / 4", health);*/
 
-	if (invincible) {
+	if (p1_invincible) {
 		// Invincible HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
@@ -571,7 +624,7 @@ void display_health(int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 		glEnd();
 		glPopMatrix();
-	} else if (health == 4) {
+	} else if (p1_health == 4) {
 		// Full HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
@@ -587,7 +640,7 @@ void display_health(int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 		glEnd();
 		glPopMatrix();
-	} else if (health == 3) {
+	} else if (p1_health == 3) {
 		// 3/4 HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
@@ -603,7 +656,7 @@ void display_health(int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 		glEnd();
 		glPopMatrix();
-	} else if (health == 2) {
+	} else if (p1_health == 2) {
 		// 1/2 HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
@@ -619,7 +672,7 @@ void display_health(int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 		glEnd();
 		glPopMatrix();
-	} else if (health == 1) {
+	} else if (p1_health == 1) {
 		// 1/4 HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
@@ -635,7 +688,7 @@ void display_health(int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
 		glEnd();
 		glPopMatrix();
-	} else if (health == 0) {
+	} else if (p1_health == 0) {
 		// No HP
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
@@ -662,7 +715,7 @@ void display_score(int xres, int yres)
 	r.left = xres/2 - 63;
 	r.center = 0;
 	unsigned int color = 0x00dddd00;
-	ggprint13(&r, 16, color, "Score: %i", score);
+	ggprint13(&r, 16, color, "Score: %i", p1_score);
 }
 
 // Displays collisions with player (for testing purposes)
@@ -691,12 +744,12 @@ void display_player_status(int xres, int yres)
 	unsigned int green = 0x00ff00;
 	unsigned int yellow = 0x00dddd00;
 	ggprint8b(&r, 16, 0xffffff, "Status (for testing):");
-	if (helm_status == true) {
+	if (p1_helm) {
 		ggprint8b(&r, 16, green, "Helmet ON");
 	} else {
 		ggprint8b(&r, 16, red, "No helmet");
 	}
-	if (invincible == true) {
+	if (p1_invincible) {
 		ggprint8b(&r, 16, yellow, "Invincible");
 	} else {
 		ggprint8b(&r, 16, red, "Not invincible");
@@ -708,7 +761,7 @@ void display_player_status(int xres, int yres)
 void gamelog()
 {
 	stringstream ss;
-	ss << score;
+	ss << p1_score;
 	string score_str = ss.str();
 
 	string command =

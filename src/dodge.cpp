@@ -147,8 +147,8 @@ int trees = 1;
 extern int spike_collisions;
 extern int helm_collisions;
 extern int star_collisions;
-extern bool helm_status;
-extern bool invincible;
+extern bool p1_helm;
+extern bool p1_invincible;
 
 int keys[65536];
 
@@ -164,10 +164,10 @@ int main(void)
 	logOpen();
 	initXWindows();
 	initOpengl();
-	init(xres, yres, &player);
+	/*init(xres, yres, &player);
 	if (two_player) {
 		init2(xres, yres, &player2);
-	}
+	}*/
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
@@ -716,13 +716,13 @@ void render(void)
 		//if right check for right keypress
 		//at end of render grab time and add to animation span
 
-		if (helm_status == true && !invincible) {
+		if (p1_helm && !p1_invincible) {
 			// display character with helmet
 			glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
-		} else if (helm_status == true && invincible) {
+		} else if (p1_helm && p1_invincible) {
 			// display character with helmet and invincibility
 			glBindTexture(GL_TEXTURE_2D, playerHelmInvincTexture);
-		} else if (helm_status == false && invincible) {
+		} else if (!p1_helm && p1_invincible) {
 			// display invincible character
 			glBindTexture(GL_TEXTURE_2D, playerInvincibleTexture);
 		} else {
