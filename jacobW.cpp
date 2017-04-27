@@ -12,6 +12,8 @@
 #include "src/shared.h"
 using namespace std;
 
+extern GLuint deathTexture;
+
 void cleanupPPM(void) {
     	system("rm ./images/credits.ppm");
 	system("rm ./images/background1.ppm");
@@ -111,3 +113,23 @@ void gamestart2p(Player *player1, Player *player2, int xres) {
     player2->pos[0] = xres/2 + 50;
     player2->pos[1] = 30;
 }
+
+void tombstone(int x)
+{
+         // Display tombstone at x-position
+         glColor3f(1.0f, 1.0f, 1.0f);
+         glPushMatrix();
+         glTranslatef(x,25,0);
+         glBindTexture(GL_TEXTURE_2D, deathTexture);
+         glEnable(GL_ALPHA_TEST);
+         glAlphaFunc(GL_GREATER, 0.0f);
+         glColor4ub(255,255,255,255);
+         glBegin(GL_QUADS);
+         glTexCoord2f(0.0f, 1.0f); glVertex2i(-25,-25);
+         glTexCoord2f(0.0f, 0.0f); glVertex2i(-25, 25);
+         glTexCoord2f(1.0f, 0.0f); glVertex2i( 25, 25);
+         glTexCoord2f(1.0f, 1.0f); glVertex2i( 25,-25);
+         glEnd();
+         glPopMatrix();
+}
+

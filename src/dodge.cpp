@@ -68,8 +68,7 @@ extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
-extern void display_collisions(int, int);
-extern void display_player_status(int, int);
+extern void tombstone(int);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -176,6 +175,9 @@ extern bool p1_helm;
 extern bool p1_invincible;
 extern bool p2_helm;
 extern bool p2_invincible;
+extern int dead_position;
+extern int dead_position2;
+
 bool hardmode = false;
 int keys[65536];
 
@@ -915,5 +917,11 @@ void render(void)
 		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
+	}
+	if (dead_position != 0) {
+		tombstone(dead_position);
+	}
+	if (dead_position2 != 0) {
+		tombstone(dead_position2);
 	}
 }

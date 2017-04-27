@@ -130,6 +130,8 @@ bool p2_helm = false;
 bool p2_invincible = false;
 bool p2_dead = false;
 
+int dead_position = 0;
+int dead_position2 = 0;
 void tutorial(const int xres, const int yres)
 {
 	unsigned int white = 0xffffff;
@@ -387,6 +389,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #endif
 						gamelog();
 						p1_dead = true;
+						dead_position = player_pos;
 						if (!two_player) {
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
@@ -430,6 +433,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #endif
 							gamelog();
 							p2_dead = true;
+							dead_position2 = player2_pos;
 							if (p1_dead) {
 								cout << "P1 score: " << p1_score;
 								cout << "\nP2 score: " << p2_score;
