@@ -13,6 +13,7 @@
 using namespace std;
 
 void cleanupPPM(void) {
+    	system("rm ./images/credits.ppm");
 	system("rm ./images/background1.ppm");
 	system("rm ./images/p1.ppm");
 	system("rm ./images/p1Helm.ppm");
@@ -35,6 +36,7 @@ void cleanupPPM(void) {
 }
 
 void convertpng2ppm(void) {
+    system("convert ./images/credits.jpg ./images/credits.ppm");
     system("convert ./images/background1.jpg ./images/background1.ppm");
     system("convert ./images/p1.png ./images/p1.ppm");
     system("convert ./images/p1Helm.png ./images/p1Helm.ppm");

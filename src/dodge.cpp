@@ -50,6 +50,7 @@ extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
 extern void credits(const int, const int);
+extern void end_credits(int xres, int yres);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
 extern void keypressA(Player *player);
@@ -64,7 +65,6 @@ extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
-//extern void end_credits(int xres, int yres);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -159,7 +159,7 @@ extern bool p1_helm;
 extern bool p1_invincible;
 extern bool p2_helm;
 extern bool p2_invincible;
-
+bool hardmode = false;
 int keys[65536];
 
 int main(void)
@@ -848,7 +848,7 @@ void render(void)
 	if (display_menu && !display_tutorial && !showPlayer) {
 		menu(xres, yres);
 		if (display_credits) {
-			credits(xres, yres);
+			end_credits(xres, yres);
 		}
 	}
 
