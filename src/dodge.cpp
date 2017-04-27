@@ -68,7 +68,7 @@ extern void display_health(int, int);
 extern void display_score(int, int);
 extern void display_collisions(int, int);
 extern void display_player_status(int, int);
-//extern void end_credits(int xres, int yres);
+extern void end_credits(int xres, int yres);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -617,7 +617,8 @@ void checkKeys(XEvent *e)
 			display_menu ^= 1;
 			break;
 		case XK_c:
-			display_credits ^= 1;
+			end_credits(xres, yres);
+			//display_credits ^= 1;
 			break;
 		case XK_p:
 			//end_credits(xres, yres);

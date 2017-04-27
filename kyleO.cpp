@@ -408,7 +408,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 					// Player1 is vulnerable
 					p1_health--;
 					if (p1_health > 0) {
-#ifdef USE_OPENAL_SOUNDD
+#ifdef USE_OPENAL_SOUND
 						// PLAY SPIKE SOUND HERE
 #endif
 					} else {
@@ -452,7 +452,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 						// Player2 is vulnerable
 						p2_health--;
 						if (p2_health > 0) {
-#ifdef USE_OPENAL_SOUNDD
+#ifdef USE_OPENAL_SOUND
 							// PLAY SPIKE SOUND HERE
 #endif
 						} else {
@@ -588,7 +588,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 
 			if (p1_health != 4) {
 #ifdef USE_OPENAL_SOUND
-				// PLAY HEALTH SOUND HERE
+				play_health_pickup();
 #endif
 				p1_health++;
 			}
