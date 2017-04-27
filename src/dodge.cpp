@@ -898,6 +898,4 @@ void render(void)
 		display_health(xres, yres);
 		display_score(xres, yres);
 	}
-		}
-	}
 }
