@@ -50,13 +50,10 @@ extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
 extern void credits(const int, const int);
-<<<<<<< HEAD
 extern void startGame(const int, const int);
 extern void oneArrow(const int, const int);
 extern void twoArrow(const int, const int);
-=======
 extern void end_credits(int xres, int yres);
->>>>>>> 1dc55c2b183ce7778763bd0b6a98bb1b82785dcf
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
 extern void keypressA(Player *player);
@@ -878,10 +875,6 @@ void render(void)
 				gamestart1p(&player, xres);
 			}
 		    }
-	if (display_menu && !display_tutorial && !showPlayer) {
-		menu(xres, yres);
-		if (display_credits) {
-			end_credits(xres, yres);
 		}
 		if (display_twoArrow & !display_oneArrow) {
 		    twoArrow(xres, yres);
