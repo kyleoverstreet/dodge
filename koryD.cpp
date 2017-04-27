@@ -11,12 +11,19 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
+#endif
+
 #include <stdlib.h>
 #include <vector>
 #include "src/shared.h"
 #include <GL/gl.h>
 #include <time.h>
+
+unsigned int black = 0xffffff;
+const float gravity = -0.1f;
 
 extern "C" {
 	#include "src/fonts.h"
@@ -177,7 +184,7 @@ extern void play_game_over()
 }
 extern void play_health_pickup()
 {
-	alBuffer = alutCreateBufferFromFile("./sounds/health_pickup.wav");
+	alBuffer = alutCreateBufferFromFile("./sounds/health-pickup.wav");
 
 	alGenSources(1, &alSource);
 	alSourcei(alSource, AL_BUFFER, alBuffer);
@@ -232,9 +239,10 @@ extern bool check_powerup_timer(bool powerup) {
 
 
 
-/* end credits scene
+// end credits scene
 
 extern void end_credits(int xres, int yres) {
+	/*
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -248,12 +256,16 @@ extern void end_credits(int xres, int yres) {
         glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
         glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
         glEnd();
+	*/
 
+	
 	Rect r;
-	r.bot = 400 - 30;
-	r.left = 300 - 100;
+	for(int i=0; i < 8000; i++) {
+	r.bot = yres/2;
+	r.left = xres/2 + 20;
 	r.center = 0;
-	unsigned int color = 0x00dddd00;
-	ggprint13(&r, 16, color, "This is a test");
+	
+	ggprint13(&r, 16, black, "This is a test");
+	}
 }
-*/
+
