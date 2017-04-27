@@ -114,6 +114,8 @@ Ppmimage *player2HelmInvincImage = NULL;
 
 Ppmimage *deathImage = NULL;
 
+Ppmimage *logoImage = NULL;
+
 Ppmimage *hp4Image = NULL;
 Ppmimage *hp3Image = NULL;
 Ppmimage *hp2Image = NULL;
@@ -140,6 +142,8 @@ GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
 
 GLuint deathTexture;
+
+GLuint logoTexture;
 
 GLuint hp4Texture;
 GLuint hp3Texture;
@@ -351,6 +355,9 @@ void initOpengl(void)
 	// Death image
 	deathImage = ppm6GetImage("./images/death.ppm");
 
+	// Logo image
+	logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
+
 	// Background images
 	bgImage = ppm6GetImage("./images/background1.ppm");
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
@@ -381,6 +388,7 @@ void initOpengl(void)
 		glGenTextures(1, &player2HelmInvincTexture);
 	}
 	glGenTextures(1, &deathTexture);
+	glGenTextures(1, &logoTexture);
 	glGenTextures(1, &hp4Texture);
 	glGenTextures(1, &hp3Texture);
 	glGenTextures(1, &hp2Texture);
@@ -505,6 +513,16 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
+	//Logo
+	w = logoImage->width;
+	h = logoImage->height;	
+	glBindTexture(GL_TEXTURE_2D, logoTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(logoImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	
 	// Full HP
 	w = hp4Image->width;
 	h = hp4Image->height;	
