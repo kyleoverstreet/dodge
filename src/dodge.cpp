@@ -50,6 +50,9 @@ extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
 extern void credits(const int, const int);
+extern void startGame(const int, const int);
+extern void oneArrow(const int, const int);
+extern void twoArrow(const int, const int);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
 extern void keypressA(Player *player);
@@ -149,6 +152,9 @@ GLuint silhouetteHeart;
 int display_tutorial = 0;
 int display_menu = 0;
 int display_credits = 0;
+int display_gameModes = 0;
+int display_oneArrow = 1;
+int display_twoArrow = 0;
 int showPlayer = 0;
 string p1_name;
 string p2_name;
@@ -627,28 +633,22 @@ void checkKeys(XEvent *e)
 		return;
 	}
 	switch(key) {
-		case XK_1:
-			two_player = false;
-			showPlayer ^= 1;
-			if (showPlayer) {
-				gamestart1p(&player, xres);
-			}
-			break;
-		case XK_2:
-			two_player = true;
-			showPlayer ^= 1 ;
-			if (showPlayer) {
-				gamestart2p(&player, &player2, xres);
-			}
-			break;
-		case XK_t:
+		case XK_h:
 			display_tutorial ^= 1;
 			break;
 		case XK_m:
 			display_menu ^= 1;
 			break;
-		case XK_c:
-			display_credits ^= 1;
+		case XK_s:
+			display_gameModes ^= 1;
+			break;
+		case XK_Down:
+			display_oneArrow ^= 1;
+			display_twoArrow ^= 1;
+			break;
+		case XK_Up:
+			display_oneArrow ^= 1;
+			display_twoArrow ^= 1;
 			break;
 		case XK_p:
 			//end_credits(xres, yres);
@@ -835,24 +835,45 @@ void render(void)
 		r.left = 10;
 		r.center = 0;
 		unsigned int color = 0x00dddd00;
-		ggprint8b(&r, 16, color, "1 - 1-player");
-		ggprint8b(&r, 16, color, "2 - 2-player");
 		ggprint8b(&r, 16, color, "T - Tutorial");
 		ggprint8b(&r, 16, color, "M - Menu");
 	}
 
-	if (display_tutorial && !showPlayer) {
-		tutorial(xres, yres);
+	if (display_menu && !showPlayer) {
+		menu(xres, yres);
 	}
 
-	if (display_menu && !display_tutorial && !showPlayer) {
-		menu(xres, yres);
-		if (display_credits) {
-			credits(xres, yres);
+	if (display_gameModes && !showPlayer) {
+	    	display_menu = 0;	
+		startGame(xres, yres);
+		if (display_oneArrow && !display_twoArrow) {
+		    oneArrow(xres, yres);
+		    if (keys[XK_Return]) {
+			two_player = false;
+			showPlayer ^= 1;
+			if (showPlayer) {
+				gamestart1p(&player, xres);
+			}
+		    }
+		}
+		if (display_twoArrow & !display_oneArrow) {
+		    twoArrow(xres, yres);
+		    if (keys[XK_Return]) {
+		    	two_player = true;
+			showPlayer ^= 1 ;
+			if (showPlayer) {
+				gamestart2p(&player, &player2, xres);
+			}
+		    }
 		}
 	}
 
-	if (!display_menu && !display_tutorial && showPlayer) {
+	if (display_tutorial && !showPlayer) {
+	    	display_menu = 0;
+		tutorial(xres, yres);
+	}
+
+	if (!display_menu && !display_tutorial && display_gameModes && showPlayer) {
 		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);

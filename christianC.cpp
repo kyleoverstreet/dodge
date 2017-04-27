@@ -1,7 +1,7 @@
 //Created by: Christian Chavez
 //Dodge project
 //Individual coode
-//Last Update: 4/26/2017
+//Last Update: 4/27/2017
 
 /*
                     *********Week 13 update*********
@@ -13,7 +13,8 @@ a place for navigation, whether thats how to play the game, look at the high
 scores or pick what game mode they would like to do. On the 23rd I added the
 ability to bring up a menu and added limited functionality to navigate throuh
 the menu. On the 24th I solved an issue that orevented the menu bix popping up
-when more text was added inside the box.
+when more text was added inside the box. Added the fucntionallity to this file
+and the main file to be able to select the game mode from the menu screen.
 */
 
 #include <X11/Xlib.h>
@@ -48,10 +49,13 @@ struct Shape {
 
 void menu(const int, const int);
 void credits(const int, const int);
+void oneArrow(const int, const int);
+void twoArrow(const int, const int);
+void two_player_arrow(const int, const int);
 extern void tutorial(const int xres, const int yres);
 
 //Colors for the test in themenus and the sub menus
-unsigned int red = 0xff0000;
+//unsigned int red = 0xff0000;
 //unsigned int green = 0x00ff00;
 unsigned int yellow = 0xffff00;
 //unsigned int blue = 0x0000ff;
@@ -66,51 +70,80 @@ void menu(const int xres, const int yres)
 
     //Welcome message Text
     Rect menu;
-    menu.bot = y + 150;
+    menu.bot = y + 225;
     menu.left = x;
     menu.center = y;
-    ggprint8b(&menu, 16, white, "WELCOME TO THE DODGE MENU!!!");
-    
-    //Keyboard Directions
-    menu.bot = y + 133;
-    menu.left = x;
-    menu.center = y;
-    ggprint8b(&menu, 16, red, "Use the keyboard to navigate through the menu!");
+    ggprint8b(&menu, 16, white, "DODGE MAIN MENU");
     
     //Change/view the audio settings
-    menu.bot = y + 100;
+    menu.bot = y + 175;
     menu.left = x;
     menu.center = y;
     ggprint8b(&menu, 16, yellow, "<a> Audio Settings");
 
     //View how tro play the game
-    menu.bot = y + 83;
+    menu.bot = y + 158;
     menu.left = x;
     menu.center = y;
     ggprint8b(&menu, 16, yellow, "<h> How to Play");
 
     //Chnage view the game mode
-    menu.bot = y + 66;
+    menu.bot = y + 141;
     menu.left = x;
     menu.center = y;
     ggprint8b(&menu, 16, yellow, "<s> Start Game");
 
 }
 
-
-void credits(const int xres, const int yres)
+void startGame (const int xres, const int yres)
 {
-
     int y = yres/2;
     int x = xres/2;
 
-    //Welcome message
-    Rect christian;
-    christian.bot = y + 90;
-    christian.left = x;
-    christian.center = y;
-    ggprint8b(&christian, 16, white, "MENU DEVELOPER - Christian Chavez");
-   
+    Rect mode;
+    mode.bot = y + 225;
+    mode.left = x;
+    mode.center = y;
+    ggprint8b(&mode, 16, white, "Select Game Mode");
+
+    //For the one player mode
+    mode.bot = y + 175;
+    mode.left = x;
+    mode.center = y;
+    ggprint8b(&mode, 16, yellow, "1 Player");
+
+    //For the two player mode
+    mode.bot = y + 158;
+    mode.left = x;
+    mode.center = y;
+    ggprint8b(&mode, 16, yellow, "2 Players");
+
+}
+
+void oneArrow (const int xres, const int yres)
+{
+    int y = yres/2;
+    int x = xres/2;
+
+    Rect one_arrow;
+    one_arrow.bot = y + 175;
+    one_arrow.left = x - 35;
+    one_arrow.center = y;
+    ggprint8b(&one_arrow, 16, yellow, ">>");
+    
+}
+
+void twoArrow (const int xres, const int yres)
+{
+    int y = yres/2;
+    int x = xres/2;
+
+    Rect one_arrow;
+    one_arrow.bot = y + 158;
+    one_arrow.left = x - 40;
+    one_arrow.center = y;
+    ggprint8b(&one_arrow, 16, yellow, ">>");
+    
 }
 
 
