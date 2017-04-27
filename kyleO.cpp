@@ -2,7 +2,7 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/25/17
+// Last edit: 4/26/17
 
 /*
  *************** NOTE TO GORDON *****************
@@ -55,14 +55,11 @@ extern "C" {
 using namespace std;
 
 void tutorial(const int, const int);
-void init2(int, int, Player*);
 void keypressA(Player*);
 void keypressD(Player*);
 int movePlayer2(int, Player*);
 void dropItems(int, int, bool, const int, const int);
 void display_score(int, int);
-void display_collisions(int, int);
-void display_player_status(int, int);
 void gamelog();
 
 #ifdef USE_OPENAL_SOUND
@@ -84,24 +81,22 @@ extern void spike_bounce(Spike* spike);
 extern void createHeart(const int, const int, const int);
 extern void drawHeart(void);
 extern void deleteHeart(Heart*);
+
 extern bool check_helm_timer(bool helm);
 extern bool start_helm_timer();
 extern bool start_powerup_timer();
 extern bool check_powerup_timer(bool powerup);
 
-
-extern Ppmimage full_hpImage;
-
 extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
 extern GLuint silhouetteHeart;
-extern GLuint full_hpTexture;
-extern GLuint three_fourths_hpTexture;
-extern GLuint half_hpTexture;
-extern GLuint one_fourth_hpTexture;
-extern GLuint no_hpTexture;
-extern GLuint invincible_hpTexture;
+extern GLuint hp4Texture;
+extern GLuint hp3Texture;
+extern GLuint hp2Texture;
+extern GLuint hp1Texture;
+extern GLuint hp0Texture;
+extern GLuint hpiTexture;
 
 extern Player *player;
 extern Player *player2;
@@ -110,22 +105,17 @@ extern Helmet *hhead;
 extern Star *sthead;
 extern Heart *hearthead;
 extern int score;
-extern string player_name;
 
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
 int drop_rate = 1; // use higher num to increase drop rate
-
-int spike_collisions = 0;
-int helm_collisions = 0;
-int star_collisions = 0;
-int heart_collisions = 0;
 
 bool deleted_spike;
 bool deleted_helm;
 bool deleted_star;
 bool deleted_heart;
 
+extern string p1_name;
 int p1_health = 4;
 int p1_score = 0;
 bool p1_helm = false;
@@ -133,6 +123,7 @@ bool p1_invincible = false;
 bool p1_dead = false;
 
 extern bool two_player;
+extern string p2_name;
 int p2_health = 4;
 int p2_score = 0;
 bool p2_helm = false;
@@ -141,21 +132,11 @@ bool p2_dead = false;
 
 void tutorial(const int xres, const int yres)
 {
-
-	unsigned int red = 0xff0000;
-	//unsigned int green = 0x00ff00;
-	//unsigned int yellow = 0x00dddd00;
 	unsigned int white = 0xffffff;
-
-	Rect temp;
-	temp.bot = yres - 150;
-	temp.left = xres/2 + 100;
-	temp.center = 0;
-	ggprint8b(&temp, 16, red, "TUTORIAL IS CURRENTLY A WORK-IN-PROGRESS");
 
 	Rect r;
 	r.bot = yres - 70;
-	r.left = xres/10;
+	r.left = xres/2 - 200;
 	r.center = 0;
 	ggprint8b(&r, 16, white, "The goal in Dodge is to move the character");
 	ggprint8b(&r, 16, white, "to avoid falling spikes for as long as possible");
@@ -165,12 +146,14 @@ void tutorial(const int xres, const int yres)
 	r2.left = xres/10;
 	r2.center = 0;
 	ggprint8b(&r2, 16, white, "Key controls:");
-	ggprint8b(&r2, 16, white, "Left arrow - moves character left");
-	ggprint8b(&r2, 16, white, "Right arrow - moves character right");
+	ggprint8b(&r2, 16, white, "a - moves player left");
+	ggprint8b(&r2, 16, white, "d - moves player right");
+	ggprint8b(&r2, 16, white, "Left arrow - moves player2 left");
+	ggprint8b(&r2, 16, white, "Right arrow - moves player2 right");
 
 	Rect r3;
-	r3.bot = yres - 200;
-	r3.left = xres/10;
+	r3.bot = yres - 130;
+	r3.left = xres/2;
 	r3.center = 0;
 	ggprint8b(&r3, 16, white, "Items:");
 
@@ -179,7 +162,7 @@ void tutorial(const int xres, const int yres)
 	// Draw spike
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
-	glTranslatef((xres/10)+10,yres-215,0);
+	glTranslatef((xres/2)+10,yres-145,0);
 	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -194,15 +177,15 @@ void tutorial(const int xres, const int yres)
 
 	// Spike description
 	Rect item1;
-	item1.bot = yres - 220;
-	item1.left = xres/10 + 30;
+	item1.bot = yres - 150;
+	item1.left = xres/2 + 30;
 	item1.center = 0;
 	ggprint8b(&item1, 16, white, "Spike - hurts the player (removes 1/4 hp per hit)");
 
 	// Draw star
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
-	glTranslatef((xres/10)+10,yres-240,0);
+	glTranslatef((xres/2)+10,yres-170,0);
 	glBindTexture(GL_TEXTURE_2D, silhouetteStar);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -217,15 +200,15 @@ void tutorial(const int xres, const int yres)
 
 	// Star description
 	Rect item2;
-	item2.bot = yres - 245;
-	item2.left = xres/10 + 30;
+	item2.bot = yres - 175;
+	item2.left = xres/2 + 30;
 	item2.center = 0;
 	ggprint8b(&item2, 16, white, "Star - gives the player invincibility for 5 seconds");
 
 	// Draw helmet
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
-	glTranslatef((xres/10)+10,yres-265,0);
+	glTranslatef((xres/2)+10,yres-195,0);
 	glBindTexture(GL_TEXTURE_2D, silhouetteHelm);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -240,15 +223,15 @@ void tutorial(const int xres, const int yres)
 
 	// Helmet description
 	Rect item3;
-	item3.bot = yres - 270;
-	item3.left = xres/10 + 30;
+	item3.bot = yres - 200;
+	item3.left = xres/2 + 30;
 	item3.center = 0;
 	ggprint8b(&item3, 16, white, "Helmet - protects the player from one spike hit");
 
 	// Draw heart
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
-	glTranslatef((xres/10)+10,yres-290,0);
+	glTranslatef((xres/2)+10,yres-220,0);
 	glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -263,33 +246,20 @@ void tutorial(const int xres, const int yres)
 
 	// Heart description
 	Rect item4;
-	item4.bot = yres - 295;
-	item4.left = xres/10 + 30;
+	item4.bot = yres - 225;
+	item4.left = xres/2 + 30;
 	item4.center = 0;
 	ggprint8b(&item4, 16, white, "Heart - player regains 1/4 hp if not full hp");
 }
 
-/*void init2(int xres, int yres, Player *player2)
-  {
-  p2_health = 4;
-  p2_score = 0;
-  p2_helm_status = false;
-  p2_invincible = false;
-  player2->pos[0] = xres/2 + 80;
-  player2->pos[1] = yres/920;
-  VecCopy(player2->pos, player2->lastpos);
-  MakeVector(-150.0, 180.0, 0.0, player2->pos);
-  MakeVector(0.0,0.0,0.0, player2->vel);
-  }*/
-
-void keypressA(Player *player2) {
-	player2->vel[0] -= 3.5;
-	player2->LR = false;
+void keypressA(Player *player) {
+	player->vel[0] -= 3.5;
+	player->LR = false;
 }
 
-void keypressD(Player *player2) {
-	player2->vel[0] += 3.5;
-	player2->LR = true;
+void keypressD(Player *player) {
+	player->vel[0] += 3.5;
+	player->LR = true;
 }
 
 int movePlayer2(int xres, Player *player2) {
@@ -320,7 +290,7 @@ int movePlayer2(int xres, Player *player2) {
 	return player2->pos[0];
 }
 
-void dropItems(int player_pos, int player2_pos, bool two_player, const int xres, const int yres)
+void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 {
 	// Create the items
 	if (random(100) < 15) {
@@ -399,10 +369,9 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	while (spike) {
 		if (((spike->pos[1] > 0 && spike->pos[1] < 68)) &&
 				((spike->pos[0] > player_pos-38) &&
-				(spike->pos[0] < player_pos+38)) &&
+				 (spike->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
 			// Spike has hit Player1
-			spike_collisions++;
 			if (!p1_invincible) {
 				if (!p1_helm) {
 					// Player1 is vulnerable
@@ -423,7 +392,7 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 							cout << "Score: " << p1_score;
 						}
 						if (two_player && p2_dead) {
-							cout << "P1 score" << p1_score;
+							cout << "P1 score: " << p1_score;
 							cout << "\nP2 score: " << p2_score;
 							cout << endl << endl;
 							cout << "Player 1 wins!" << endl;
@@ -444,9 +413,8 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 		if (two_player && !p2_dead) {
 			if (((spike->pos[1] > 0 && spike->pos[1] < 68)) &&
 					((spike->pos[0] > player2_pos-38) &&
-					(spike->pos[0] < player2_pos+38))) {
+					 (spike->pos[0] < player2_pos+38))) {
 				// Spike has hit Player2
-				spike_collisions++;
 				if (!p2_invincible) {
 					if (!p2_helm) {
 						// Player2 is vulnerable
@@ -498,13 +466,12 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	while (helmet) {
 		if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
 				((helmet->pos[0] > player_pos-38) &&
-				(helmet->pos[0] < player_pos+38)) &&
+				 (helmet->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
 			// Helmet has landed on Player1
 #ifdef USE_OPENAL_SOUND
 			play_helmet_hit();
 #endif
-			helm_collisions++;
 			p1_helm = start_helm_timer();
 			deleteHelmet(helmet);
 			deleted_helm = true;
@@ -512,12 +479,11 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 		if (two_player && !p2_dead) {
 			if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
 					((helmet->pos[0] > player2_pos-38) &&
-					(helmet->pos[0] < player2_pos+38))) {
+					 (helmet->pos[0] < player2_pos+38))) {
 				// Helmet has landed on Player2
 #ifdef USE_OPENAL_SOUND
 				play_helmet_hit();
 #endif
-				helm_collisions++;
 				p2_helm = start_helm_timer();
 				if (!deleted_helm) {
 					deleteHelmet(helmet);
@@ -539,10 +505,9 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	while (star) {
 		if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
 				((star->pos[0] > player_pos-38) &&
-				(star->pos[0] < player_pos+38)) &&
+				 (star->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
 			// Star has hit landed on Player1
-			star_collisions++;
 #ifdef USE_OPENAL_SOUND
 			play_powerup();
 #endif
@@ -553,9 +518,8 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 		if (two_player && !p2_dead) {
 			if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
 					((star->pos[0] > player2_pos-38) &&
-					(star->pos[0] < player2_pos+38))) {
+					 (star->pos[0] < player2_pos+38))) {
 				// Star has landed on Player2
-				star_collisions++;
 #ifdef USE_OPENAL_SOUND
 				play_powerup();
 #endif
@@ -581,10 +545,9 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 	while (heart) {
 		if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
 				((heart->pos[0] > player_pos-38) &&
-				(heart->pos[0] < player_pos+38)) &&
+				 (heart->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
 			// Heart has landed on Player1
-			heart_collisions++;
 
 			if (p1_health != 4) {
 #ifdef USE_OPENAL_SOUND
@@ -599,9 +562,8 @@ void dropItems(int player_pos, int player2_pos, bool two_player, const int xres,
 
 			if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
 					((heart->pos[0] > player2_pos-38) &&
-					(heart->pos[0] < player2_pos+38))) {
+					 (heart->pos[0] < player2_pos+38))) {
 				// Heart has landed on Player2
-				heart_collisions++;
 
 				if (p2_health != 4) {
 #ifdef USE_OPENAL_SOUND
@@ -640,231 +602,117 @@ void display_health(int xres, int yres)
 	int x;
 	int y;
 	int x2;
-	int y2;
 	unsigned int white = 0xffffff;
-	
-	// Set up coordinates for Player1's health bar based on game mode
+	unsigned int yellow = 0x00dddd00;
+
+	// Set up coordinates for Player1's name/health bar based on game mode
 	if (!two_player) {
 		x = xres/2;
-		y = yres - 20;
+		y = yres - 40;
 	} else {
 		x = 100;
-		y = yres - 20;
+		y = yres - 40;
 
 		x2 = xres - 100;
-		y2 = yres - 20;
 	}
-	
+
+	// Player1 name
+	const char* p1_cstr = p1_name.c_str();
+	Rect n;
+	n.bot = y + 10;
+	n.left = x - 40;
+	n.center = 0;
+	ggprint13(&n, 16, yellow, p1_cstr);
+
+	// Player1 health bar
 	Rect h;
 	h.bot = y - 10;
 	h.left = x - 65;
 	h.center = 0;
 	ggprint13(&h, 16, white, "HP");
-	
-	// Player1 health bar
+
+	GLuint p1_hpBar;
+
+	// Set up appropriate Player1 health bar texture
 	if (p1_invincible) {
-		// Invincible HP
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-		glEnd();
-		glPopMatrix();
+		p1_hpBar = hpiTexture;
 	} else if (p1_health == 4) {
-		// Full HP
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, full_hpTexture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-		glEnd();
-		glPopMatrix();
+		p1_hpBar = hp4Texture;
 	} else if (p1_health == 3) {
-		// 3/4 HP
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-		glEnd();
-		glPopMatrix();
+		p1_hpBar = hp3Texture;
 	} else if (p1_health == 2) {
-		// 1/2 HP
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, half_hpTexture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-		glEnd();
-		glPopMatrix();
+		p1_hpBar = hp2Texture;
 	} else if (p1_health == 1) {
-		// 1/4 HP
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-		glEnd();
-		glPopMatrix();
+		p1_hpBar = hp1Texture;
 	} else if (p1_health == 0) {
-		// No HP
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glPushMatrix();
-		glTranslatef(x,y,0);
-		glBindTexture(GL_TEXTURE_2D, no_hpTexture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-		glEnd();
-		glPopMatrix();
-	}
+		p1_hpBar = hp0Texture;
+	}		
+
+	// Display Player1 health bar
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef(x,y,0);
+	glBindTexture(GL_TEXTURE_2D, p1_hpBar);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+	glEnd();
+	glPopMatrix();
 
 	if (two_player) {
+
+		// Player2 name
+		const char* p2_cstr = p2_name.c_str();
+		Rect n;
+		n.bot = y + 10;
+		n.left = x2 - 40;
+		n.center = 0;
+		ggprint13(&n, 16, yellow, p2_cstr);
+
+		// Player2 health bar
 		Rect h2;
-		h2.bot = y2 - 10;
+		h2.bot = y - 10;
 		h2.left = x2 - 65;
 		h2.center = 0;
 		ggprint13(&h2, 16, white, "HP");
 
-		// Player2 health bar
+		GLuint p2_hpBar;
+
+		// Set up appropriate Player2 health bar texture
 		if (p2_invincible) {
-			// Invincible HP
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-			glEnd();
-			glPopMatrix();
+			p2_hpBar = hpiTexture;
 		} else if (p2_health == 4) {
-			// Full HP
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, full_hpTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-			glEnd();
-			glPopMatrix();
+			p2_hpBar = hp4Texture;
 		} else if (p2_health == 3) {
-			// 3/4 HP
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-			glEnd();
-			glPopMatrix();
+			p2_hpBar = hp3Texture;
 		} else if (p2_health == 2) {
-			// 1/2 HP
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, half_hpTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-			glEnd();
-			glPopMatrix();
+			p2_hpBar = hp2Texture;
 		} else if (p2_health == 1) {
-			// 1/4 HP
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-			glEnd();
-			glPopMatrix();
+			p2_hpBar = hp1Texture;
 		} else if (p2_health == 0) {
-			// No HP
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(x2,y2,0);
-			glBindTexture(GL_TEXTURE_2D, no_hpTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
-			glEnd();
-			glPopMatrix();
+			p2_hpBar = hp0Texture;
 		}
+
+		// Display Player2 health bar	
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glPushMatrix();
+		glTranslatef(x2,y,0);
+		glBindTexture(GL_TEXTURE_2D, p2_hpBar);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(-45,-18);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(-45, 18);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i( 45, 18);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i( 45,-18);
+		glEnd();
+		glPopMatrix();
 	}
 }
 
@@ -875,60 +723,22 @@ void display_score(int xres, int yres)
 
 	if (!two_player) {
 		Rect r;
-		r.bot = yres - 50;
+		r.bot = yres - 70;
 		r.left = xres/2 - 25;
 		r.center = 0;
 		ggprint10(&r, 16, yellow, "Score: %i", p1_score);
 	} else {
 		Rect r;
-		r.bot = yres - 50;
+		r.bot = yres - 70;
 		r.left = 75;
 		r.center = 0;
 		ggprint10(&r, 16, yellow, "Score: %i", p1_score);
 
 		Rect r2;
-		r2.bot = yres - 50;
+		r2.bot = yres - 70;
 		r2.left = xres - 125;
 		r2.center = 0;
 		ggprint10(&r2, 16, yellow, "Score: %i", p2_score);
-	}
-}
-
-// Displays collisions with player (for testing purposes)
-void display_collisions(int xres, int yres)
-{
-	Rect r;
-	r.bot = yres - 20;
-	r.left = xres - 198;
-	r.center = 0;
-	unsigned int white = 0xffffff;
-	ggprint8b(&r, 16, white, "Collisions (for testing):");
-	ggprint8b(&r, 16, white, "Spikes - %i", spike_collisions);
-	ggprint8b(&r, 16, white, "Stars - %i", star_collisions);
-	ggprint8b(&r, 16, white, "Helmets - %i", helm_collisions);
-	ggprint8b(&r, 16, white, "Hearts - %i", heart_collisions);
-}
-
-// Displays helmet and invincibility status (for testing purposes)
-void display_player_status(int xres, int yres)
-{
-	Rect r;
-	r.bot = yres - 110;
-	r.left = xres - 198;
-	r.center = 0;
-	unsigned int red = 0xff0000;
-	unsigned int green = 0x00ff00;
-	unsigned int yellow = 0x00dddd00;
-	ggprint8b(&r, 16, 0xffffff, "Status (for testing):");
-	if (p1_helm) {
-		ggprint8b(&r, 16, green, "Helmet ON");
-	} else {
-		ggprint8b(&r, 16, red, "No helmet");
-	}
-	if (p1_invincible) {
-		ggprint8b(&r, 16, yellow, "Invincible");
-	} else {
-		ggprint8b(&r, 16, red, "Not invincible");
 	}
 }
 
@@ -942,7 +752,7 @@ void gamelog()
 
 	string command =
 		"curl http://cs.csubak.edu/\\~koverstreet/3350/dodge/update_scores.php";
-	command += "\\?name=" + player_name;
+	command += "\\?name=" + p1_name;
 	command += "\\&score=" + score_str;
 
 	system(command.c_str());

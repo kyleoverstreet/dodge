@@ -50,25 +50,27 @@ extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
 extern void credits(const int, const int);
-extern void init(int, int, Player*);
-extern void init2(int, int, Player*);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
-extern void keypressR(Player *player);
-extern void keypressL(Player *player);
-extern void keypressA(Player *player2);
-extern void keypressD(Player *player2);
+extern void keypressA(Player *player);
+extern void keypressD(Player *player);
+extern void keypressR(Player *player2);
+extern void keypressL(Player *player2);
 extern int movePlayer(int xres, Player *player);
 extern int movePlayer2(int xres, Player *player2);
-extern void dropItems(int, int, bool, const int, const int);
+extern void dropItems(int, int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
+<<<<<<< HEAD
 extern void display_collisions(int, int);
 extern void display_player_status(int, int);
 extern void end_credits(int xres, int yres);
+=======
+//extern void end_credits(int xres, int yres);
+>>>>>>> 2f479b990ee1fbfcc4d0968d643c699bb50db08f
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -104,15 +106,22 @@ Ppmimage *playerImage = NULL;
 Ppmimage *playerHelmImage = NULL;
 Ppmimage *playerInvincibleImage = NULL;
 Ppmimage *playerHelmInvincImage = NULL;
-Ppmimage *playerImage2 = NULL;
-Ppmimage *full_hpImage = NULL;
-Ppmimage *three_fourths_hpImage = NULL;
-Ppmimage *half_hpImage = NULL;
-Ppmimage *one_fourth_hpImage = NULL;
-Ppmimage *no_hpImage = NULL;
-Ppmimage *invincible_hpImage = NULL;
+
+Ppmimage *player2Image = NULL;
+Ppmimage *player2HelmImage = NULL;
+Ppmimage *player2InvincibleImage = NULL;
+Ppmimage *player2HelmInvincImage = NULL;
+
+Ppmimage *hp4Image = NULL;
+Ppmimage *hp3Image = NULL;
+Ppmimage *hp2Image = NULL;
+Ppmimage *hp1Image = NULL;
+Ppmimage *hp0Image = NULL;
+Ppmimage *hpiImage = NULL;
+
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
+
 Ppmimage *spikeImage = NULL;
 Ppmimage *helmetImage = NULL;
 Ppmimage *starImage = NULL;
@@ -122,41 +131,49 @@ GLuint playerTexture;
 GLuint playerHelmTexture;
 GLuint playerInvincibleTexture;
 GLuint playerHelmInvincTexture;
-GLuint playerTexture2;
-GLuint full_hpTexture;
-GLuint three_fourths_hpTexture;
-GLuint half_hpTexture;
-GLuint one_fourth_hpTexture;
-GLuint no_hpTexture;
-GLuint invincible_hpTexture;
+
+GLuint player2Texture;
+GLuint player2HelmTexture;
+GLuint player2InvincibleTexture;
+GLuint player2HelmInvincTexture;
+
+GLuint hp4Texture;
+GLuint hp3Texture;
+GLuint hp2Texture;
+GLuint hp1Texture;
+GLuint hp0Texture;
+GLuint hpiTexture;
+
+GLuint bgTexture;
+GLuint bgTransTexture;
+
 GLuint silhouetteSpike;
 GLuint silhouetteHelm;
 GLuint silhouetteStar;
 GLuint silhouetteHeart;
-GLuint bgTexture;
-GLuint bgTransTexture;
 
 int display_tutorial = 0;
 int display_menu = 0;
 int display_credits = 0;
 int showPlayer = 0;
-string player_name;
+string p1_name;
+string p2_name;
 int background = 1;
 int silhouette = 1;
 int trees = 1;
-extern int spike_collisions;
-extern int helm_collisions;
-extern int star_collisions;
 extern bool p1_helm;
 extern bool p1_invincible;
+extern bool p2_helm;
+extern bool p2_invincible;
 
 int keys[65536];
 
 int main(void)
 {
-	cout << "(TEMPORARY TO TEST KYLE'S GAMELOG SCRIPT)" << endl;
-	cout << "Please enter player name: ";
-	cin >> player_name;
+	cout << "Please enter player1 name: ";
+	cin >> p1_name;
+	cout << "Please enter player2 name: ";
+	cin >> p2_name;
 	cout << endl;
 #ifdef USE_OPENAL_SOUND
 	initialize_sounds();
@@ -164,10 +181,6 @@ int main(void)
 	logOpen();
 	initXWindows();
 	initOpengl();
-	/*init(xres, yres, &player);
-	  if (two_player) {
-	  init2(xres, yres, &player2);
-	  }*/
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
@@ -313,62 +326,56 @@ void initOpengl(void)
 	initialize_fonts();
 	//load the images file into a ppm structure.
 	convertpng2ppm();
-	//Character1
-	playerImage = ppm6GetImage("./images/standL.ppm");
-	//Character1 with Helm
-	playerHelmImage  = ppm6GetImage("./images/standhelmL.ppm");
-	//Character1 with Invincibility
-	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
-	//Character1 with Helm and Invincibility
-	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
+	
+	// Player1 images
+	playerImage = ppm6GetImage("./images/p1.ppm");
+	playerHelmImage  = ppm6GetImage("./images/p1Helm.ppm");
+	playerInvincibleImage = ppm6GetImage("./images/p1Invinc.ppm");
+	playerHelmInvincImage = ppm6GetImage("./images/p1HelmInvinc.ppm");
 
+	// Player2 images
 	if (two_player) {
-		//Character2 Image
-		playerImage2 = ppm6GetImage("./images/player2.ppm");
+		player2Image = ppm6GetImage("./images/p2.ppm");
+		player2HelmImage = ppm6GetImage("./images/p2Helm.ppm");
+		player2InvincibleImage = ppm6GetImage("./images/p2Invinc.ppm");
+		player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
 	}
 
-	//Background Image
+	// Background images
 	bgImage = ppm6GetImage("./images/background1.ppm");
-	//Transparent Image (since it messes up if I delete it)	
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
-	//Character1 with Invincibility
-	playerInvincibleImage = ppm6GetImage("./images/starplayer.ppm");
-	//Character1 with Helm and Invincibility
-	playerHelmInvincImage = ppm6GetImage("./images/invinciblehelm.ppm");
-	// Full HP
-	full_hpImage = ppm6GetImage("./images/full_hp.ppm");
-	// 3/4 HP
-	three_fourths_hpImage = ppm6GetImage("./images/three_fourths_hp.ppm");
-	// Half HP
-	half_hpImage = ppm6GetImage("./images/half_hp.ppm");
-	// 1/4 HP
-	one_fourth_hpImage = ppm6GetImage("./images/one_fourth_hp.ppm");
-	// No HP
-	no_hpImage = ppm6GetImage("./images/no_hp.ppm");
-	// Invincible HP
-	invincible_hpImage = ppm6GetImage("./images/invincible_hp.ppm");
-	//Spike Image
+	
+	// Health bar images
+	hp4Image = ppm6GetImage("./images/hp4.ppm");
+	hp3Image = ppm6GetImage("./images/hp3.ppm");
+	hp2Image = ppm6GetImage("./images/hp2.ppm");
+	hp1Image = ppm6GetImage("./images/hp1.ppm");
+	hp0Image = ppm6GetImage("./images/hp0.ppm");
+	hpiImage = ppm6GetImage("./images/hpi.ppm");
+	
+	// Item images
 	spikeImage = ppm6GetImage("./images/Spike.ppm");
-	//Helmet Image
 	helmetImage = ppm6GetImage("./images/helmet.ppm");
-	//Star Image
 	starImage = ppm6GetImage("./images/Star.ppm");
-	//Heart Image
 	heartImage = ppm6GetImage("./images/heart.ppm");
+	
 	//create opengl texture elements
 	glGenTextures(1, &playerTexture);
 	glGenTextures(1, &playerHelmTexture);
 	glGenTextures(1, &playerInvincibleTexture);
 	glGenTextures(1, &playerHelmInvincTexture);
 	if (two_player) {
-		glGenTextures(1, &playerTexture2);
+		glGenTextures(1, &player2Texture);
+		glGenTextures(1, &player2HelmTexture);
+		glGenTextures(1, &player2InvincibleTexture);
+		glGenTextures(1, &player2HelmInvincTexture);
 	}
-	glGenTextures(1, &full_hpTexture);
-	glGenTextures(1, &three_fourths_hpTexture);
-	glGenTextures(1, &half_hpTexture);
-	glGenTextures(1, &one_fourth_hpTexture);
-	glGenTextures(1, &no_hpTexture);
-	glGenTextures(1, &invincible_hpTexture);
+	glGenTextures(1, &hp4Texture);
+	glGenTextures(1, &hp3Texture);
+	glGenTextures(1, &hp2Texture);
+	glGenTextures(1, &hp1Texture);
+	glGenTextures(1, &hp0Texture);
+	glGenTextures(1, &hpiTexture);
 	glGenTextures(1, &silhouetteSpike);
 	glGenTextures(1, &silhouetteHelm);
 	glGenTextures(1, &silhouetteStar);
@@ -437,77 +444,107 @@ void initOpengl(void)
 
 	if (two_player) {
 		//player2
-		w = playerImage2->width;
-		h = playerImage2->height;
-		glBindTexture(GL_TEXTURE_2D, playerTexture2);
+		w = player2Image->width;
+		h = player2Image->height;
+		glBindTexture(GL_TEXTURE_2D, player2Texture);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		silhouetteData = buildAlphaData(playerImage2);	
+		silhouetteData = buildAlphaData(player2Image);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+		//player2 with helm
+		w = player2HelmImage->width;
+		h = player2HelmImage->height;
+		glBindTexture(GL_TEXTURE_2D, player2HelmTexture);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		silhouetteData = buildAlphaData(player2HelmImage);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+		
+		//player2 with invincibility
+		w = player2InvincibleImage->width;
+		h = player2InvincibleImage->height;
+		glBindTexture(GL_TEXTURE_2D, player2InvincibleTexture);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		silhouetteData = buildAlphaData(player2InvincibleImage);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+		//player2 with helm and invincibility
+		w = player2HelmInvincImage->width;
+		h = player2HelmInvincImage->height;
+		glBindTexture(GL_TEXTURE_2D, player2HelmInvincTexture);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		silhouetteData = buildAlphaData(player2HelmInvincImage);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	}
 
 	// Full HP
-	w = full_hpImage->width;
-	h = full_hpImage->height;	
-	glBindTexture(GL_TEXTURE_2D, full_hpTexture);
+	w = hp4Image->width;
+	h = hp4Image->height;	
+	glBindTexture(GL_TEXTURE_2D, hp4Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(full_hpImage);	
+	silhouetteData = buildAlphaData(hp4Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// 3/4 HP
-	w = three_fourths_hpImage->width;
-	h = three_fourths_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, three_fourths_hpTexture);
+	w = hp3Image->width;
+	h = hp3Image->height; 
+	glBindTexture(GL_TEXTURE_2D, hp3Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(three_fourths_hpImage);	
+	silhouetteData = buildAlphaData(hp3Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// Half HP
-	w = half_hpImage->width;
-	h = half_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, half_hpTexture);
+	w = hp2Image->width;
+	h = hp2Image->height; 
+	glBindTexture(GL_TEXTURE_2D, hp2Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(half_hpImage);	
+	silhouetteData = buildAlphaData(hp2Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	// 1/4 HP
-	w = one_fourth_hpImage->width;
-	h = one_fourth_hpImage->height;	
-	glBindTexture(GL_TEXTURE_2D, one_fourth_hpTexture);
+	w = hp1Image->width;
+	h = hp1Image->height;	
+	glBindTexture(GL_TEXTURE_2D, hp1Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(one_fourth_hpImage);	
+	silhouetteData = buildAlphaData(hp1Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// No HP
-	w = no_hpImage->width;
-	h = no_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, no_hpTexture);
+	w = hp0Image->width;
+	h = hp0Image->height; 
+	glBindTexture(GL_TEXTURE_2D, hp0Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(no_hpImage);	
+	silhouetteData = buildAlphaData(hp0Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
 
 	// Invincible HP
-	w = invincible_hpImage->width;
-	h = invincible_hpImage->height; 
-	glBindTexture(GL_TEXTURE_2D, invincible_hpTexture);
+	w = hpiImage->width;
+	h = hpiImage->height; 
+	glBindTexture(GL_TEXTURE_2D, hpiTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(invincible_hpImage);	
+	silhouetteData = buildAlphaData(hpiImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
@@ -663,23 +700,23 @@ void physics(void)
 	if (showPlayer) {
 		if (!two_player) {
 			p1_pos = movePlayer(xres, &player);
-			dropItems(p1_pos, p2_pos, two_player, xres, yres);
+			dropItems(p1_pos, p2_pos, xres, yres);
 		} else {
 			p1_pos = movePlayer(xres, &player);
 			p2_pos = movePlayer2(xres, &player2);
-			dropItems(p1_pos, p2_pos, two_player, xres, yres);
+			dropItems(p1_pos, p2_pos, xres, yres);
 		}
 		if (keys[XK_Left]) {
-			keypressL(&player);
+			keypressL(&player2);
 		}
 		if (keys[XK_Right]) {
-			keypressR(&player);
+			keypressR(&player2);
 		}
 		if (keys[XK_a]) {
-			keypressA(&player2);
+			keypressA(&player);
 		}
 		if (keys[XK_d]) {
-			keypressD(&player2);
+			keypressD(&player);
 		}
 	}
 }
@@ -696,7 +733,7 @@ void render(void)
 	float wid = 30.0f;
 	glColor3f(1.0, 1.0, 1.0);
 
-	//set background
+	// Set background
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -709,25 +746,17 @@ void render(void)
 		glPushMatrix();
 		glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
 
-		//set up a timer depending on keypress
-		//use an animation span for a certain amount of seconds to display each image
-		//combine images into one, and use vertices to display each image individually
-		//if stand then keys are not pressed 
-		//if left check for left keypress
-		//if right check for right keypress
-		//at end of render grab time and add to animation span
-
 		if (p1_helm && !p1_invincible) {
-			// display character with helmet
+			// Player1 - Helmet
 			glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
 		} else if (p1_helm && p1_invincible) {
-			// display character with helmet and invincibility
+			// Player1 - Helmet & invincible
 			glBindTexture(GL_TEXTURE_2D, playerHelmInvincTexture);
 		} else if (!p1_helm && p1_invincible) {
-			// display invincible character
+			// Player1 - Invincible
 			glBindTexture(GL_TEXTURE_2D, playerInvincibleTexture);
 		} else {
-			// display vulnerable (normal) character
+			// Player1
 			glBindTexture(GL_TEXTURE_2D, playerTexture);
 		}
 
@@ -754,7 +783,21 @@ void render(void)
 		if (two_player) {
 			glPushMatrix();
 			glTranslatef(player2.pos[0], player2.pos[1], 0);
-			glBindTexture(GL_TEXTURE_2D, playerTexture2);
+			
+			if (p2_helm && !p2_invincible) {
+				// Player2 - Helmet
+				glBindTexture(GL_TEXTURE_2D, player2HelmTexture);
+			} else if (p2_helm && p2_invincible) {
+				// Player2 - Helmet & invincible
+				glBindTexture(GL_TEXTURE_2D, player2HelmInvincTexture);
+			} else if (!p2_helm && p2_invincible) {
+				// Player2 - Invincible
+				glBindTexture(GL_TEXTURE_2D, player2InvincibleTexture);
+			} else {
+				// Player2
+				glBindTexture(GL_TEXTURE_2D, player2Texture);
+			}
+		
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
@@ -800,7 +843,7 @@ void render(void)
 		r.center = 0;
 		unsigned int color = 0x00dddd00;
 		ggprint8b(&r, 16, color, "1 - 1-player");
-		ggprint8b(&r, 16, color, "2 - 2-player (work in progress)");
+		ggprint8b(&r, 16, color, "2 - 2-player");
 		ggprint8b(&r, 16, color, "T - Tutorial");
 		ggprint8b(&r, 16, color, "M - Menu");
 	}
@@ -820,7 +863,5 @@ void render(void)
 		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
-		//display_collisions(xres, yres);
-		//display_player_status(xres, yres);
 	}
 }

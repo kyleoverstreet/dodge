@@ -1,7 +1,7 @@
 //Created by: Christian Chavez
 //Dodge project
 //Individual coode
-//Last Update: 4/23/2017
+//Last Update: 4/26/2017
 
 /*
                     *********Week 13 update*********
@@ -12,7 +12,8 @@ designed to apper in the window when the game is started up and give the user
 a place for navigation, whether thats how to play the game, look at the high
 scores or pick what game mode they would like to do. On the 23rd I added the
 ability to bring up a menu and added limited functionality to navigate throuh
-the menu.
+the menu. On the 24th I solved an issue that orevented the menu bix popping up
+when more text was added inside the box.
 */
 
 #include <X11/Xlib.h>
@@ -47,102 +48,68 @@ struct Shape {
 
 void menu(const int, const int);
 void credits(const int, const int);
+extern void tutorial(const int xres, const int yres);
 
 //Colors for the test in themenus and the sub menus
 unsigned int red = 0xff0000;
 //unsigned int green = 0x00ff00;
 unsigned int yellow = 0xffff00;
-unsigned int blue = 0x0000ff;
+//unsigned int blue = 0x0000ff;
 //unsigned int aqua = 0x00ffff;
-//unsigned int white = 0xffffff;
+unsigned int white = 0xffffff;
 
 void menu(const int xres, const int yres)
 {
-    float w, h;
-    
-    Shape s;
-    s.width = 300;
-    s.height = 225;
-    s.center.x = xres/2;
-    s.center.y = yres/2 + 20;
-    glColor3ub(0,0,0);
-    glPushMatrix();
-    glTranslatef(s.center.x, s.center.y, s.center.z);
-    w = s.width;
-    h = s.height;
-    glBegin(GL_QUADS);
-    glVertex2i(-w, -h);
-    glVertex2i(-w, h);
-    glVertex2i(w, h);
-    glVertex2i(w, -h);
-    glEnd();
-    glPopMatrix();
+    int y = yres/2;
+    int x = xres/2;
+
+
     //Welcome message Text
     Rect menu;
-    menu.bot = s.center.y + 90;
-    menu.left = s.center.x;
-    menu.center = s.center.y;
-    ggprint8b(&menu, 16, blue, "WELCOME TO THE DODGE MENU!!!");
+    menu.bot = y + 150;
+    menu.left = x;
+    menu.center = y;
+    ggprint8b(&menu, 16, white, "WELCOME TO THE DODGE MENU!!!");
     
     //Keyboard Directions
-    menu.bot = s.center.y + 73;
-    menu.left = s.center.x;
-    menu.center = s.center.y;
+    menu.bot = y + 133;
+    menu.left = x;
+    menu.center = y;
     ggprint8b(&menu, 16, red, "Use the keyboard to navigate through the menu!");
     
-    //Exit the menu
-    menu.bot = s.center.y;
-    menu.left = s.center.x - 150;
-    menu.center = s.center.y;
-    ggprint8b(&menu, 16, yellow, "<m> Exit Menu");
-
-    //See the game credits
-    menu.bot = s.center.y - 17;
-    menu.left = s.center.x - 159;
-    menu.center = s.center.y;
-    ggprint8b(&menu, 16, yellow, "<c> Credits");
-
     //Change/view the audio settings
-    menu.bot = s.center.y - 34;
-    menu.left = s.center.x - 139;
-    menu.center = s.center.y;
+    menu.bot = y + 100;
+    menu.left = x;
+    menu.center = y;
     ggprint8b(&menu, 16, yellow, "<a> Audio Settings");
 
+    //View how tro play the game
+    menu.bot = y + 83;
+    menu.left = x;
+    menu.center = y;
+    ggprint8b(&menu, 16, yellow, "<h> How to Play");
+
     //Chnage view the game mode
-    menu.bot = s.center.y - 51;
-    menu.left = s.center.x - 145;
-    menu.center = s.center.y;
-    ggprint8b(&menu, 16, yellow, "<g> Game Modes");
+    menu.bot = y + 66;
+    menu.left = x;
+    menu.center = y;
+    ggprint8b(&menu, 16, yellow, "<s> Start Game");
+
 }
 
 
 void credits(const int xres, const int yres)
 {
-    float w, h;
-    
-    Shape s;
-    s.width = 300;
-    s.height = 225;
-    s.center.x = xres/2;
-    s.center.y = yres/2 + 20;
-    glColor3ub(0,0,0);
-    glPushMatrix();
-    glTranslatef(s.center.x, s.center.y, s.center.z);
-    w = s.width;
-    h = s.height;
-    glBegin(GL_QUADS);
-        glVertex2i(-w, -h);
-        glVertex2i(-w, h);
-        glVertex2i(w, h);
-        glVertex2i(w, -h);
-        glEnd();
-        glPopMatrix();
+
+    int y = yres/2;
+    int x = xres/2;
+
     //Welcome message
     Rect christian;
-    christian.bot = s.center.y + 90;
-    christian.left = s.center.x;
-    christian.center = s.center.y;
-    ggprint8b(&christian, 16, blue, "MENU DEVELOPER - Christian Chavez");
+    christian.bot = y + 90;
+    christian.left = x;
+    christian.center = y;
+    ggprint8b(&christian, 16, white, "MENU DEVELOPER - Christian Chavez");
    
 }
 
