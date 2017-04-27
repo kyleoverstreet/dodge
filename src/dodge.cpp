@@ -65,13 +65,8 @@ extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
-<<<<<<< HEAD
-=======
 extern void display_collisions(int, int);
 extern void display_player_status(int, int);
-extern void end_credits(int xres, int yres);
-//extern void end_credits(int xres, int yres);
->>>>>>> 82fce1edf03921f4d7e14a587e83d8970bd4be28
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -80,6 +75,7 @@ extern void play_GetShield();
 extern void cleanup_sounds();
 extern void check_sound();
 extern void play_theme();
+extern void play_health_pickup();
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -673,11 +669,9 @@ void checkKeys(XEvent *e)
 			display_menu ^= 1;
 			break;
 		case XK_c:
-			end_credits(xres, yres);
-			//display_credits ^= 1;
+			display_credits ^= 1;
 			break;
 		case XK_p:
-			//end_credits(xres, yres);
 			break;
 		case XK_Left: 
 			break;
