@@ -84,14 +84,14 @@ int movePlayer(int xres, Player *player) {
 	return player->pos[0];	
 }
 
-void keypressL(Player *player) {
-	player->vel[0] -= 3.5;
-	player->LR = false;
+void keypressL(Player *player2) {
+	player2->vel[0] -= 3.5;
+	player2->LR = false;
 }
 
-void keypressR(Player *player) {
-	player->vel[0] += 3.5;
-	player->LR = true;
+void keypressR(Player *player2) {
+	player2->vel[0] += 3.5;
+	player2->LR = true;
 }
 
 void gamestart1p(Player *player, int xres) {

@@ -52,10 +52,10 @@ extern void menu(const int, const int);
 extern void credits(const int, const int);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
-extern void keypressR(Player *player);
-extern void keypressL(Player *player);
-extern void keypressA(Player *player2);
-extern void keypressD(Player *player2);
+extern void keypressA(Player *player);
+extern void keypressD(Player *player);
+extern void keypressR(Player *player2);
+extern void keypressL(Player *player2);
 extern int movePlayer(int xres, Player *player);
 extern int movePlayer2(int xres, Player *player2);
 extern void dropItems(int, int, const int, const int);
@@ -150,7 +150,8 @@ int display_tutorial = 0;
 int display_menu = 0;
 int display_credits = 0;
 int showPlayer = 0;
-string player_name;
+string p1_name;
+string p2_name;
 int background = 1;
 int silhouette = 1;
 int trees = 1;
@@ -163,9 +164,10 @@ int keys[65536];
 
 int main(void)
 {
-	cout << "(TEMPORARY TO TEST KYLE'S GAMELOG SCRIPT)" << endl;
-	cout << "Please enter player name: ";
-	cin >> player_name;
+	cout << "Please enter player1 name: ";
+	cin >> p1_name;
+	cout << "Please enter player2 name: ";
+	cin >> p2_name;
 	cout << endl;
 #ifdef USE_OPENAL_SOUND
 	initialize_sounds();
@@ -698,16 +700,16 @@ void physics(void)
 			dropItems(p1_pos, p2_pos, xres, yres);
 		}
 		if (keys[XK_Left]) {
-			keypressL(&player);
+			keypressL(&player2);
 		}
 		if (keys[XK_Right]) {
-			keypressR(&player);
+			keypressR(&player2);
 		}
 		if (keys[XK_a]) {
-			keypressA(&player2);
+			keypressA(&player);
 		}
 		if (keys[XK_d]) {
-			keypressD(&player2);
+			keypressD(&player);
 		}
 	}
 }
