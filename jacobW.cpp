@@ -13,6 +13,7 @@
 using namespace std;
 
 void cleanupPPM(void) {
+    	system("rm ./images/credits.ppm");
 	system("rm ./images/background1.ppm");
 	system("rm ./images/p1.ppm");
 	system("rm ./images/p1Helm.ppm");
@@ -32,9 +33,11 @@ void cleanupPPM(void) {
 	system("rm ./images/helmet.ppm");
 	system("rm ./images/Star.ppm");
 	system("rm ./images/heart.ppm");
+	system("rm ./images/death.ppm");
 }
 
 void convertpng2ppm(void) {
+    system("convert ./images/credits.jpg ./images/credits.ppm");
     system("convert ./images/background1.jpg ./images/background1.ppm");
     system("convert ./images/p1.png ./images/p1.ppm");
     system("convert ./images/p1Helm.png ./images/p1Helm.ppm");
@@ -54,6 +57,7 @@ void convertpng2ppm(void) {
     system("convert ./images/helmet.png ./images/helmet.ppm");
     system("convert ./images/Star.png ./images/Star.ppm");
     system("convert ./images/heart.png ./images/heart.ppm");
+    system("convert ./images/death.png ./images/death.ppm");
 }
 
 int movePlayer(int xres, Player *player) {

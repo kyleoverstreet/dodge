@@ -50,9 +50,13 @@ extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
 extern void menu(const int, const int);
 extern void credits(const int, const int);
+<<<<<<< HEAD
 extern void startGame(const int, const int);
 extern void oneArrow(const int, const int);
 extern void twoArrow(const int, const int);
+=======
+extern void end_credits(int xres, int yres);
+>>>>>>> 1dc55c2b183ce7778763bd0b6a98bb1b82785dcf
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
 extern void keypressA(Player *player);
@@ -67,7 +71,8 @@ extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
-//extern void end_credits(int xres, int yres);
+extern void display_collisions(int, int);
+extern void display_player_status(int, int);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -76,6 +81,7 @@ extern void play_GetShield();
 extern void cleanup_sounds();
 extern void check_sound();
 extern void play_theme();
+extern void play_health_pickup();
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -109,6 +115,8 @@ Ppmimage *player2HelmImage = NULL;
 Ppmimage *player2InvincibleImage = NULL;
 Ppmimage *player2HelmInvincImage = NULL;
 
+Ppmimage *deathImage = NULL;
+
 Ppmimage *hp4Image = NULL;
 Ppmimage *hp3Image = NULL;
 Ppmimage *hp2Image = NULL;
@@ -133,6 +141,8 @@ GLuint player2Texture;
 GLuint player2HelmTexture;
 GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
+
+GLuint deathTexture;
 
 GLuint hp4Texture;
 GLuint hp3Texture;
@@ -165,7 +175,7 @@ extern bool p1_helm;
 extern bool p1_invincible;
 extern bool p2_helm;
 extern bool p2_invincible;
-
+bool hardmode = false;
 int keys[65536];
 
 int main(void)
@@ -341,6 +351,9 @@ void initOpengl(void)
 		player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
 	}
 
+	// Death image
+	deathImage = ppm6GetImage("./images/death.ppm");
+
 	// Background images
 	bgImage = ppm6GetImage("./images/background1.ppm");
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
@@ -370,6 +383,7 @@ void initOpengl(void)
 		glGenTextures(1, &player2InvincibleTexture);
 		glGenTextures(1, &player2HelmInvincTexture);
 	}
+	glGenTextures(1, &deathTexture);
 	glGenTextures(1, &hp4Texture);
 	glGenTextures(1, &hp3Texture);
 	glGenTextures(1, &hp2Texture);
@@ -483,6 +497,16 @@ void initOpengl(void)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	}
+
+	//death
+	w = deathImage->width;
+	h = deathImage->height;	
+	glBindTexture(GL_TEXTURE_2D, deathTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(deathImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	// Full HP
 	w = hp4Image->width;
@@ -651,7 +675,6 @@ void checkKeys(XEvent *e)
 			display_twoArrow ^= 1;
 			break;
 		case XK_p:
-			//end_credits(xres, yres);
 			break;
 		case XK_Left: 
 			break;
@@ -855,6 +878,10 @@ void render(void)
 				gamestart1p(&player, xres);
 			}
 		    }
+	if (display_menu && !display_tutorial && !showPlayer) {
+		menu(xres, yres);
+		if (display_credits) {
+			end_credits(xres, yres);
 		}
 		if (display_twoArrow & !display_oneArrow) {
 		    twoArrow(xres, yres);
