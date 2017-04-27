@@ -106,6 +106,8 @@ Ppmimage *player2HelmImage = NULL;
 Ppmimage *player2InvincibleImage = NULL;
 Ppmimage *player2HelmInvincImage = NULL;
 
+Ppmimage *deathImage = NULL;
+
 Ppmimage *hp4Image = NULL;
 Ppmimage *hp3Image = NULL;
 Ppmimage *hp2Image = NULL;
@@ -130,6 +132,8 @@ GLuint player2Texture;
 GLuint player2HelmTexture;
 GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
+
+GLuint deathTexture;
 
 GLuint hp4Texture;
 GLuint hp3Texture;
@@ -335,6 +339,9 @@ void initOpengl(void)
 		player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
 	}
 
+	// Death image
+	deathImage = ppm6GetImage("./images/death.ppm");
+
 	// Background images
 	bgImage = ppm6GetImage("./images/background1.ppm");
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
@@ -364,6 +371,7 @@ void initOpengl(void)
 		glGenTextures(1, &player2InvincibleTexture);
 		glGenTextures(1, &player2HelmInvincTexture);
 	}
+	glGenTextures(1, &deathTexture);
 	glGenTextures(1, &hp4Texture);
 	glGenTextures(1, &hp3Texture);
 	glGenTextures(1, &hp2Texture);
@@ -477,6 +485,16 @@ void initOpengl(void)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	}
+
+	//death
+	w = deathImage->width;
+	h = deathImage->height;	
+	glBindTexture(GL_TEXTURE_2D, deathTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(deathImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	// Full HP
 	w = hp4Image->width;

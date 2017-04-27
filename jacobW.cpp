@@ -32,6 +32,7 @@ void cleanupPPM(void) {
 	system("rm ./images/helmet.ppm");
 	system("rm ./images/Star.ppm");
 	system("rm ./images/heart.ppm");
+	system("rm ./images/death.ppm");
 }
 
 void convertpng2ppm(void) {
@@ -54,6 +55,7 @@ void convertpng2ppm(void) {
     system("convert ./images/helmet.png ./images/helmet.ppm");
     system("convert ./images/Star.png ./images/Star.ppm");
     system("convert ./images/heart.png ./images/heart.ppm");
+    system("convert ./images/death.png ./images/death.ppm");
 }
 
 int movePlayer(int xres, Player *player) {
