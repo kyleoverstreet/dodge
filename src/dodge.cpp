@@ -64,13 +64,10 @@ extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
-<<<<<<< HEAD
 extern void display_collisions(int, int);
 extern void display_player_status(int, int);
 extern void end_credits(int xres, int yres);
-=======
 //extern void end_credits(int xres, int yres);
->>>>>>> 2f479b990ee1fbfcc4d0968d643c699bb50db08f
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
