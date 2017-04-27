@@ -65,6 +65,13 @@ extern void deleteStar(Star *node);
 extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
+<<<<<<< HEAD
+=======
+extern void display_collisions(int, int);
+extern void display_player_status(int, int);
+extern void end_credits(int xres, int yres);
+//extern void end_credits(int xres, int yres);
+>>>>>>> 82fce1edf03921f4d7e14a587e83d8970bd4be28
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -106,6 +113,8 @@ Ppmimage *player2HelmImage = NULL;
 Ppmimage *player2InvincibleImage = NULL;
 Ppmimage *player2HelmInvincImage = NULL;
 
+Ppmimage *deathImage = NULL;
+
 Ppmimage *hp4Image = NULL;
 Ppmimage *hp3Image = NULL;
 Ppmimage *hp2Image = NULL;
@@ -130,6 +139,8 @@ GLuint player2Texture;
 GLuint player2HelmTexture;
 GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
+
+GLuint deathTexture;
 
 GLuint hp4Texture;
 GLuint hp3Texture;
@@ -335,6 +346,9 @@ void initOpengl(void)
 		player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
 	}
 
+	// Death image
+	deathImage = ppm6GetImage("./images/death.ppm");
+
 	// Background images
 	bgImage = ppm6GetImage("./images/background1.ppm");
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
@@ -364,6 +378,7 @@ void initOpengl(void)
 		glGenTextures(1, &player2InvincibleTexture);
 		glGenTextures(1, &player2HelmInvincTexture);
 	}
+	glGenTextures(1, &deathTexture);
 	glGenTextures(1, &hp4Texture);
 	glGenTextures(1, &hp3Texture);
 	glGenTextures(1, &hp2Texture);
@@ -477,6 +492,16 @@ void initOpengl(void)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	}
+
+	//death
+	w = deathImage->width;
+	h = deathImage->height;	
+	glBindTexture(GL_TEXTURE_2D, deathTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(deathImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	// Full HP
 	w = hp4Image->width;
@@ -648,7 +673,8 @@ void checkKeys(XEvent *e)
 			display_menu ^= 1;
 			break;
 		case XK_c:
-			display_credits ^= 1;
+			end_credits(xres, yres);
+			//display_credits ^= 1;
 			break;
 		case XK_p:
 			//end_credits(xres, yres);

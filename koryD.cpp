@@ -11,7 +11,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
+#endif
+
 #include <stdlib.h>
 #include <vector>
 #include "src/shared.h"
@@ -26,6 +30,9 @@ Ppmimage *creditsTransImage = NULL;
 GLuint 	creditsTexture;
 GLuint 	creditsTransTexture;
 extern unsigned char *buildAlphaData(Ppmimage *img);
+
+unsigned int black = 0xffffff;
+const float gravity = -0.1f;
 
 extern "C" {
 #include "src/fonts.h"
@@ -186,6 +193,7 @@ extern void play_game_over()
 }
 extern void play_health_pickup()
 {
+<<<<<<< HEAD
     alBuffer = alutCreateBufferFromFile("./sounds/health_pickup.wav");
 
     alGenSources(1, &alSource);
@@ -200,6 +208,22 @@ extern void play_health_pickup()
     }
 
     alSourcePlay(alSource);
+=======
+	alBuffer = alutCreateBufferFromFile("./sounds/health-pickup.wav");
+
+	alGenSources(1, &alSource);
+	alSourcei(alSource, AL_BUFFER, alBuffer);
+	
+	alSourcef(alSource, AL_GAIN, 1.0f);
+	alSourcef(alSource, AL_PITCH, 1.0f);
+	alSourcei(alSource, AL_LOOPING, AL_FALSE);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR setting sound source\n");
+		return;
+	}
+	
+	alSourcePlay(alSource);
+>>>>>>> 82fce1edf03921f4d7e14a587e83d8970bd4be28
 }
 #endif
 
@@ -241,6 +265,7 @@ extern bool check_powerup_timer(bool powerup) {
 
 
 
+<<<<<<< HEAD
 //end credits scene
 
 extern void end_credits(int xres, int yres) {
@@ -301,3 +326,35 @@ extern void end_credits(int xres, int yres) {
 
 
 
+=======
+// end credits scene
+
+extern void end_credits(int xres, int yres) {
+	/*
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	float wid = 40.0f;
+        glColor3f(1.0, 1.0, 1.0);
+
+	glBindTexture(GL_TEXTURE_2D, bdTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
+	*/
+
+	
+	Rect r;
+	for(int i=0; i < 8000; i++) {
+	r.bot = yres/2;
+	r.left = xres/2 + 20;
+	r.center = 0;
+	
+	ggprint13(&r, 16, black, "This is a test");
+	}
+}
+
+>>>>>>> 82fce1edf03921f4d7e14a587e83d8970bd4be28
