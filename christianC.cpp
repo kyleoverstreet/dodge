@@ -16,7 +16,7 @@ the menu. On the 24th I solved an issue that orevented the menu bix popping up
 when more text was added inside the box. April 27th: Added the fucntionallity to this file
 and the main file to be able to select the game mode from the menu screen; I
 added the primitive menu for the audio settings and made the game over message
-apper when the game is over.
+apper on screen when the game is over.
 */
 
 #include <X11/Xlib.h>
