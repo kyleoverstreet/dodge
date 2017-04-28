@@ -60,7 +60,7 @@ void keypressD(Player*);
 int movePlayer2(int, Player*);
 void dropItems(int, int, bool, const int, const int);
 void display_score(int, int);
-void gamelog();
+void gamelog(string, int);
 
 #ifdef USE_OPENAL_SOUND
 extern void play_helmet_hit();
@@ -68,17 +68,17 @@ extern void play_powerup();
 extern void play_game_over();
 extern void play_health_pickup();
 #endif
-extern void createSpikes(const int, const int, const int);
+extern void createSpikes(float, const int, const int);
 extern void drawSpikes(void);
 extern void deleteSpike(Spike*);
-extern void createHelmets(const int, const int, const int);
+extern void createHelmets(float, const int, const int);
 extern void drawHelmets(void);
 extern void deleteHelmet(Helmet*);
-extern void createStars(const int, const int, const int);
+extern void createStars(float, const int, const int);
 extern void drawStars(void);
 extern void deleteStar(Star*);
 extern void spike_bounce(Spike* spike);
-extern void createHeart(const int, const int, const int);
+extern void createHeart(float, const int, const int);
 extern void drawHeart(void);
 extern void deleteHeart(Heart*);
 
@@ -110,7 +110,12 @@ extern int score;
 
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
-int drop_rate = 1; // use higher num to increase drop rate
+//const float gravity = -0.8f; FAT!
+float drop_rate = 1.0;; // use higher num to increase drop rate
+float spike_mod = 15.0;
+float other_mod = 1.3;
+int level = 1;
+int level_change = 100;
 
 bool deleted_spike;
 bool deleted_helm;
@@ -301,7 +306,14 @@ int movePlayer2(int xres, Player *player2) {
 void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 {
 	// Create the items
-	if (random(100) < 15) {
+	if ((p1_score > level_change || p2_score > level_change) && level < 10) {
+		spike_mod += 4;
+		level_change += 100;
+		level++;
+		cout << "increasing drop rate to level " << level << endl;
+	}
+	
+	if (random(100) < spike_mod) {
 		createSpikes(drop_rate, xres, yres);
 	}
 	if (random(200) < 1.3) {
@@ -393,7 +405,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #ifdef USE_OPENAL_SOUND
 						play_game_over();
 #endif
-						gamelog();
+						gamelog(p1_name, p1_score);
 						p1_dead = true;
 						dead_position = player_pos;
 						if (!two_player) {
@@ -441,7 +453,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #ifdef USE_OPENAL_SOUND
 							play_game_over();
 #endif
-							gamelog();
+							gamelog(p2_name, p2_score);
 							p2_dead = true;
 							dead_position2 = player2_pos;
 							if (p1_dead) {
@@ -760,15 +772,15 @@ void display_score(int xres, int yres)
 
 // Append player name, score, and date to gamelog via PHP script
 // Viewable at cs.csubak.edu/~koverstreet/3350/dodge/scores.txt
-void gamelog()
+void gamelog(string player, int score)
 {
 	stringstream ss;
-	ss << p1_score;
+	ss << score;
 	string score_str = ss.str();
 
 	string command =
 		"curl http://cs.csubak.edu/\\~koverstreet/3350/dodge/update_scores.php";
-	command += "\\?name=" + p1_name;
+	command += "\\?name=" + player;
 	command += "\\&score=" + score_str;
 
 	system(command.c_str());

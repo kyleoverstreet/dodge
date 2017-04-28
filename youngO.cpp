@@ -34,7 +34,7 @@ extern int p2_score;
 extern bool p1_dead;
 extern bool p2_dead;
 
-extern void createSpikes(const int n, const int xres, const int yres)
+extern void createSpikes(float n, const int xres, const int yres)
 {
 	//create new rain drops...
 	int i;
@@ -117,7 +117,7 @@ void deleteSpike(Spike *node)
 	}
 }
 
-extern void createHelmets(const int n, const int xres, const int yres)
+extern void createHelmets(float n, const int xres, const int yres)
 {
 	//create new rain drops...
 	int i;
@@ -195,7 +195,7 @@ extern void deleteHelmet(Helmet *node)
 	node = NULL;
 }
 
-extern void createStars(const int n, const int xres, const int yres)
+extern void createStars(float n, const int xres, const int yres)
 {
 	//create new rain drops...
 	int i;
@@ -269,7 +269,7 @@ void deleteStar(Star *node)
 	node = NULL;
 }
 //----------- create heart ---------------
-extern void createHeart(const int n, const int xres, const int yres)
+extern void createHeart(float n, const int xres, const int yres)
 {
 	//create new rain drops...
 	int i;
