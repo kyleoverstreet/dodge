@@ -690,10 +690,10 @@ void checkKeys(XEvent *e)
 		case XK_d:
 			break;
 		case XK_Escape:
-			if(creds)
+			if(creds) {
 				done=1;
 				break;
-			end_credits(xres, yres);
+			}
 			creds = 1;
 			break;
 	}
@@ -864,6 +864,9 @@ void render(void)
 		ggprint8b(&r, 16, color, "M - Menu");
 	}
 
+	if(creds) {
+		end_credits(xres, yres);
+	}
 	if (display_menu && !showPlayer) {
 		menu(xres, yres);
 	}
