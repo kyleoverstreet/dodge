@@ -87,6 +87,8 @@ extern bool start_helm_timer();
 extern bool start_powerup_timer();
 extern bool check_powerup_timer(bool powerup);
 
+extern void menu(int, int);
+
 extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
 extern GLuint silhouetteStar;
@@ -132,6 +134,10 @@ bool p2_dead = false;
 
 int dead_position = 0;
 int dead_position2 = 0;
+
+extern int showPlayer;
+extern int display_menu;
+
 void tutorial(const int xres, const int yres)
 {
 	unsigned int white = 0xffffff;
@@ -393,12 +399,16 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 						if (!two_player) {
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
+							display_menu = 1;
+							showPlayer = false;
 						}
 						if (two_player && p2_dead) {
 							cout << "P1 score: " << p1_score;
 							cout << "\nP2 score: " << p2_score;
 							cout << endl << endl;
 							cout << "Player 1 wins!" << endl;
+							display_menu = 1;
+							showPlayer = false;
 						}
 					}
 					deleteSpike(spike);
@@ -439,6 +449,8 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 								cout << "\nP2 score: " << p2_score;
 								cout << endl << endl;
 								cout << "Player 2 wins!" << endl;
+								display_menu = 1;
+								showPlayer = false;
 							}
 						}
 						if (!deleted_spike) {
