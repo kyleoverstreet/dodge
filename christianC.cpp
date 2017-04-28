@@ -75,11 +75,11 @@ void menu(const int xres, const int yres)
 
     //Welcome message Text
     Rect menu;
-    menu.bot = y + 225;
+/*    menu.bot = y + 225;
     menu.left = x;
     menu.center = y;
     ggprint8b(&menu, 16, white, "DODGE MAIN MENU");
-    
+*/    
     //Change/view the audio settings
     menu.bot = y + 175;
     menu.left = x;

@@ -72,6 +72,7 @@ extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
 extern void tombstone(int);
+extern void logo(int, int);
 extern void gameOver(const int, const int);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
@@ -861,6 +862,7 @@ void render(void)
 
 	if (display_menu && !showPlayer) {
 		menu(xres, yres);
+		logo(xres, 525);
 	}
 
 	if (display_gameModes && !showPlayer) {

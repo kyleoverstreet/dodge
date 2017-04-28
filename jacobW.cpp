@@ -13,31 +13,32 @@
 using namespace std;
 
 extern GLuint deathTexture;
+extern GLuint logoTexture;
 extern bool game_started;
 
 void cleanupPPM(void) {
-    	system("rm ./images/credits.ppm");
-	system("rm ./images/background1.ppm");
-	system("rm ./images/p1.ppm");
-	system("rm ./images/p1Helm.ppm");
-	system("rm ./images/p1Invinc.ppm");
-	system("rm ./images/p1HelmInvinc.ppm");
-	system("rm ./images/p2.ppm");
-	system("rm ./images/p2Helm.ppm");
-	system("rm ./images/p2Invinc.ppm");
-	system("rm ./images/p2HelmInvinc.ppm");
-	system("rm ./images/hp4.ppm");
-	system("rm ./images/hp3.ppm");
-	system("rm ./images/hp2.ppm");
-	system("rm ./images/hp1.ppm");
-	system("rm ./images/hp0.ppm");
-	system("rm ./images/hpi.ppm");
-	system("rm ./images/Spike.ppm");
-	system("rm ./images/helmet.ppm");
-	system("rm ./images/Star.ppm");
-	system("rm ./images/heart.ppm");
-	system("rm ./images/death.ppm");
-	system("rm ./images/DodgeLogo.ppm");
+    system("rm ./images/credits.ppm");
+    system("rm ./images/background1.ppm");
+    system("rm ./images/p1.ppm");
+    system("rm ./images/p1Helm.ppm");
+    system("rm ./images/p1Invinc.ppm");
+    system("rm ./images/p1HelmInvinc.ppm");
+    system("rm ./images/p2.ppm");
+    system("rm ./images/p2Helm.ppm");
+    system("rm ./images/p2Invinc.ppm");
+    system("rm ./images/p2HelmInvinc.ppm");
+    system("rm ./images/hp4.ppm");
+    system("rm ./images/hp3.ppm");
+    system("rm ./images/hp2.ppm");
+    system("rm ./images/hp1.ppm");
+    system("rm ./images/hp0.ppm");
+    system("rm ./images/hpi.ppm");
+    system("rm ./images/Spike.ppm");
+    system("rm ./images/helmet.ppm");
+    system("rm ./images/Star.ppm");
+    system("rm ./images/heart.ppm");
+    system("rm ./images/death.ppm");
+    system("rm ./images/DodgeLogo.ppm");
 }
 
 void convertpng2ppm(void) {
@@ -67,40 +68,40 @@ void convertpng2ppm(void) {
 
 int movePlayer(int xres, Player *player) {
 
-	player->pos[0] += player->vel[0];
+    player->pos[0] += player->vel[0];
 
-	//Check if edge left
-	if (player->pos[0] <= 40) {
-		player->pos[0] = 40;
-		player->vel[0] = 0;
-	}
+    //Check if edge left
+    if (player->pos[0] <= 40) {
+	player->pos[0] = 40;
+	player->vel[0] = 0;
+    }
 
-	//Check if edge right
-	if (player->pos[0] >= xres-40) {
-		player->pos[0] = xres-40;
-		player->vel[0] = 0;
-	}
+    //Check if edge right
+    if (player->pos[0] >= xres-40) {
+	player->pos[0] = xres-40;
+	player->vel[0] = 0;
+    }
 
-	if (player->vel[0] < -3) { 
-		player->vel[0] += 2;
-	} else if (player->vel[0] > 3) {
-		player->vel[0] += -2;
-	} else if (player->vel[0] <= 3 && player->vel[0] >= -3) {
-		player->vel[0] = 0;
-	}
+    if (player->vel[0] < -3) { 
+	player->vel[0] += 2;
+    } else if (player->vel[0] > 3) {
+	player->vel[0] += -2;
+    } else if (player->vel[0] <= 3 && player->vel[0] >= -3) {
+	player->vel[0] = 0;
+    }
 
-	//return player's x-position (needed to detect collisions)
-	return player->pos[0];	
+    //return player's x-position (needed to detect collisions)
+    return player->pos[0];	
 }
 
 void keypressL(Player *player2) {
-	player2->vel[0] -= 3.5;
-	player2->LR = false;
+    player2->vel[0] -= 3.5;
+    player2->LR = false;
 }
 
 void keypressR(Player *player2) {
-	player2->vel[0] += 3.5;
-	player2->LR = true;
+    player2->vel[0] += 3.5;
+    player2->LR = true;
 }
 
 void gamestart1p(Player *player, int xres) {
@@ -119,20 +120,38 @@ void gamestart2p(Player *player1, Player *player2, int xres) {
 
 void tombstone(int x)
 {
-         // Display tombstone at x-position
-         glColor3f(1.0f, 1.0f, 1.0f);
-         glPushMatrix();
-         glTranslatef(x,25,0);
-         glBindTexture(GL_TEXTURE_2D, deathTexture);
-         glEnable(GL_ALPHA_TEST);
-         glAlphaFunc(GL_GREATER, 0.0f);
-         glColor4ub(255,255,255,255);
-         glBegin(GL_QUADS);
-         glTexCoord2f(0.0f, 1.0f); glVertex2i(-25,-25);
-         glTexCoord2f(0.0f, 0.0f); glVertex2i(-25, 25);
-         glTexCoord2f(1.0f, 0.0f); glVertex2i( 25, 25);
-         glTexCoord2f(1.0f, 1.0f); glVertex2i( 25,-25);
-         glEnd();
-         glPopMatrix();
+    // Display tombstone at x-position
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(x,25,0);
+    glBindTexture(GL_TEXTURE_2D, deathTexture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-25,-25);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-25, 25);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( 25, 25);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( 25,-25);
+    glEnd();
+    glPopMatrix();
 }
 
+void logo(int xres, int y)
+{
+    //display logo at (x,y)
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(xres/2,y,0);
+    glBindTexture(GL_TEXTURE_2D, logoTexture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-100,-25);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-100, 25);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( 100, 25);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( 100,-25);
+    glEnd();
+    glPopMatrix();
+}
