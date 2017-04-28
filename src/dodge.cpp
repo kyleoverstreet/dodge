@@ -48,7 +48,7 @@ void checkKeys(XEvent *e);
 extern void convertpng2ppm(void);
 extern void cleanupPPM(void);
 extern void tutorial(const int, const int);
-extern void menu(const int, const int);
+//extern void menu(const int, const int);
 extern void credits(const int, const int);
 extern void startGame(const int, const int);
 extern void oneArrow(const int, const int);
@@ -74,6 +74,7 @@ extern void display_score(int, int);
 extern void tombstone(int);
 extern void logo(int, int);
 extern void mainmenu(int, int);
+extern void gameover(int, int);
 extern void gameOver(const int, const int);
 #ifdef USE_OPENAL_SOUND
 extern void play_health_loss();
@@ -120,6 +121,7 @@ Ppmimage *player2InvincibleImage = NULL;
 Ppmimage *player2HelmInvincImage = NULL;
 
 Ppmimage *deathImage = NULL;
+Ppmimage *gameoverImage = NULL;
 
 Ppmimage *logoImage = NULL;
 
@@ -151,6 +153,7 @@ GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
 
 GLuint deathTexture;
+GLuint gameoverTexture;
 
 GLuint logoTexture;
 
@@ -370,6 +373,9 @@ void initOpengl(void)
 
 	// Death image
 	deathImage = ppm6GetImage("./images/death.ppm");
+	
+	// Game Over Image
+	gameoverImage = ppm6GetImage("./images/GameOver.ppm");
 
 	// Logo image
 	logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
@@ -407,6 +413,7 @@ void initOpengl(void)
 		glGenTextures(1, &player2HelmInvincTexture);
 	}
 	glGenTextures(1, &deathTexture);
+	glGenTextures(1, &gameoverTexture);
 	glGenTextures(1, &logoTexture);
 	glGenTextures(1, &mainmenuTexture);
 	glGenTextures(1, &hp4Texture);
@@ -530,6 +537,16 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	silhouetteData = buildAlphaData(deathImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	
+	// Game Over
+	w = gameoverImage->width;
+	h = gameoverImage->height;	
+	glBindTexture(GL_TEXTURE_2D, gameoverTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(gameoverImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
@@ -890,8 +907,8 @@ void render(void)
 	}
 
 	if (display_menu && !showPlayer) {
-		mainmenu(xres, 450);
-		logo(xres, 525);
+		mainmenu(xres, 400);
+		logo(xres, 500);
 	}
 
 	if (display_gameModes && !showPlayer) {
@@ -953,13 +970,15 @@ void render(void)
 
     if (!two_player) {
         if(p1_dead) {
-            gameOver(xres, yres);
+            gameover(xres, 450);
+	    //gameOver(xres, yres);
         }
     }
 
     if (two_player) {
         if(p1_dead && p2_dead) {
-            gameOver(xres, yres);
+	    gameover(xres, 450);
+            //gameOver(xres, yres);
         }
     }
 }
