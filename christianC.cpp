@@ -206,7 +206,7 @@ void gameOver (const int xres, const int yres)
     int x = xres/2;
 
     Rect over;
-    over.bot = y + 225;
+    over.bot = y + 175;
     over.left = x;
     over.center = y;
     ggprint8b(&over, 16, white, "GAME OVER!");

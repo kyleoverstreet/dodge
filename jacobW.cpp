@@ -13,6 +13,7 @@
 using namespace std;
 
 extern GLuint deathTexture;
+extern bool game_started;
 
 void cleanupPPM(void) {
     	system("rm ./images/credits.ppm");
@@ -105,6 +106,7 @@ void keypressR(Player *player2) {
 void gamestart1p(Player *player, int xres) {
     player->pos[0] = xres/2;
     player->pos[1] = 30;
+    game_started = true;
 }
 
 void gamestart2p(Player *player1, Player *player2, int xres) {
@@ -112,6 +114,7 @@ void gamestart2p(Player *player1, Player *player2, int xres) {
     player1->pos[1] = 30;
     player2->pos[0] = xres/2 + 50;
     player2->pos[1] = 30;
+    game_started = true;
 }
 
 void tombstone(int x)
