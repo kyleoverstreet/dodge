@@ -53,6 +53,9 @@ extern void credits(const int, const int);
 extern void startGame(const int, const int);
 extern void oneArrow(const int, const int);
 extern void twoArrow(const int, const int);
+extern void audioSettings(const int, const int);
+extern void onArrow(const int, const int);
+extern void offrrow(const int, const int);
 extern void end_credits(int xres, int yres);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
@@ -69,6 +72,7 @@ extern void deleteHeart(Heart *node);
 extern void display_health(int, int);
 extern void display_score(int, int);
 extern void tombstone(int);
+extern void gameOver(const int, const int);
 #ifdef USE_OPENAL_SOUND
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -163,6 +167,7 @@ int display_tutorial = 0;
 int display_menu = 0;
 int display_credits = 0;
 int display_gameModes = 0;
+int display_audioSettings = 0;
 int display_oneArrow = 1;
 int display_twoArrow = 0;
 int showPlayer = 0;
@@ -683,6 +688,9 @@ void checkKeys(XEvent *e)
 		case XK_s:
 			display_gameModes ^= 1;
 			break;
+		case XK_t:
+			display_audioSettings ^= 1;
+			break;
 		case XK_Down:
 			display_oneArrow ^= 1;
 			display_twoArrow ^= 1;
@@ -875,7 +883,6 @@ void render(void)
 		r.left = 10;
 		r.center = 0;
 		unsigned int color = 0x00dddd00;
-		ggprint8b(&r, 16, color, "T - Tutorial");
 		ggprint8b(&r, 16, color, "M - Menu");
 	}
 
@@ -909,11 +916,22 @@ void render(void)
 	}
 
 	if (display_tutorial && !showPlayer) {
-	    	display_menu = 0;
+        display_menu = 0;
 		tutorial(xres, yres);
 	}
 
-	if (!display_menu && !display_tutorial && display_gameModes && showPlayer) {
+	if (display_audioSettings && !showPlayer) {
+        display_menu = 0;
+		audioSettings(xres, yres);
+        if (display_oneArrow && !display_twoArrow) {
+            onArrow(xres, yres);
+        }
+        if (display_twoArrow && !display_oneArrow) {
+            twoArrow(xres, yres);
+        }
+	}
+
+	if (!display_audioSettings && !display_menu && !display_tutorial && display_gameModes && showPlayer) {
 		// Display player info to screen
 		display_health(xres, yres);
 		display_score(xres, yres);
@@ -924,4 +942,16 @@ void render(void)
 	if (dead_position2 != 0) {
 		tombstone(dead_position2);
 	}
+
+    if (!two_player) {
+        if(dead_position != 0) {
+            gameOver(xres, yres);
+        }
+    }
+
+    if (two_player) {
+        if(dead_position != 0 && dead_position2 != 0) {
+            gameOver(xres, yres);
+        }
+    }
 }

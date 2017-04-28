@@ -48,10 +48,13 @@ struct Shape {
 };
 
 void menu(const int, const int);
-void credits(const int, const int);
+void startGame(const int, const int);
 void oneArrow(const int, const int);
 void twoArrow(const int, const int);
-void two_player_arrow(const int, const int);
+void onArrow(const int, const int);
+void offArrow(const int, const int);
+void audioSettings (const int, const int);
+void gameOver (const int, const int);
 extern void tutorial(const int xres, const int yres);
 
 //Colors for the test in themenus and the sub menus
@@ -79,7 +82,7 @@ void menu(const int xres, const int yres)
     menu.bot = y + 175;
     menu.left = x;
     menu.center = y;
-    ggprint8b(&menu, 16, yellow, "<a> Audio Settings");
+    ggprint8b(&menu, 16, yellow, "<t> Toggle Audio");
 
     //View how tro play the game
     menu.bot = y + 158;
@@ -138,12 +141,74 @@ void twoArrow (const int xres, const int yres)
     int y = yres/2;
     int x = xres/2;
 
-    Rect one_arrow;
-    one_arrow.bot = y + 158;
-    one_arrow.left = x - 40;
-    one_arrow.center = y;
-    ggprint8b(&one_arrow, 16, yellow, ">>");
+    Rect two_arrow;
+    two_arrow.bot = y + 158;
+    two_arrow.left = x - 40;
+    two_arrow.center = y;
+    ggprint8b(&two_arrow, 16, yellow, ">>");
     
 }
 
+void audioSettings (const int xres, const int yres)
+{
+    int y = yres/2;
+    int x = xres/2;
 
+    Rect audio;
+    audio.bot = y + 225;
+    audio.left = x;
+    audio.center = y;
+    ggprint8b(&audio, 16, white, "Select Audio Mode");
+
+    //For on mode
+    audio.bot = y + 175;
+    audio.left = x;
+    audio.center = y;
+    ggprint8b(&audio, 16, yellow, "Audio On");
+
+    //For off mode
+    audio.bot = y + 158;
+    audio.left = x;
+    audio.center = y;
+    ggprint8b(&audio, 16, yellow, "Audio Off");
+
+}
+
+void onArrow (const int xres, const int yres)
+{
+    int y = yres/2;
+    int x = xres/2;
+
+    Rect on_arrow;
+    on_arrow.bot = y + 175;
+    on_arrow.left = x - 35;
+    on_arrow.center = y;
+    ggprint8b(&on_arrow, 16, yellow, ">>");
+    
+}
+
+void offArrow (const int xres, const int yres)
+{
+    int y = yres/2;
+    int x = xres/2;
+
+    Rect off_arrow;
+    off_arrow.bot = y + 158;
+    off_arrow.left = x - 40;
+    off_arrow.center = y;
+    ggprint8b(&off_arrow, 16, yellow, ">>");
+    
+}
+
+void gameOver (const int xres, const int yres)
+{
+    int y = yres/2;
+    int x = xres/2;
+
+    Rect over;
+    over.bot = y + 225;
+    over.left = x;
+    over.center = y;
+    ggprint8b(&over, 16, white, "GAME OVER!");
+
+}
