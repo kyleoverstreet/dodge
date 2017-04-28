@@ -73,6 +73,7 @@ extern void display_health(int, int);
 extern void display_score(int, int);
 extern void tombstone(int);
 extern void logo(int, int);
+extern void mainmenu(int, int);
 extern void gameOver(const int, const int);
 #ifdef USE_OPENAL_SOUND
 extern void play_health_loss();
@@ -122,6 +123,8 @@ Ppmimage *deathImage = NULL;
 
 Ppmimage *logoImage = NULL;
 
+Ppmimage *mainmenuImage = NULL;
+
 Ppmimage *hp4Image = NULL;
 Ppmimage *hp3Image = NULL;
 Ppmimage *hp2Image = NULL;
@@ -150,6 +153,8 @@ GLuint player2HelmInvincTexture;
 GLuint deathTexture;
 
 GLuint logoTexture;
+
+GLuint mainmenuTexture;
 
 GLuint hp4Texture;
 GLuint hp3Texture;
@@ -369,6 +374,9 @@ void initOpengl(void)
 	// Logo image
 	logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
 
+	// Main Menu Image
+	mainmenuImage = ppm6GetImage("./images/Menu.ppm");
+
 	// Background images
 	bgImage = ppm6GetImage("./images/background1.ppm");
 	bgTransImage = ppm6GetImage("./images/transparent.ppm");
@@ -400,6 +408,7 @@ void initOpengl(void)
 	}
 	glGenTextures(1, &deathTexture);
 	glGenTextures(1, &logoTexture);
+	glGenTextures(1, &mainmenuTexture);
 	glGenTextures(1, &hp4Texture);
 	glGenTextures(1, &hp3Texture);
 	glGenTextures(1, &hp2Texture);
@@ -531,6 +540,16 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	silhouetteData = buildAlphaData(logoImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	
+	// Main Menu
+	w = mainmenuImage->width;
+	h = mainmenuImage->height;	
+	glBindTexture(GL_TEXTURE_2D, mainmenuTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(mainmenuImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
@@ -871,7 +890,7 @@ void render(void)
 	}
 
 	if (display_menu && !showPlayer) {
-		menu(xres, yres);
+		mainmenu(xres, 450);
 		logo(xres, 525);
 	}
 

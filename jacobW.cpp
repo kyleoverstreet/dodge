@@ -14,6 +14,7 @@ using namespace std;
 
 extern GLuint deathTexture;
 extern GLuint logoTexture;
+extern GLuint mainmenuTexture;
 extern bool game_started;
 
 void cleanupPPM(void) {
@@ -39,6 +40,7 @@ void cleanupPPM(void) {
     system("rm ./images/heart.ppm");
     system("rm ./images/death.ppm");
     system("rm ./images/DodgeLogo.ppm");
+    system("rm ./images/Menu.ppm");
 }
 
 void convertpng2ppm(void) {
@@ -64,6 +66,7 @@ void convertpng2ppm(void) {
     system("convert ./images/heart.png ./images/heart.ppm");
     system("convert ./images/death.png ./images/death.ppm");
     system("convert ./images/DodgeLogo.png ./images/DodgeLogo.ppm");
+    system("convert ./images/Menu.png ./images/Menu.ppm");
 }
 
 int movePlayer(int xres, Player *player) {
@@ -144,6 +147,25 @@ void logo(int xres, int y)
     glPushMatrix();
     glTranslatef(xres/2,y,0);
     glBindTexture(GL_TEXTURE_2D, logoTexture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-100,-25);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-100, 25);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( 100, 25);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( 100,-25);
+    glEnd();
+    glPopMatrix();
+}
+    
+void mainmenu(int xres, int y)
+{
+    //display menu at (x,y)
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(xres/2,y,0);
+    glBindTexture(GL_TEXTURE_2D, mainmenuTexture);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
     glColor4ub(255,255,255,255);
