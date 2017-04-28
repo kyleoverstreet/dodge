@@ -174,6 +174,23 @@ extern void play_theme()
 
     alSourcePlay(alSource);
 }
+extern void play_health_loss()
+{
+    alBuffer = alutCreateBufferFromFile("./sounds/health_loss.wav");
+
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
 extern void play_game_over()
 {
     alBuffer = alutCreateBufferFromFile("./sounds/game_over.wav");

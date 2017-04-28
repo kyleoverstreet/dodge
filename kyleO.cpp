@@ -67,6 +67,7 @@ extern void play_helmet_hit();
 extern void play_powerup();
 extern void play_game_over();
 extern void play_health_pickup();
+extern void play_health_loss();
 #endif
 extern void createSpikes(float, const int, const int);
 extern void drawSpikes(void);
@@ -398,7 +399,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 					p1_health--;
 					if (p1_health > 0) {
 #ifdef USE_OPENAL_SOUND
-						// PLAY SPIKE SOUND HERE
+						play_health_loss();
 #endif
 					} else {
 						// Player1 has no health

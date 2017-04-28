@@ -75,6 +75,7 @@ extern void tombstone(int);
 extern void logo(int, int);
 extern void gameOver(const int, const int);
 #ifdef USE_OPENAL_SOUND
+extern void play_health_loss();
 extern void initialize_sounds();
 extern void play_helmet_hit();
 extern void play_powerup();
