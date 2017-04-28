@@ -749,6 +749,10 @@ void physics(void)
 
 void render(void)
 {
+	if(creds) {
+		end_credits(xres, yres);
+		return;
+	}
 	Rect r;
 
 	//Clear the screen
@@ -865,9 +869,6 @@ void render(void)
 		ggprint8b(&r, 16, color, "M - Menu");
 	}
 
-	if(creds) {
-		end_credits(xres, yres);
-	}
 	if (display_menu && !showPlayer) {
 		menu(xres, yres);
 		logo(xres, 525);
