@@ -102,6 +102,7 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 }
 //-----------------------------------------------------------------------------
 
+bool creds = 0;
 int done = 0;
 int xres = 800, yres = 600;
 bool two_player = true;
@@ -690,7 +691,11 @@ void checkKeys(XEvent *e)
 		case XK_d:
 			break;
 		case XK_Escape:
-			done=1;
+			if(creds)
+				done=1;
+				break;
+			end_credits(xres, yres);
+			creds = 1;
 			break;
 	}
 }
