@@ -264,10 +264,10 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 		cout << "increasing drop rate to level " << level << endl;
 	}
 	
-	/*if (random(100) < spike_mod) {
+	if (random(100) < spike_mod) {
 		createSpikes(drop_rate, xres, yres);
-	}*/
-	if (random(200) < 2.3) {
+	}
+	if (random(200) < 1.3) {
 		createHelmets(drop_rate, xres, yres);
 	}
 	if (random(200) < 1.3) {
@@ -482,7 +482,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 			play_helmet_hit();
 #endif
 			// Give helmet to closest player
-			if (d1 < d2) {
+			if (d1 <= d2) {
 				p1_helm = true;
 			} else {
 				p2_helm = true;
