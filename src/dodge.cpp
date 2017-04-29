@@ -1,16 +1,16 @@
 /******** DODGE ********
 
-Created by:
-Kyle Overstreet
-Jacob West
-Young Soo Oh
-Kory Despot
-Christian Chavez
+  Created by:
+  Kyle Overstreet
+  Jacob West
+  Young Soo Oh
+  Kory Despot
+  Christian Chavez
 
-Framework by:
-Gordon Griesel
+  Framework by:
+  Gordon Griesel
 
-************************/
+ ************************/
 
 #include <iostream>
 #include <stdio.h>
@@ -34,15 +34,9 @@ extern "C" {
 #include "fonts.h"
 }
 
-//X Windows variables
+// X Windows variables
 Display *dpy;
 Window win;
-Player player;
-Player player2;
-Spike *sphead = NULL;
-Helmet *hhead = NULL;
-Star *sthead = NULL;
-Heart *hearthead = NULL;
 
 void initXWindows(void);
 void initOpengl(void);
@@ -69,7 +63,6 @@ extern void keypressD(Player *player);
 extern void keypressR(Player *player2);
 extern void keypressL(Player *player2);
 extern int movePlayer(int xres, Player *player);
-extern int movePlayer2(int xres, Player *player2);
 extern void dropItems(int, int, const int, const int);
 extern void deleteSpike(Spike *node);
 extern void deleteStar(Star *node);
@@ -165,6 +158,13 @@ GLuint hpiTexture;
 GLuint deathTexture;
 GLuint gameoverTexture;
 
+Player player;
+Player player2;
+Spike *sphead = NULL;
+Helmet *hhead = NULL;
+Star *sthead = NULL;
+Heart *hearthead = NULL;
+
 int display_tutorial = 0;
 int display_menu = 1;
 int display_credits = 0;
@@ -172,25 +172,25 @@ int display_gameModes = 0;
 int display_audioSettings = 0;
 int display_oneArrow = 1;
 int display_twoArrow = 0;
-int start_game = 0;
+
 bool intro = true;
-bool game_started = false;
-int background = 1;
+int start_game = 0;
 string p1_name;
 extern bool p1_helm;
 extern bool p1_invincible;
 extern bool p1_dead;
+extern int p1_deadpos;
 string p2_name;
 extern bool p2_helm;
 extern bool p2_invincible;
 extern bool p2_dead;
-extern int dead_position;
-extern int dead_position2;
+extern int p2_deadpos;
 
 int keys[65536];
 
 int main(void)
 {
+	// Temporary console prompt until implemented in game window
 	cout << "Please enter player1 name: ";
 	cin >> p1_name;
 	cout << "Please enter player2 name: ";
@@ -207,7 +207,7 @@ int main(void)
 #ifdef USE_OPENAL_SOUND
 	play_theme();
 #endif
-	// For intro
+	// Display both players for intro animation
 	gamestart2p(&player, &player2, xres);
 	while (!done) {
 		while (XPending(dpy)) {
@@ -216,16 +216,16 @@ int main(void)
 			checkKeys(&e);
 		}
 
-		//Below is a process to apply physics at a consistent rate.
-		//1. Get the time right now.
+		// Below is a process to apply physics at a consistent rate.
+		// 1. Get the time right now.
 		clock_gettime(CLOCK_REALTIME, &timeCurrent);
-		//2. How long since we were here last?
+		// 2. How long since we were here last?
 		timeSpan = timeDiff(&timeStart, &timeCurrent);
-		//3. Save the current time as our new starting time.
+		// 3. Save the current time as our new starting time.
 		timeCopy(&timeStart, &timeCurrent);
-		//4. Add time-span to our countdown amount.
+		// 4. Add time-span to our countdown amount.
 		physicsCountdown += timeSpan;
-		//5. Has countdown gone beyond our physics rate? 
+		// 5. Has countdown gone beyond our physics rate? 
 		//       if yes,
 		//           In a loop...
 		//              Apply physics
@@ -234,13 +234,12 @@ int main(void)
 		//       if no,
 		//           Apply no physics this frame.
 		while (physicsCountdown >= physicsRate) {
-			//6. Apply physics
+			// 6. Apply physics
 			physics();
-			//7. Reduce the countdown by our physics-rate
+			// 7. Reduce the countdown by our physics-rate
 			physicsCountdown -= physicsRate;
 		}
-		//check_sound();
-		//Always render every frame.
+		// Always render every frame.
 		render();
 		glXSwapBuffers(dpy, win);
 	}
@@ -263,7 +262,7 @@ void cleanupXWindows(void) {
 
 void setTitle(void)
 {
-	// Set the window title bar.
+	// Set the window title bar
 	XMapWindow(dpy, win);
 	XStoreName(dpy, win, "Dodge");
 }
@@ -305,7 +304,7 @@ void initXWindows(void)
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
-	//add 4th component to RGB stream...
+	// Add 4th component to RGB stream...
 	int i;
 	int a,b,c;
 	unsigned char *newdata, *ptr;
@@ -328,12 +327,12 @@ unsigned char *buildAlphaData(Ppmimage *img)
 
 void initOpengl(void)
 {
-	//OpenGL initialization
+	// OpenGL initialization
 	glViewport(0, 0, xres, yres);
-	//Initialize matrices
+	// Initialize matrices
 	glMatrixMode(GL_PROJECTION); glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-	//This sets 2D mode (no perspective)
+	// This sets 2D mode (no perspective)
 	glOrtho(0, xres, 0, yres, -1, 1);
 
 	glDisable(GL_LIGHTING);
@@ -341,13 +340,24 @@ void initOpengl(void)
 	glDisable(GL_FOG);
 	glDisable(GL_CULL_FACE);
 
-	//Clear the screen
+	// Clear the screen
 	glClearColor(1.0, 1.0, 1.0, 1.0);
-	//Do this to allow fonts
+	// Do this to allow fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
-	//load the images file into a ppm structure.
+
+	// Load the images file into a ppm structure.
 	convertpng2ppm();
+
+	// Background images
+	bgImage = ppm6GetImage("./images/background1.ppm");
+	bgTransImage = ppm6GetImage("./images/transparent.ppm");
+
+	// Logo image
+	logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
+
+	// Main menu image
+	mainmenuImage = ppm6GetImage("./images/Menu.ppm");
 
 	// Player1 images
 	playerImage = ppm6GetImage("./images/p1.ppm");
@@ -356,28 +366,16 @@ void initOpengl(void)
 	playerHelmInvincImage = ppm6GetImage("./images/p1HelmInvinc.ppm");
 
 	// Player2 images
-	if (two_player) {
-		player2Image = ppm6GetImage("./images/p2.ppm");
-		player2HelmImage = ppm6GetImage("./images/p2Helm.ppm");
-		player2InvincibleImage = ppm6GetImage("./images/p2Invinc.ppm");
-		player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
-	}
+	player2Image = ppm6GetImage("./images/p2.ppm");
+	player2HelmImage = ppm6GetImage("./images/p2Helm.ppm");
+	player2InvincibleImage = ppm6GetImage("./images/p2Invinc.ppm");
+	player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
 
-	// Death image
-	deathImage = ppm6GetImage("./images/death.ppm");
-
-	// Game Over Image
-	gameoverImage = ppm6GetImage("./images/GameOver.ppm");
-
-	// Logo image
-	logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
-
-	// Main Menu Image
-	mainmenuImage = ppm6GetImage("./images/Menu.ppm");
-
-	// Background images
-	bgImage = ppm6GetImage("./images/background1.ppm");
-	bgTransImage = ppm6GetImage("./images/transparent.ppm");
+	// Item images
+	spikeImage = ppm6GetImage("./images/Spike.ppm");
+	helmetImage = ppm6GetImage("./images/helmet.ppm");
+	starImage = ppm6GetImage("./images/Star.ppm");
+	heartImage = ppm6GetImage("./images/heart.ppm");
 
 	// Health bar images
 	hp4Image = ppm6GetImage("./images/hp4.ppm");
@@ -387,23 +385,21 @@ void initOpengl(void)
 	hp0Image = ppm6GetImage("./images/hp0.ppm");
 	hpiImage = ppm6GetImage("./images/hpi.ppm");
 
-	// Item images
-	spikeImage = ppm6GetImage("./images/Spike.ppm");
-	helmetImage = ppm6GetImage("./images/helmet.ppm");
-	starImage = ppm6GetImage("./images/Star.ppm");
-	heartImage = ppm6GetImage("./images/heart.ppm");
+	// Tombstone image
+	deathImage = ppm6GetImage("./images/death.ppm");
 
-	//create opengl texture elements
+	// Game Over Image
+	gameoverImage = ppm6GetImage("./images/GameOver.ppm");
+
+	// Create opengl texture elements
 	glGenTextures(1, &playerTexture);
 	glGenTextures(1, &playerHelmTexture);
 	glGenTextures(1, &playerInvincibleTexture);
 	glGenTextures(1, &playerHelmInvincTexture);
-	if (two_player) {
-		glGenTextures(1, &player2Texture);
-		glGenTextures(1, &player2HelmTexture);
-		glGenTextures(1, &player2InvincibleTexture);
-		glGenTextures(1, &player2HelmInvincTexture);
-	}
+	glGenTextures(1, &player2Texture);
+	glGenTextures(1, &player2HelmTexture);
+	glGenTextures(1, &player2InvincibleTexture);
+	glGenTextures(1, &player2HelmInvincTexture);
 	glGenTextures(1, &deathTexture);
 	glGenTextures(1, &gameoverTexture);
 	glGenTextures(1, &logoTexture);
@@ -420,19 +416,18 @@ void initOpengl(void)
 	glGenTextures(1, &silhouetteHeart);
 	glGenTextures(1, &bgTexture);
 
-	//background
+	// Background
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3,
 			bgImage->width, bgImage->height,
 			0, GL_RGB, GL_UNSIGNED_BYTE, bgImage->data);
-	//-------------------------------------------------------------------------
-	//background transparent part
+
+	// Background (transparent)
 	glBindTexture(GL_TEXTURE_2D, bgTransTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	//must build a new set of data...
 	int w = bgTransImage->width;
 	int h = bgTransImage->height;
 	unsigned char *ftData = buildAlphaData(bgTransImage);	
@@ -440,17 +435,36 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, ftData);
 	free(ftData);
 
-	//player
+	// Dodge logo
+	w = logoImage->width;
+	h = logoImage->height;	
+	glBindTexture(GL_TEXTURE_2D, logoTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *silhouetteData = buildAlphaData(logoImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+	// Main menu
+	w = mainmenuImage->width;
+	h = mainmenuImage->height;	
+	glBindTexture(GL_TEXTURE_2D, mainmenuTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(mainmenuImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	// Player1
 	w = playerImage->width;
 	h = playerImage->height;
 	glBindTexture(GL_TEXTURE_2D, playerTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	unsigned char *silhouetteData = buildAlphaData(playerImage);	
+	silhouetteData = buildAlphaData(playerImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	//player with helm
+	// Player1 with helmet
 	w = playerHelmImage->width;
 	h = playerHelmImage->height;
 	glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
@@ -460,7 +474,7 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	//player with invincibility
+	// Player1 with invincibility
 	w = playerInvincibleImage->width;
 	h = playerInvincibleImage->height;
 	glBindTexture(GL_TEXTURE_2D, playerInvincibleTexture);
@@ -470,7 +484,7 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	//player with helm and invincibility
+	// Player1 with helmet and invincibility
 	w = playerHelmInvincImage->width;
 	h = playerHelmInvincImage->height;
 	glBindTexture(GL_TEXTURE_2D, playerHelmInvincTexture);
@@ -480,87 +494,89 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	if (two_player) {
-		//player2
-		w = player2Image->width;
-		h = player2Image->height;
-		glBindTexture(GL_TEXTURE_2D, player2Texture);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		silhouetteData = buildAlphaData(player2Image);	
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-
-		//player2 with helm
-		w = player2HelmImage->width;
-		h = player2HelmImage->height;
-		glBindTexture(GL_TEXTURE_2D, player2HelmTexture);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		silhouetteData = buildAlphaData(player2HelmImage);	
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-
-		//player2 with invincibility
-		w = player2InvincibleImage->width;
-		h = player2InvincibleImage->height;
-		glBindTexture(GL_TEXTURE_2D, player2InvincibleTexture);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		silhouetteData = buildAlphaData(player2InvincibleImage);	
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-
-		//player2 with helm and invincibility
-		w = player2HelmInvincImage->width;
-		h = player2HelmInvincImage->height;
-		glBindTexture(GL_TEXTURE_2D, player2HelmInvincTexture);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		silhouetteData = buildAlphaData(player2HelmInvincImage);	
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	}
-
-	// Tombstone
-	w = deathImage->width;
-	h = deathImage->height;	
-	glBindTexture(GL_TEXTURE_2D, deathTexture);
+	// Player2
+	w = player2Image->width;
+	h = player2Image->height;
+	glBindTexture(GL_TEXTURE_2D, player2Texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(deathImage);	
+	silhouetteData = buildAlphaData(player2Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	// Game Over
-	w = gameoverImage->width;
-	h = gameoverImage->height;	
-	glBindTexture(GL_TEXTURE_2D, gameoverTexture);
+	// Player2 with helmet
+	w = player2HelmImage->width;
+	h = player2HelmImage->height;
+	glBindTexture(GL_TEXTURE_2D, player2HelmTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(gameoverImage);	
+	silhouetteData = buildAlphaData(player2HelmImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	// Dodge logo
-	w = logoImage->width;
-	h = logoImage->height;	
-	glBindTexture(GL_TEXTURE_2D, logoTexture);
+	// Player2 with invincibility
+	w = player2InvincibleImage->width;
+	h = player2InvincibleImage->height;
+	glBindTexture(GL_TEXTURE_2D, player2InvincibleTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(logoImage);	
+	silhouetteData = buildAlphaData(player2InvincibleImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	// Main Menu
-	w = mainmenuImage->width;
-	h = mainmenuImage->height;	
-	glBindTexture(GL_TEXTURE_2D, mainmenuTexture);
+	// Player2 with helmet and invincibility
+	w = player2HelmInvincImage->width;
+	h = player2HelmInvincImage->height;
+	glBindTexture(GL_TEXTURE_2D, player2HelmInvincTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(mainmenuImage);	
+	silhouetteData = buildAlphaData(player2HelmInvincImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+	// Spike
+	w = spikeImage->width;
+	h = spikeImage->height;	
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(spikeImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// Helmet
+	w = helmetImage->width;
+	h = helmetImage->height; 
+	glBindTexture(GL_TEXTURE_2D, silhouetteHelm);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(helmetImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// Star
+	w = starImage->width;
+	h = starImage->height; 
+	glBindTexture(GL_TEXTURE_2D, silhouetteStar);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(starImage);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+
+	// Heart
+	w = heartImage->width;
+	h = heartImage->height; 
+	glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	silhouetteData = buildAlphaData(heartImage); 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
 
 	// Full HP
 	w = hp4Image->width;
@@ -626,49 +642,25 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	// Spike
-	w = spikeImage->width;
-	h = spikeImage->height;	
-	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	// Tombstone
+	w = deathImage->width;
+	h = deathImage->height;	
+	glBindTexture(GL_TEXTURE_2D, deathTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(spikeImage);	
+	silhouetteData = buildAlphaData(deathImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	free(silhouetteData);
 
-	// Helmet
-	w = helmetImage->width;
-	h = helmetImage->height; 
-	glBindTexture(GL_TEXTURE_2D, silhouetteHelm);
+	// Game Over
+	w = gameoverImage->width;
+	h = gameoverImage->height;	
+	glBindTexture(GL_TEXTURE_2D, gameoverTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(helmetImage);	
+	silhouetteData = buildAlphaData(gameoverImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	free(silhouetteData);
-
-	// Star
-	w = starImage->width;
-	h = starImage->height; 
-	glBindTexture(GL_TEXTURE_2D, silhouetteStar);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(starImage);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	free(silhouetteData);
-
-	// Heart
-	w = heartImage->width;
-	h = heartImage->height; 
-	glBindTexture(GL_TEXTURE_2D, silhouetteHeart);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(heartImage); 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	free(silhouetteData);
 }
 
 void checkKeys(XEvent *e)
@@ -757,10 +749,9 @@ void physics(void)
 			}
 		}
 
-		movePlayer2(xres, &player2);
+		movePlayer(xres, &player2);
 		int p2_goPosition = random(xres);
 		int p2_currentPosition = player2.pos[0];
-
 		if (abs(p2_goPosition - p2_currentPosition) > 200) {
 			// Move 200 pixels minimum to avoid jerky movement
 			if (p2_goPosition < p2_currentPosition) {
@@ -781,7 +772,7 @@ void physics(void)
 			dropItems(p1_pos, p2_pos, xres, yres);
 		} else {
 			p1_pos = movePlayer(xres, &player);
-			p2_pos = movePlayer2(xres, &player2);
+			p2_pos = movePlayer(xres, &player2);
 			dropItems(p1_pos, p2_pos, xres, yres);
 		}
 		if (keys[XK_Left]) {
@@ -958,15 +949,15 @@ void render(void)
 		display_score(xres, yres);
 	}
 
-	// Display tombstone if player dies
+	// Display tombstone at position of death(s)
 	if (p1_dead) {
-		tombstone(dead_position);
+		tombstone(p1_deadpos);
 	}
 	if (p2_dead) {
-		tombstone(dead_position2);
+		tombstone(p2_deadpos);
 	}
 
-	// Display "game over" after player(s) death 
+	// Display "Game Over" after player(s) death 
 	if (!two_player) {
 		if(p1_dead && !display_menu) {
 			gameover(xres, 450);

@@ -2,34 +2,15 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/26/17
+// Last edit: 4/28/17
 
-/*
- *************** NOTE TO GORDON *****************
- Young helped write the dropItems function below
+/****** WEEK 13 ******
+Working on many things:
 
- ====================WEEK 11====================
- -Made many changes to our main source file (src/dodge.cpp).
- -Cleaned up project's repo. Removed files, renamed files, etc.
- -Helped Young with his create items functions (dodge.cpp and youngO.cpp)
-
- ====================SPRING BREAK===============
- -Removed large sound/images files from project repo.
- -Fixed all compiling errors.
- -Removed unnecessary code from src/dodge.cpp.
- -Implemented collision detection between player and items.
- -Added star item.
- -Added player "status" display for testing purposes.
- -Fixed black box behind falling items!!! (finally)
- -Implemented image of player with helmet on.
-
- =====================WEEK 12====================
- -Created heart image and implemented heart collision detection
- -Implemented communication with webpage
- (see cs.csubak.edu/~koverstreet/3350/dodge for additional code)
- -Added tutorial
- -Implemented second player and added item collision & effects
- */
+Intro animation
+New displays
+Score webpage
+**********************/
 
 #include <X11/Xlib.h>
 #include <GL/gl.h>
@@ -57,18 +38,11 @@ using namespace std;
 void tutorial(const int, const int);
 void keypressA(Player*);
 void keypressD(Player*);
-int movePlayer2(int, Player*);
 void dropItems(int, int, bool, const int, const int);
+void display_health(int, int);
 void display_score(int, int);
 void gamelog(string, int);
 
-#ifdef USE_OPENAL_SOUND
-extern void play_helmet_hit();
-extern void play_powerup();
-extern void play_game_over();
-extern void play_health_pickup();
-extern void play_health_loss();
-#endif
 extern void createSpikes(float, const int, const int);
 extern void drawSpikes(void);
 extern void deleteSpike(Spike*);
@@ -82,13 +56,18 @@ extern void spike_bounce(Spike* spike);
 extern void createHeart(float, const int, const int);
 extern void drawHeart(void);
 extern void deleteHeart(Heart*);
-
 extern bool check_helm_timer(bool helm);
 extern bool start_helm_timer();
 extern bool start_powerup_timer();
 extern bool check_powerup_timer(bool powerup);
-
 extern void menu(int, int);
+#ifdef USE_OPENAL_SOUND
+extern void play_helmet_hit();
+extern void play_powerup();
+extern void play_game_over();
+extern void play_health_pickup();
+extern void play_health_loss();
+#endif
 
 extern GLuint silhouetteSpike;
 extern GLuint silhouetteHelm;
@@ -107,21 +86,13 @@ extern Spike *sphead;
 extern Helmet *hhead;
 extern Star *sthead;
 extern Heart *hearthead;
-extern int score;
 
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
-//const float gravity = -0.8f; FAT!
-float drop_rate = 1.0;; // use higher num to increase drop rate
+float drop_rate = 1.0;;
 float spike_mod = 15.0;
-float other_mod = 1.3;
 int level = 1;
 int level_change = 100;
-
-bool deleted_spike;
-bool deleted_helm;
-bool deleted_star;
-bool deleted_heart;
 
 extern string p1_name;
 int p1_health = 4;
@@ -129,6 +100,7 @@ int p1_score = 0;
 bool p1_helm = false;
 bool p1_invincible = false;
 bool p1_dead = false;
+int p1_deadpos;
 
 extern bool two_player;
 extern string p2_name;
@@ -137,13 +109,17 @@ int p2_score = 0;
 bool p2_helm = false;
 bool p2_invincible = false;
 bool p2_dead = false;
-
-int dead_position = 0;
-int dead_position2 = 0;
+int p2_deadpos;
 
 extern bool start_game;
 extern int display_menu;
 
+bool deleted_spike;
+bool deleted_helm;
+bool deleted_star;
+bool deleted_heart;
+
+// Display tutorial to screen (accessible via menu)
 void tutorial(const int xres, const int yres)
 {
 	unsigned int white = 0xffffff;
@@ -173,7 +149,7 @@ void tutorial(const int xres, const int yres)
 
 	float w = 10.0;
 
-	// Draw spike
+	// Display spike
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
 	glTranslatef((xres/2)+10,yres-145,0);
@@ -196,7 +172,7 @@ void tutorial(const int xres, const int yres)
 	item1.center = 0;
 	ggprint8b(&item1, 16, white, "Spike - hurts the player (removes 1/4 hp per hit)");
 
-	// Draw star
+	// Display star
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
 	glTranslatef((xres/2)+10,yres-170,0);
@@ -219,7 +195,7 @@ void tutorial(const int xres, const int yres)
 	item2.center = 0;
 	ggprint8b(&item2, 16, white, "Star - gives the player invincibility for 5 seconds");
 
-	// Draw helmet
+	// Display helmet
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
 	glTranslatef((xres/2)+10,yres-195,0);
@@ -242,7 +218,7 @@ void tutorial(const int xres, const int yres)
 	item3.center = 0;
 	ggprint8b(&item3, 16, white, "Helmet - protects the player from one spike hit");
 
-	// Draw heart
+	// Display heart
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPushMatrix();
 	glTranslatef((xres/2)+10,yres-220,0);
@@ -266,42 +242,16 @@ void tutorial(const int xres, const int yres)
 	ggprint8b(&item4, 16, white, "Heart - player regains 1/4 hp if not full hp");
 }
 
+// Move player left
 void keypressA(Player *player) {
 	player->vel[0] -= 3.5;
 	player->LR = false;
 }
 
+// Move player right
 void keypressD(Player *player) {
 	player->vel[0] += 3.5;
 	player->LR = true;
-}
-
-int movePlayer2(int xres, Player *player2) {
-
-	player2->pos[0] += player2->vel[0];
-
-	//Check if edge left
-	if (player2->pos[0] <= 40) {
-		player2->pos[0] = 40;
-		player2->vel[0] = 0;
-	}
-
-	//Check if edge right
-	if (player2->pos[0] >= xres-40) {
-		player2->pos[0] = xres-40;
-		player2->vel[0] = 0;
-	}
-
-	if (player2->vel[0] < -3) {
-		player2->vel[0] += 2;
-	} else if (player2->vel[0] > 3) {
-		player2->vel[0] += -2;
-	} else if (player2->vel[0] <= 3 && player2->vel[0] >= -3) {
-		player2->vel[0] = 0;
-	}
-
-	//return player2's x-position (needed to detect collisions)
-	return player2->pos[0];
 }
 
 void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
@@ -314,10 +264,10 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 		cout << "increasing drop rate to level " << level << endl;
 	}
 	
-	if (random(100) < spike_mod) {
+	/*if (random(100) < spike_mod) {
 		createSpikes(drop_rate, xres, yres);
-	}
-	if (random(200) < 1.3) {
+	}*/
+	if (random(200) < 2.3) {
 		createHelmets(drop_rate, xres, yres);
 	}
 	if (random(200) < 1.3) {
@@ -408,7 +358,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #endif
 						gamelog(p1_name, p1_score);
 						p1_dead = true;
-						dead_position = player_pos;
+						p1_deadpos = player_pos;
 						if (!two_player) {
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
@@ -447,7 +397,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 						p2_health--;
 						if (p2_health > 0) {
 #ifdef USE_OPENAL_SOUND
-							// PLAY SPIKE SOUND HERE
+							play_health_loss();
 #endif
 						} else {
 							// Player2 has no health
@@ -456,7 +406,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #endif
 							gamelog(p2_name, p2_score);
 							p2_dead = true;
-							dead_position2 = player2_pos;
+							p2_deadpos = player2_pos;
 							if (p1_dead) {
 								cout << "P1 score: " << p1_score;
 								cout << "\nP2 score: " << p2_score;
@@ -481,7 +431,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 			}
 		}
 		if (spike->pos[1] < -20.0f) {
-			// Spike has hit ground
+			// Spike hit ground
 			Spike *savespike = spike->next;
 			deleteSpike(spike);
 			spike = savespike;
@@ -493,41 +443,60 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 
 	helmet = hhead;
 	while (helmet) {
+		int helm_decision = 0;
+		int d1;
+		int d2;
 		if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
-				((helmet->pos[0] > player_pos-38) &&
-				 (helmet->pos[0] < player_pos+38)) &&
-				(!p1_dead)) {
-			// Helmet has landed on Player1
-#ifdef USE_OPENAL_SOUND
-			play_helmet_hit();
-#endif
-			p1_helm = start_helm_timer();
-			deleteHelmet(helmet);
-			deleted_helm = true;
+			((helmet->pos[0] > player_pos-38) &&
+			(helmet->pos[0] < player_pos+38)) &&
+			(!p1_dead)) {
+			helm_decision += 1;
+			d1 = abs(helmet->pos[0] - player_pos);
 		}
 		if (two_player && !p2_dead) {
 			if (((helmet->pos[1] > 0 && helmet->pos[1] < 68)) &&
-					((helmet->pos[0] > player2_pos-38) &&
-					 (helmet->pos[0] < player2_pos+38))) {
-				// Helmet has landed on Player2
-#ifdef USE_OPENAL_SOUND
-				play_helmet_hit();
-#endif
-				p2_helm = start_helm_timer();
-				if (!deleted_helm) {
-					deleteHelmet(helmet);
-				}
+				((helmet->pos[0] > player2_pos-38) &&
+				(helmet->pos[0] < player2_pos+38))) {
+				helm_decision += 2;
+				d2 = abs(helmet->pos[0] - player2_pos);
 			}
 		}
+		if (helm_decision == 1) {
+		// Helmet landed on Player1
+#ifdef USE_OPENAL_SOUND
+			play_helmet_hit();
+#endif
+			p1_helm = true;
+			deleteHelmet(helmet);
+		} else if (helm_decision == 2) {
+		// Helmet landed on Player2
+#ifdef USE_OPENAL_SOUND
+			play_helmet_hit();
+#endif
+			p2_helm = true;
+			deleteHelmet(helmet);
+
+		} else if (helm_decision == 3) {
+			// Helmet landed on both players
+#ifdef USE_OPENAL_SOUND
+			play_helmet_hit();
+#endif
+			// Give helmet to closest player
+			if (d1 < d2) {
+				p1_helm = true;
+			} else {
+				p2_helm = true;
+			}
+			deleteHelmet(helmet);
+		}
 		if (helmet->pos[1] < -20.0f) {
-			// Helmet has hit ground
+			// Helmet hit ground
 			Helmet *savehelm = helmet->next;
 			deleteHelmet(helmet);
 			helmet = savehelm;
 			continue;
 		}
 		helmet = helmet->next;
-		deleted_helm = false;
 	}
 
 	star = sthead;
@@ -536,7 +505,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 				((star->pos[0] > player_pos-38) &&
 				 (star->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
-			// Star has hit landed on Player1
+			// Star landed on Player1
 #ifdef USE_OPENAL_SOUND
 			play_powerup();
 #endif
@@ -548,7 +517,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 			if (((star->pos[1] > 0 && star->pos[1] < 68)) &&
 					((star->pos[0] > player2_pos-38) &&
 					 (star->pos[0] < player2_pos+38))) {
-				// Star has landed on Player2
+				// Star landed on Player2
 #ifdef USE_OPENAL_SOUND
 				play_powerup();
 #endif
@@ -560,7 +529,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 
 		}
 		if (star->pos[1] < -20.0f) {
-			// Star has hit ground
+			// Star hit ground
 			Star *savestar = star->next;
 			deleteStar(star);
 			star = savestar;
@@ -576,7 +545,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 				((heart->pos[0] > player_pos-38) &&
 				 (heart->pos[0] < player_pos+38)) &&
 				(!p1_dead)) {
-			// Heart has landed on Player1
+			// Heart landed on Player1
 
 			if (p1_health != 4) {
 #ifdef USE_OPENAL_SOUND
@@ -592,7 +561,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 			if (((heart->pos[1] > 0 && heart->pos[1] < 68)) &&
 					((heart->pos[0] > player2_pos-38) &&
 					 (heart->pos[0] < player2_pos+38))) {
-				// Heart has landed on Player2
+				// Heart landed on Player2
 
 				if (p2_health != 4) {
 #ifdef USE_OPENAL_SOUND
@@ -606,7 +575,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 			}
 		}
 		if (heart->pos[1] < -20.0f) {
-			// Heart has hit ground
+			// Heart hit ground
 			Heart *saveheart = heart->next;
 			deleteHeart(heart);
 			heart = saveheart;
@@ -617,15 +586,15 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 	}
 
 	// Check the timers for the powerup and helmet
-	p1_helm = check_helm_timer(p1_helm);
+	//p1_helm = check_helm_timer(p1_helm);
 	p1_invincible = check_powerup_timer(p1_invincible);
 	if (two_player) {
-		p2_helm = check_helm_timer(p2_helm);
+		//p2_helm = check_helm_timer(p2_helm);
 		p2_invincible = check_powerup_timer(p2_invincible);
 	}
 }
 
-// Display player health(s) at top-center
+// Display player health(s) at top of window
 void display_health(int xres, int yres)
 {
 	int x;
@@ -771,8 +740,9 @@ void display_score(int xres, int yres)
 	}
 }
 
-// Append player name, score, and date to gamelog via PHP script
-// Viewable at cs.csubak.edu/~koverstreet/3350/dodge/scores.txt
+// Appends player name, score, and date to a gamelog via PHP script
+// PHP script executes a separate program to ouput gamelog data to HTML webpage
+// View scores at cs.csubak.edu/~koverstreet/3350/dodge/scores.html
 void gamelog(string player, int score)
 {
 	stringstream ss;
