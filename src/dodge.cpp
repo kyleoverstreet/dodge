@@ -175,13 +175,14 @@ GLuint silhouetteStar;
 GLuint silhouetteHeart;
 
 int display_tutorial = 0;
-int display_menu = 0;
+int display_menu = 1;
 int display_credits = 0;
 int display_gameModes = 0;
 int display_audioSettings = 0;
 int display_oneArrow = 1;
 int display_twoArrow = 0;
-int showPlayer = 0;
+int start_game = 0;
+bool intro = true;
 bool game_started = false;
 int background = 1;
 string p1_name;
@@ -216,6 +217,8 @@ int main(void)
 #ifdef USE_OPENAL_SOUND
 	play_theme();
 #endif
+	// For intro
+	gamestart2p(&player, &player2, xres);
 	while (!done) {
 		while (XPending(dpy)) {
 			XEvent e;
@@ -728,6 +731,7 @@ void checkKeys(XEvent *e)
 		case XK_d:
 			break;
 		case XK_Escape:
+			start_game = false;
 			if(creds) {
 				done=1;
 				break;
@@ -760,7 +764,42 @@ void physics(void)
 {
 	int p1_pos;
 	int p2_pos = 0;
-	if (showPlayer) {
+
+	// Displays introduction animation
+	if (intro) {
+		srand(time(NULL));
+		
+		movePlayer(xres, &player);
+		int p1_goPosition = random(xres);
+		int p1_currentPosition = player.pos[0];
+		if (abs(p1_goPosition - p1_currentPosition) > 200) {
+			// Move 200 pixels minimum to avoid jerky movement
+			if (p1_goPosition < p1_currentPosition) {
+				keypressA(&player);
+			} else {
+				keypressR(&player);
+			}
+		}
+	
+		movePlayer2(xres, &player2);
+		int p2_goPosition = random(xres);
+		int p2_currentPosition = player2.pos[0];
+
+		if (abs(p2_goPosition - p2_currentPosition) > 200) {
+			// Move 200 pixels minimum to avoid jerky movement
+			if (p2_goPosition < p2_currentPosition) {
+				keypressL(&player2);
+			} else {
+				keypressR(&player2);
+			}
+		}
+	}
+
+	// Game started - activate player movement and item drops
+	if (start_game) {
+		intro = false;
+		int p1_pos;
+		int p2_pos = 0;
 		if (!two_player) {
 			p1_pos = movePlayer(xres, &player);
 			dropItems(p1_pos, p2_pos, xres, yres);
@@ -790,13 +829,11 @@ void render(void)
 		end_credits(xres, yres);
 		return;
 	}
-	Rect r;
 
 	//Clear the screen
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//draw a quad with texture
 	float wid = 30.0f;
 	glColor3f(1.0, 1.0, 1.0);
 
@@ -809,11 +846,11 @@ void render(void)
 	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
 
-	if (showPlayer && !p1_dead) {
+	if ((start_game && !p1_dead) || intro) {
 		glPushMatrix();
 		glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
 
-		// Display Player1 texture
+		// Display appropriate Player1 texture
 		if (p1_helm && !p1_invincible) {
 			glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
 		} else if (p1_helm && p1_invincible) {
@@ -842,16 +879,11 @@ void render(void)
 		glPopMatrix();
 	}
 
-	if (two_player && !p2_dead) {
+	if ((two_player && !p2_dead) || intro) {
 		glPushMatrix();
-		if (!game_started) {
-			// Needed to keep Player2 off screen
-			glTranslatef(player2.pos[0]-100, player2.pos[1], 0);
-		} else {
-			glTranslatef(player2.pos[0], player2.pos[1], 0);
-		}
+		glTranslatef(player2.pos[0], player2.pos[1], 0);
 	
-		// Display Player2 texture
+		// Display appropriate Player2 texture
 		if (p2_helm && !p2_invincible) {
 			glBindTexture(GL_TEXTURE_2D, player2HelmTexture);
 		} else if (p2_helm && p2_invincible) {
@@ -898,28 +930,20 @@ void render(void)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
-	if (!showPlayer) {
-		r.bot = yres - 20;
-		r.left = 10;
-		r.center = 0;
-		unsigned int color = 0x00dddd00;
-		ggprint8b(&r, 16, color, "M - Menu");
-	}
-
-	if (display_menu && !showPlayer) {
+	if (display_menu && !game_started) {
 		mainmenu(xres, 400);
 		logo(xres, 500);
 	}
 
-	if (display_gameModes && !showPlayer) {
+	if (display_gameModes && !game_started) {
 		display_menu = 0;	
 		startGame(xres, yres);
 		if (display_oneArrow && !display_twoArrow) {
 			oneArrow(xres, yres);
 			if (keys[XK_Return]) {
 				two_player = false;
-				showPlayer ^= 1;
-				if (showPlayer) {
+				start_game ^= 1;
+				if (start_game) {
 					gamestart1p(&player, xres);
 				}
 			}
@@ -928,20 +952,20 @@ void render(void)
 			twoArrow(xres, yres);
 			if (keys[XK_Return]) {
 				two_player = true;
-				showPlayer ^= 1 ;
-				if (showPlayer) {
+				start_game ^= 1 ;
+				if (start_game) {
 					gamestart2p(&player, &player2, xres);
 				}
 			}
 		}
 	}
 
-	if (display_tutorial && !showPlayer) {
+	if (display_tutorial && !start_game) {
         display_menu = 0;
 		tutorial(xres, yres);
 	}
 
-	if (display_audioSettings && !showPlayer) {
+	if (display_audioSettings && !start_game) {
         display_menu = 0;
 		audioSettings(xres, yres);
         if (display_oneArrow && !display_twoArrow) {
@@ -952,11 +976,11 @@ void render(void)
         }
 	}
 
-	if (game_started) {
+	if (start_game) {
 		// Display health bar and score to screen
 		display_gameModes = 0;
 		display_menu = 0;
-        display_health(xres, yres);
+        	display_health(xres, yres);
 		display_score(xres, yres);
 	}
 	if (p1_dead) {
@@ -969,14 +993,14 @@ void render(void)
 	}
 
     if (!two_player) {
-        if(p1_dead) {
-            gameover(xres, 450);
+        if(p1_dead && !display_menu) {
+           	gameover(xres, 450);
 	    //gameOver(xres, yres);
         }
     }
 
     if (two_player) {
-        if(p1_dead && p2_dead) {
+        if((p1_dead && p2_dead) && !display_menu) {
 	    gameover(xres, 450);
             //gameOver(xres, yres);
         }

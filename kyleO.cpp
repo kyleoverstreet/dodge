@@ -141,7 +141,7 @@ bool p2_dead = false;
 int dead_position = 0;
 int dead_position2 = 0;
 
-extern int showPlayer;
+extern bool start_game;
 extern int display_menu;
 
 void tutorial(const int xres, const int yres)
@@ -412,16 +412,16 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 						if (!two_player) {
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
-							display_menu = 1;
-							showPlayer = false;
+							//display_menu = 1;
+							start_game = false;
 						}
 						if (two_player && p2_dead) {
 							cout << "P1 score: " << p1_score;
 							cout << "\nP2 score: " << p2_score;
 							cout << endl << endl;
 							cout << "Player 1 wins!" << endl;
-							display_menu = 1;
-							showPlayer = false;
+							//display_menu = 1;
+							start_game = false;
 						}
 					}
 					deleteSpike(spike);
@@ -462,8 +462,8 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 								cout << "\nP2 score: " << p2_score;
 								cout << endl << endl;
 								cout << "Player 2 wins!" << endl;
-								display_menu = 1;
-								showPlayer = false;
+								//display_menu = 1;
+								start_game = false;
 							}
 						}
 						if (!deleted_spike) {
