@@ -1,9 +1,16 @@
-//DODGE.CPP
-//Jacob West
-//Kory Despot
-//Christian Chavez
-//Young Soo
-//Kyle Overstreet
+/******** DODGE ********
+
+Created by:
+Kyle Overstreet
+Jacob West
+Young Soo Oh
+Kory Despot
+Christian Chavez
+
+Framework by:
+Gordon Griesel
+
+************************/
 
 #include <iostream>
 #include <stdio.h>
@@ -13,7 +20,6 @@
 #include <time.h>
 #include <math.h>
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <X11/keysym.h>
@@ -55,7 +61,6 @@ extern void oneArrow(const int, const int);
 extern void twoArrow(const int, const int);
 extern void audioSettings(const int, const int);
 extern void onArrow(const int, const int);
-extern void offrrow(const int, const int);
 extern void end_credits(int xres, int yres);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
@@ -110,69 +115,55 @@ int done = 0;
 int xres = 800, yres = 600;
 bool two_player = true;
 
+Ppmimage *bgImage = NULL;
+Ppmimage *bgTransImage = NULL;
+Ppmimage *logoImage = NULL;
+Ppmimage *mainmenuImage = NULL;
 Ppmimage *playerImage = NULL;
 Ppmimage *playerHelmImage = NULL;
 Ppmimage *playerInvincibleImage = NULL;
 Ppmimage *playerHelmInvincImage = NULL;
-
 Ppmimage *player2Image = NULL;
 Ppmimage *player2HelmImage = NULL;
 Ppmimage *player2InvincibleImage = NULL;
 Ppmimage *player2HelmInvincImage = NULL;
-
-Ppmimage *deathImage = NULL;
-Ppmimage *gameoverImage = NULL;
-
-Ppmimage *logoImage = NULL;
-
-Ppmimage *mainmenuImage = NULL;
-
+Ppmimage *spikeImage = NULL;
+Ppmimage *helmetImage = NULL;
+Ppmimage *starImage = NULL;
+Ppmimage *heartImage = NULL;
 Ppmimage *hp4Image = NULL;
 Ppmimage *hp3Image = NULL;
 Ppmimage *hp2Image = NULL;
 Ppmimage *hp1Image = NULL;
 Ppmimage *hp0Image = NULL;
 Ppmimage *hpiImage = NULL;
+Ppmimage *deathImage = NULL;
+Ppmimage *gameoverImage = NULL;
 
-Ppmimage *bgImage = NULL;
-Ppmimage *bgTransImage = NULL;
-
-Ppmimage *spikeImage = NULL;
-Ppmimage *helmetImage = NULL;
-Ppmimage *starImage = NULL;
-Ppmimage *heartImage = NULL;
-
+GLuint bgTexture;
+GLuint bgTransTexture;
+GLuint logoTexture;
+GLuint mainmenuTexture;
 GLuint playerTexture;
 GLuint playerHelmTexture;
 GLuint playerInvincibleTexture;
 GLuint playerHelmInvincTexture;
-
 GLuint player2Texture;
 GLuint player2HelmTexture;
 GLuint player2InvincibleTexture;
 GLuint player2HelmInvincTexture;
-
-GLuint deathTexture;
-GLuint gameoverTexture;
-
-GLuint logoTexture;
-
-GLuint mainmenuTexture;
-
+GLuint silhouetteSpike;
+GLuint silhouetteHelm;
+GLuint silhouetteStar;
+GLuint silhouetteHeart;
 GLuint hp4Texture;
 GLuint hp3Texture;
 GLuint hp2Texture;
 GLuint hp1Texture;
 GLuint hp0Texture;
 GLuint hpiTexture;
-
-GLuint bgTexture;
-GLuint bgTransTexture;
-
-GLuint silhouetteSpike;
-GLuint silhouetteHelm;
-GLuint silhouetteStar;
-GLuint silhouetteHeart;
+GLuint deathTexture;
+GLuint gameoverTexture;
 
 int display_tutorial = 0;
 int display_menu = 1;
@@ -196,7 +187,6 @@ extern bool p2_dead;
 extern int dead_position;
 extern int dead_position2;
 
-bool hardmode = false;
 int keys[65536];
 
 int main(void)
@@ -273,7 +263,7 @@ void cleanupXWindows(void) {
 
 void setTitle(void)
 {
-	//Set the window title bar.
+	// Set the window title bar.
 	XMapWindow(dpy, win);
 	XStoreName(dpy, win, "Dodge");
 }
@@ -289,7 +279,6 @@ void initXWindows(void)
 	GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 	XSetWindowAttributes swa;
 
-	//OLD RES WAS 1280 X 960
 	setupScreenRes(900, 600);
 	dpy = XOpenDisplay(NULL);
 	if (dpy == NULL) {
@@ -376,7 +365,7 @@ void initOpengl(void)
 
 	// Death image
 	deathImage = ppm6GetImage("./images/death.ppm");
-	
+
 	// Game Over Image
 	gameoverImage = ppm6GetImage("./images/GameOver.ppm");
 
@@ -542,7 +531,7 @@ void initOpengl(void)
 	silhouetteData = buildAlphaData(deathImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	
+
 	// Game Over
 	w = gameoverImage->width;
 	h = gameoverImage->height;	
@@ -562,7 +551,7 @@ void initOpengl(void)
 	silhouetteData = buildAlphaData(logoImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	
+
 	// Main Menu
 	w = mainmenuImage->width;
 	h = mainmenuImage->height;	
@@ -720,16 +709,6 @@ void checkKeys(XEvent *e)
 			display_oneArrow ^= 1;
 			display_twoArrow ^= 1;
 			break;
-		case XK_p:
-			break;
-		case XK_Left: 
-			break;
-		case XK_Right:
-			break;
-		case XK_a:
-			break;
-		case XK_d:
-			break;
 		case XK_Escape:
 			start_game = false;
 			if(creds) {
@@ -762,10 +741,10 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
-	// Displays introduction animation
+	// Introduction animation
 	if (intro) {
 		srand(time(NULL));
-		
+
 		movePlayer(xres, &player);
 		int p1_goPosition = random(xres);
 		int p1_currentPosition = player.pos[0];
@@ -777,7 +756,7 @@ void physics(void)
 				keypressR(&player);
 			}
 		}
-	
+
 		movePlayer2(xres, &player2);
 		int p2_goPosition = random(xres);
 		int p2_currentPosition = player2.pos[0];
@@ -792,7 +771,7 @@ void physics(void)
 		}
 	}
 
-	// Game started - activate player movement and item drops
+	// Game started - activate player movement controls and item drops
 	if (start_game) {
 		intro = false;
 		int p1_pos;
@@ -822,12 +801,7 @@ void physics(void)
 
 void render(void)
 {
-	if(creds) {
-		end_credits(xres, yres);
-		return;
-	}
-
-	//Clear the screen
+	// Clear the screen
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -843,11 +817,12 @@ void render(void)
 	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
 
+	// Display Player1
 	if ((start_game && !p1_dead) || intro) {
 		glPushMatrix();
 		glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
 
-		// Display appropriate Player1 texture
+		// Check Player1 status to display appropriate texture
 		if (p1_helm && !p1_invincible) {
 			glBindTexture(GL_TEXTURE_2D, playerHelmTexture);
 		} else if (p1_helm && p1_invincible) {
@@ -876,11 +851,12 @@ void render(void)
 		glPopMatrix();
 	}
 
+	// Display Player2 (intro animation and 2P mode only)
 	if ((two_player && !p2_dead) || intro) {
 		glPushMatrix();
 		glTranslatef(player2.pos[0], player2.pos[1], 0);
-	
-		// Display appropriate Player2 texture
+
+		// Check Player2 status to display appropriate texture
 		if (p2_helm && !p2_invincible) {
 			glBindTexture(GL_TEXTURE_2D, player2HelmTexture);
 		} else if (p2_helm && p2_invincible) {
@@ -927,12 +903,13 @@ void render(void)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
-	if (display_menu && !game_started) {
+	// Menu
+	if (display_menu && !start_game) {
 		mainmenu(xres, 400);
 		logo(xres, 500);
 	}
 
-	if (display_gameModes && !game_started) {
+	if (display_gameModes && !start_game) {
 		display_menu = 0;	
 		startGame(xres, yres);
 		if (display_oneArrow && !display_twoArrow) {
@@ -958,48 +935,51 @@ void render(void)
 	}
 
 	if (display_tutorial && !start_game) {
-        display_menu = 0;
+		display_menu = 0;
 		tutorial(xres, yres);
 	}
 
 	if (display_audioSettings && !start_game) {
-        display_menu = 0;
+		display_menu = 0;
 		audioSettings(xres, yres);
-        if (display_oneArrow && !display_twoArrow) {
-            onArrow(xres, yres);
-        }
-        if (display_twoArrow && !display_oneArrow) {
-            twoArrow(xres, yres);
-        }
+		if (display_oneArrow && !display_twoArrow) {
+			onArrow(xres, yres);
+		}
+		if (display_twoArrow && !display_oneArrow) {
+			twoArrow(xres, yres);
+		}
 	}
 
+	// Display health and score to screen once game is started
 	if (start_game) {
-		// Display health bar and score to screen
 		display_gameModes = 0;
 		display_menu = 0;
-        	display_health(xres, yres);
+		display_health(xres, yres);
 		display_score(xres, yres);
 	}
+
+	// Display tombstone if player dies
 	if (p1_dead) {
-		// Display tombstone
-        tombstone(dead_position);
+		tombstone(dead_position);
 	}
 	if (p2_dead) {
-		// Display tombstone
-        tombstone(dead_position2);
+		tombstone(dead_position2);
 	}
 
-    if (!two_player) {
-        if(p1_dead && !display_menu) {
-           	gameover(xres, 450);
-	    //gameOver(xres, yres);
-        }
-    }
+	// Display "game over" after player(s) death 
+	if (!two_player) {
+		if(p1_dead && !display_menu) {
+			gameover(xres, 450);
+		}
+	}
+	if (two_player) {
+		if((p1_dead && p2_dead) && !display_menu) {
+			gameover(xres, 450);
+		}
+	}
 
-    if (two_player) {
-        if((p1_dead && p2_dead) && !display_menu) {
-	    gameover(xres, 450);
-            //gameOver(xres, yres);
-        }
-    }
+	// Display credits
+	if(creds) {
+		end_credits(xres, yres);
+	}
 }
