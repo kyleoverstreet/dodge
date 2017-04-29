@@ -2,6 +2,7 @@
 // CMPS 3350
 // Dodge Project
 
+#include <iostream>
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -10,7 +11,8 @@
 #include "src/log.h"
 #include "src/ppm.h"
 #include "src/shared.h"
-#include <iostream>
+using namespace std;
+
 
 extern Spike *sphead;
 extern Helmet *hhead;
@@ -33,6 +35,11 @@ extern int p1_score;
 extern int p2_score;
 extern bool p1_dead;
 extern bool p2_dead;
+extern int movePlayer(int xres, Player *player);
+extern void keypressA(Player *player);
+extern void keypressD(Player *player);
+extern void keypressR(Player *player2);
+extern void keypressL(Player *player2);
 
 extern void createSpikes(float n, const int xres, const int yres)
 {
@@ -341,4 +348,33 @@ void deleteHeart(Heart *node)
 	// Free the node's memory and set node to NULL
 	delete node;
 	node = NULL;
+}
+
+void moveRandomly(Player *player, Player *player2)
+{
+	srand(time(NULL));
+
+	movePlayer(800, player);
+	int p1_goPosition = random(800);
+	int p1_currentPosition = player->pos[0];
+	if (abs(p1_goPosition - p1_currentPosition) > 200) {
+		// Move 200 pixels minimum to avoid jerky movement
+		if (p1_goPosition < p1_currentPosition) {
+			keypressA(player);
+		} else {
+			keypressR(player);
+		}
+	}
+
+	movePlayer(800, player2);
+	int p2_goPosition = random(800);
+	int p2_currentPosition = player2->pos[0];
+	if (abs(p2_goPosition - p2_currentPosition) > 200) {
+		// Move 200 pixels minimum to avoid jerky movement
+		if (p2_goPosition < p2_currentPosition) {
+			keypressL(player2);
+		} else {
+			keypressR(player2);
+		}
+	}
 }

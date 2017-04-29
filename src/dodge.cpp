@@ -735,31 +735,7 @@ void physics(void)
 {
 	// Introduction animation
 	if (intro) {
-		srand(time(NULL));
-
-		movePlayer(xres, &player);
-		int p1_goPosition = random(xres);
-		int p1_currentPosition = player.pos[0];
-		if (abs(p1_goPosition - p1_currentPosition) > 200) {
-			// Move 200 pixels minimum to avoid jerky movement
-			if (p1_goPosition < p1_currentPosition) {
-				keypressA(&player);
-			} else {
-				keypressR(&player);
-			}
-		}
-
-		movePlayer(xres, &player2);
-		int p2_goPosition = random(xres);
-		int p2_currentPosition = player2.pos[0];
-		if (abs(p2_goPosition - p2_currentPosition) > 200) {
-			// Move 200 pixels minimum to avoid jerky movement
-			if (p2_goPosition < p2_currentPosition) {
-				keypressL(&player2);
-			} else {
-				keypressR(&player2);
-			}
-		}
+		moveRandomly(&player, &player2);
 	}
 
 	// Game started - activate player movement controls and item drops

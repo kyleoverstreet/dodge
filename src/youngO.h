@@ -10,4 +10,6 @@ extern void drawHelmets(void);
 extern void drawStars(void);
 extern void drawHeart(void);
 extern void deleteHelmet(Helmet *node);
+extern void moveRandomly(Player *player, Player *player2);
+
 #endif
