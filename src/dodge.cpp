@@ -762,9 +762,6 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
-	int p1_pos;
-	int p2_pos = 0;
-
 	// Displays introduction animation
 	if (intro) {
 		srand(time(NULL));
