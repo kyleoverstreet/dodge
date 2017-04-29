@@ -74,6 +74,7 @@ extern void logo(int, int);
 extern void mainmenu(int, int);
 extern void gameover(int, int);
 extern void gameOver(const int, const int);
+extern void view_scores();
 #ifdef USE_OPENAL_SOUND
 extern void play_health_loss();
 extern void initialize_sounds();
@@ -250,8 +251,7 @@ int main(void)
 	cleanupXWindows();
 	cleanup_fonts();
 	logClose();
-	cout << endl << "To view a list of all game scores, go to:" << endl
-		<< "cs.csubak.edu/~koverstreet/3350/dodge/scores.html" << endl;
+	view_scores();
 	return 0;
 }
 
@@ -843,7 +843,7 @@ void render(void)
 	}
 
 	// Display Player2 (intro animation and 2P mode only)
-	if ((two_player && !p2_dead) || intro) {
+	if (intro || (two_player && !p2_dead)) {
 		glPushMatrix();
 		glTranslatef(player2.pos[0], player2.pos[1], 0);
 

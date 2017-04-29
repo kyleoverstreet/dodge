@@ -2,7 +2,7 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/28/17
+// Last edit: 4/29/17
 
 /****** WEEK 13 ******
 Working on many things:
@@ -42,6 +42,7 @@ void dropItems(int, int, bool, const int, const int);
 void display_health(int, int);
 void display_score(int, int);
 void gamelog(string, int);
+void view_scores();
 
 extern void createSpikes(float, const int, const int);
 extern void drawSpikes(void);
@@ -362,6 +363,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 						if (!two_player) {
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
+							cout << endl << endl;
 							//display_menu = 1;
 							start_game = false;
 						}
@@ -714,7 +716,7 @@ void display_health(int xres, int yres)
 	}
 }
 
-// Displays the player score(s) at top-center
+// Displays the player score(s) under health bar
 void display_score(int xres, int yres)
 {
 	unsigned int yellow = 0x00dddd00;
@@ -755,4 +757,9 @@ void gamelog(string player, int score)
 	command += "\\&score=" + score_str;
 
 	system(command.c_str());
+}
+
+void view_scores()
+{
+	system("firefox http://cs.csubak.edu/~koverstreet/3350/dodge/scores.html");
 }
