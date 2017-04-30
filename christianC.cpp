@@ -73,7 +73,7 @@ void player1Name (const int xres, const int yres, Input &input)
     s.width = 100;
     s.height = 15;
     s.center.x = xres/2;
-    s.center.y = yres/2 + 100;
+    s.center.y = yres/2 + 75;
     glColor3ub(244, 241, 29);
     glPushMatrix();
     glTranslatef(s.center.x, s.center.y, s.center.z);
@@ -94,7 +94,7 @@ void player1Name (const int xres, const int yres, Input &input)
     p.center = s.center.y;
     ggprint13(&p, 20, black_, "Enter player1 name");
 
-    p.bot = s.center.y - 5;
+    p.bot = s.center.y - 8;
     p.left = s.center.x;
     p.center = s.center.y;
     ggprint13(&p, 20, black_, "%s", input.player1);
@@ -141,7 +141,7 @@ void player2Name (const int xres, const int yres, Input &input)
     s.width = 100;
     s.height = 15;
     s.center.x = xres/2;
-    s.center.y = yres/2;
+    s.center.y = yres/2 + 75;
     glColor3ub(244, 241, 29);
     glPushMatrix();
     glTranslatef(s.center.x, s.center.y, s.center.z);
@@ -162,7 +162,7 @@ void player2Name (const int xres, const int yres, Input &input)
     p.center = s.center.y;
     ggprint13(&p, 20, black_, "Enter player2 name");
 
-    p.bot = s.center.y - 5;
+    p.bot = s.center.y - 8;
     p.left = s.center.x;
     p.center = s.center.y;
     ggprint13(&p, 20, black_, "%s", input.player2);

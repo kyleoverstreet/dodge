@@ -705,6 +705,17 @@ void checkKeys(XEvent *e)
 	} else {
 		return;
 	}
+    if (display_playername2) {
+        getName_player2(key, input);
+        if (keys[XK_Return]) {
+            display_playername2 = false;
+            two_player = true;
+            start_game = true;
+            assign_namep1(p1_name, input);
+            assign_namep2(p2_name, input);
+            gamestart2p(&player, &player2, xres);
+        }
+    }
     if (display_playername) {
         getName_player1(key, input);
         if (keys[XK_Return]) {
@@ -717,21 +728,11 @@ void checkKeys(XEvent *e)
             } else {
                 entering_one = false;
                 entering_two = true;
+                display_playername = false;
+                display_playername2 = true;
                 return;
             } 
            
-        }
-    }
-    if (display_playername2) {
-        getName_player2(key, input);
-        if (keys[XK_Return]) {
-            display_playername = false;
-            display_playername2 = false;
-            two_player = true;
-            start_game = true;
-            assign_namep1(p1_name, input);
-            assign_namep2(p2_name, input);
-            gamestart2p(&player, &player2, xres);
         }
     }
 	switch(key) {
@@ -772,11 +773,11 @@ void checkKeys(XEvent *e)
 				// 2-Player
 				} else {
 					display_modemenu = false;
-                    //display_playername = true;
+                    display_playername = true;
                     //display_playername2 = true;
-					two_player = true;
-					start_game = true;
-					gamestart2p(&player, &player2, xres);
+					//two_player = true;
+					//start_game = true;
+					//gamestart2p(&player, &player2, xres);
 				}
 			}
 			// Audio settings
