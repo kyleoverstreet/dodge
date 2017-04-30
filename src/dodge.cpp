@@ -47,14 +47,18 @@ void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void convertpng2ppm(void);
 extern void cleanupPPM(void);
+extern void start_menu(const int, const int);
+extern void mode_menu(const int, const int);
+extern void audio_menu(const int, const int);
 extern void tutorial(const int, const int);
+extern void end_menu(const int, const int);
 //extern void menu(const int, const int);
 extern void credits(const int, const int);
-extern void startGame(const int, const int);
+/*extern void startGame(const int, const int);
 extern void oneArrow(const int, const int);
 extern void twoArrow(const int, const int);
 extern void audioSettings(const int, const int);
-extern void onArrow(const int, const int);
+extern void onArrow(const int, const int);*/
 extern void end_credits(int xres, int yres);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
@@ -166,16 +170,25 @@ Helmet *hhead = NULL;
 Star *sthead = NULL;
 Heart *hearthead = NULL;
 
-int display_tutorial = 0;
+/*int display_tutorial = 0;
 int display_menu = 1;
 int display_credits = 0;
 int display_gameModes = 0;
 int display_audioSettings = 0;
 int display_oneArrow = 1;
-int display_twoArrow = 0;
+int display_twoArrow = 0;*/
 
 bool intro = true;
-int start_game = 0;
+bool show_logo = true;
+int menu_position = 1;
+bool display_startmenu = false;
+bool display_modemenu = false;
+bool display_audiomenu = false;
+bool display_tutorial = false;
+bool display_endmenu = false;
+bool audio_on = true;
+bool start_game = false;
+bool game_over = false;
 string p1_name;
 extern bool p1_helm;
 extern bool p1_invincible;
@@ -251,7 +264,7 @@ int main(void)
 	cleanupXWindows();
 	cleanup_fonts();
 	logClose();
-	view_scores();
+	//view_scores();
 	return 0;
 }
 
@@ -681,25 +694,62 @@ void checkKeys(XEvent *e)
 		return;
 	}
 	switch(key) {
-		case XK_h:
-			display_tutorial ^= 1;
-			break;
 		case XK_m:
-			display_menu ^= 1;
-			break;
-		case XK_s:
-			display_gameModes ^= 1;
-			break;
-		case XK_t:
-			display_audioSettings ^= 1;
+			if (!start_game && !display_endmenu) {
+				display_startmenu = true;
+			}
+			
 			break;
 		case XK_Down:
-			display_oneArrow ^= 1;
-			display_twoArrow ^= 1;
+			if (display_startmenu && menu_position != 3) {
+				menu_position++;
+			} else if ((display_modemenu || display_audiomenu) && menu_position != 2) {
+				menu_position++;
+			} else if (display_endmenu && menu_position != 4) {
+				menu_position++;
+			}
 			break;
 		case XK_Up:
-			display_oneArrow ^= 1;
-			display_twoArrow ^= 1;
+			if ((display_startmenu || display_modemenu || display_audiomenu || display_endmenu)
+				&& menu_position != 1) {
+				menu_position--;
+			}
+			break;
+		case XK_Return:
+			if (display_modemenu) {
+				if (menu_position == 1) {
+					display_modemenu = false;
+					two_player = false;
+					start_game = true;
+					gamestart1p(&player, xres);
+				} else {
+					display_modemenu = false;
+					two_player = true;
+					start_game = true;
+					gamestart2p(&player, &player2, xres);
+				}
+			}
+			if (display_endmenu) {
+				if (menu_position == 1) {
+					display_endmenu = false;
+					start_game = true;
+					if (!two_player) {
+						gamestart1p(&player, xres);
+					} else {
+						gamestart2p(&player, &player2, xres);
+					}
+				} else if (menu_position == 2) {
+					display_endmenu = false;
+					display_modemenu = true;
+					menu_position = 1;
+				} else if (menu_position == 3) {
+					display_endmenu = false;
+					display_audiomenu = true;
+					menu_position = 1;
+				} else if (menu_position == 4) {
+					view_scores();
+				}
+			}
 			break;
 		case XK_Escape:
 			start_game = false;
@@ -871,7 +921,7 @@ void render(void)
 	glEnable(GL_TEXTURE_2D);
 
 	// Menu
-	if (display_menu && !start_game) {
+	/*if (display_menu && !start_game) {
 		mainmenu(xres, 400);
 		logo(xres, 500);
 	}
@@ -902,7 +952,6 @@ void render(void)
 	}
 
 	if (display_tutorial && !start_game) {
-		display_menu = 0;
 		tutorial(xres, yres);
 	}
 
@@ -915,12 +964,33 @@ void render(void)
 		if (display_twoArrow && !display_oneArrow) {
 			twoArrow(xres, yres);
 		}
+	}*/
+
+	// Menus (new)
+	if (show_logo && !start_game && !game_over) {
+		logo(xres, 500);
+	}
+		
+	if (display_startmenu) {
+		start_menu(xres, yres);
+	}
+	if (display_modemenu) {
+		mode_menu(xres, yres);
+	}
+	if (display_audiomenu) {
+		audio_menu(xres, yres);
+	}
+	if (display_tutorial) {
+		tutorial(xres, yres);
+	}
+	if (display_endmenu) {
+		end_menu(xres, yres);
 	}
 
 	// Display health and score to screen once game is started
 	if (start_game) {
-		display_gameModes = 0;
-		display_menu = 0;
+		//display_gameModes = 0;
+		//display_menu = 0;
 		display_health(xres, yres);
 		display_score(xres, yres);
 	}
@@ -934,15 +1004,8 @@ void render(void)
 	}
 
 	// Display "Game Over" after player(s) death 
-	if (!two_player) {
-		if(p1_dead && !display_menu) {
-			gameover(xres, 450);
-		}
-	}
-	if (two_player) {
-		if((p1_dead && p2_dead) && !display_menu) {
-			gameover(xres, 450);
-		}
+	if (game_over) {
+		gameover(xres, 490);
 	}
 
 	// Display credits

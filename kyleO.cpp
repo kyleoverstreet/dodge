@@ -35,6 +35,9 @@ extern "C" {
 
 using namespace std;
 
+void start_menu(const int, const int);
+void mode_menu(const int, const int);
+void audio_menu(const int, const int);
 void tutorial(const int, const int);
 void keypressA(Player*);
 void keypressD(Player*);
@@ -44,6 +47,8 @@ void display_score(int, int);
 void gamelog(string, int);
 void view_scores();
 
+extern void gamestart1p(Player*, int);
+extern void gamestart2p(Player*, Player*, int);
 extern void createSpikes(float, const int, const int);
 extern void drawSpikes(void);
 extern void deleteSpike(Spike*);
@@ -112,13 +117,199 @@ bool p2_invincible = false;
 bool p2_dead = false;
 int p2_deadpos;
 
+extern bool show_logo;
+extern int keys[];
+extern int menu_position;
+extern bool display_startmenu;
+extern bool display_modemenu;
+extern bool display_audiomenu;
+extern bool audio_on;
+extern bool display_tutorial;
+extern bool display_endmenu;
 extern bool start_game;
-extern int display_menu;
+extern bool game_over;
 
 bool deleted_spike;
 bool deleted_helm;
 bool deleted_star;
 bool deleted_heart;
+
+
+void start_menu(const int xres, const int yres)
+{
+	unsigned int yellow = 0x00dddd00;
+	
+	Rect m;
+	m.bot = yres - 200;
+	m.left = xres/2 - 55;
+	m.center = 0;
+	ggprint13(&m, 16, yellow, "Play Game");
+	ggprint13(&m, 16, yellow, "Audio Settings");
+	ggprint13(&m, 16, yellow, "How to Play");
+
+	int spike_x;
+	int spike_y;
+
+	if (menu_position == 1) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 190;
+	} else if (menu_position == 2) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 207;
+	} else if (menu_position == 3) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 224;
+	}
+
+	float w = 10.0;
+	// Display spike
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef(spike_x,spike_y,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+	glEnd();
+	glPopMatrix();
+
+	if (keys[XK_Return]) {
+		if (menu_position == 1) {
+			display_startmenu = false;
+			display_modemenu = true;
+		} else if (menu_position == 2) {
+			display_startmenu = false;
+			display_audiomenu = true;
+			menu_position = 1;
+		} else if (menu_position == 3) {
+			display_startmenu = false;
+			display_tutorial = true;
+			show_logo = false;
+		}
+	}
+}
+
+void mode_menu(const int xres, const int yres)
+{
+	unsigned int yellow = 0x00dddd00;
+	
+	Rect m;
+	m.bot = yres - 200;
+	m.left = xres/2 - 55;
+	m.center = 0;
+	ggprint13(&m, 16, yellow, "1-Player");
+	ggprint13(&m, 16, yellow, "2-Player");
+	ggprint13(&m, 16, yellow, " ");
+	
+	int spike_x = xres/2 - 73;
+	int spike_y = yres - 190;
+	if (menu_position == 1) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 190;
+	} else if (menu_position == 2) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 207;
+	}
+	
+	float w = 10.0;
+	// Display spike
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef(spike_x,spike_y,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+	glEnd();
+	glPopMatrix();
+	
+	if (keys[XK_Left]) {
+		if (!game_over) {
+			display_modemenu = false;
+			display_startmenu = true;
+			menu_position = 1;
+		} else if (game_over) {
+			display_modemenu = false;
+			display_endmenu = true;
+		}
+	}
+}
+
+void audio_menu(const int xres, const int yres)
+{
+	unsigned int yellow = 0x00dddd00;
+	
+	Rect m;
+	m.bot = yres - 200;
+	m.left = xres/2 - 55;
+	m.center = 0;
+	ggprint13(&m, 16, yellow, "Enable Audio");
+	ggprint13(&m, 16, yellow, "Disable Audio");
+	ggprint13(&m, 16, yellow, " ");
+
+	if (audio_on) {
+		ggprint13(&m, 16, yellow, "Audio is currently ON!");
+	} else {
+		ggprint13(&m, 16, yellow, "Audio is currently OFF!");
+	}
+	
+	int spike_x = xres/2 - 73;
+	int spike_y = yres - 190;
+	if (menu_position == 1) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 190;
+	} else if (menu_position == 2) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 207;
+	}
+	
+	float w = 10.0;
+	// Display spike
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef(spike_x,spike_y,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+	glEnd();
+	glPopMatrix();
+
+	if (keys[XK_Return]) {
+		if (menu_position == 1) {
+			audio_on = true;
+		} else if (menu_position == 2) {
+			audio_on = false;
+		}
+	}
+	
+	if (keys[XK_Left]) {
+		if (!game_over) {
+			display_audiomenu = false;
+			display_startmenu = true;
+			menu_position = 2;
+		}
+		if (game_over) {
+			display_audiomenu = false;
+			display_endmenu = true;
+		}
+	}
+}
 
 // Display tutorial to screen (accessible via menu)
 void tutorial(const int xres, const int yres)
@@ -241,6 +432,63 @@ void tutorial(const int xres, const int yres)
 	item4.left = xres/2 + 30;
 	item4.center = 0;
 	ggprint8b(&item4, 16, white, "Heart - player regains 1/4 hp if not full hp");
+
+	if (keys[XK_Left]) {
+		display_tutorial = false;
+		display_startmenu = true;
+		
+		if (!game_over) {
+			show_logo = true;
+		}
+	}
+}
+
+void end_menu(const int xres, const int yres)
+{
+	unsigned int yellow = 0x00dddd00;
+	
+	Rect m;
+	m.bot = yres - 200;
+	m.left = xres/2 - 55;
+	m.center = 0;
+	ggprint13(&m, 16, yellow, "Play Again");
+	ggprint13(&m, 16, yellow, "Change Game Mode");
+	ggprint13(&m, 16, yellow, "Audio Settings");
+	ggprint13(&m, 16, yellow, "View Scores");
+
+	int spike_x;
+	int spike_y;
+
+	if (menu_position == 1) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 190;
+	} else if (menu_position == 2) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 207;
+	} else if (menu_position == 3) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 224;
+	} else if (menu_position == 4) {
+		spike_x = xres/2 - 73;
+		spike_y = yres - 241;
+	}
+
+	float w = 10.0;
+	// Display spike
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef(spike_x,spike_y,0);
+	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+	glEnd();
+	glPopMatrix();
 }
 
 // Move player left
@@ -364,16 +612,20 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
 							cout << endl << endl;
-							//display_menu = 1;
+							game_over = true;
 							start_game = false;
+							display_endmenu = true;
+							menu_position = 1;
 						}
 						if (two_player && p2_dead) {
 							cout << "P1 score: " << p1_score;
 							cout << "\nP2 score: " << p2_score;
 							cout << endl << endl;
 							cout << "Player 1 wins!" << endl;
-							//display_menu = 1;
+							game_over = true;
 							start_game = false;
+							display_endmenu = true;
+							menu_position = 1;
 						}
 					}
 					deleteSpike(spike);
@@ -414,8 +666,10 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 								cout << "\nP2 score: " << p2_score;
 								cout << endl << endl;
 								cout << "Player 2 wins!" << endl;
-								//display_menu = 1;
+								game_over = true;
 								start_game = false;
+								display_endmenu = true;
+								menu_position = 1;
 							}
 						}
 						if (!deleted_spike) {

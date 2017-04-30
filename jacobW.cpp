@@ -16,7 +16,13 @@ extern GLuint deathTexture;
 extern GLuint logoTexture;
 extern GLuint mainmenuTexture;
 extern GLuint gameoverTexture;
-//extern bool game_started;
+extern int p1_health;
+extern int p1_score;
+extern bool p1_dead;
+extern int p2_health;
+extern int p2_score;
+extern bool p2_dead;
+extern bool game_over;
 
 void cleanupPPM(void) {
 	system("rm ./images/credits.ppm");
@@ -111,19 +117,30 @@ void keypressR(Player *player2) {
 }
 
 void gamestart1p(Player *player, int xres) {
-
+	game_over = false;
 	player->vel[0] = 0;
 	player->pos[0] = xres/2;
 	player->pos[1] = 30;
+	p1_health = 4;
+	p1_score = 0;
+	p1_dead = false;
+	p2_dead = false;
 }
 
 void gamestart2p(Player *player1, Player *player2, int xres) {
+	game_over = false;
 	player1->vel[0] = 0;
 	player1->pos[0] = xres/2 - 100;
 	player1->pos[1] = 30;
+	p1_health = 4;
+	p1_score = 0;
+	p1_dead = false;
 	player2->vel[0] = 0;
 	player2->pos[0] = xres/2 + 100;
 	player2->pos[1] = 30;
+	p2_health = 4;
+	p2_score = 0;
+	p2_dead = false;
 }
 
 void tombstone(int x)
