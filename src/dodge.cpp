@@ -189,6 +189,7 @@ bool display_endmenu = false;
 bool audio_on = true;
 bool start_game = false;
 bool game_over = false;
+bool reset_game = false;
 string p1_name;
 extern bool p1_helm;
 extern bool p1_invincible;
@@ -813,6 +814,22 @@ void physics(void)
 		if (keys[XK_d]) {
 			keypressD(&player);
 		}
+	}
+
+	if (reset_game) {
+		while (sphead) {
+			deleteSpike(sphead);
+		}
+		while (hhead) {
+			deleteHelmet(hhead);
+		}
+		while (sthead) {
+			deleteStar(sthead);
+		}
+		while (hearthead) {
+			deleteHeart(hearthead);
+		}
+		reset_game = false;
 	}
 }
 

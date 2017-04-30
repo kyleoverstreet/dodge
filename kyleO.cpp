@@ -128,7 +128,7 @@ extern bool display_tutorial;
 extern bool display_endmenu;
 extern bool start_game;
 extern bool game_over;
-
+extern bool reset_game;
 bool deleted_spike;
 bool deleted_helm;
 bool deleted_star;
@@ -605,7 +605,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #ifdef USE_OPENAL_SOUND
 						play_game_over();
 #endif
-						gamelog(p1_name, p1_score);
+						//gamelog(p1_name, p1_score);
 						p1_dead = true;
 						p1_deadpos = player_pos;
 						if (!two_player) {
@@ -614,6 +614,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							cout << endl << endl;
 							game_over = true;
 							start_game = false;
+							reset_game = true;
 							display_endmenu = true;
 							menu_position = 1;
 						}
@@ -624,6 +625,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							cout << "Player 1 wins!" << endl;
 							game_over = true;
 							start_game = false;
+							reset_game = true;
 							display_endmenu = true;
 							menu_position = 1;
 						}
@@ -658,7 +660,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 #ifdef USE_OPENAL_SOUND
 							play_game_over();
 #endif
-							gamelog(p2_name, p2_score);
+							//gamelog(p2_name, p2_score);
 							p2_dead = true;
 							p2_deadpos = player2_pos;
 							if (p1_dead) {
