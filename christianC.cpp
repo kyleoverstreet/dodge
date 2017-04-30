@@ -29,17 +29,17 @@ apper on screen when the game is over.
 #include <math.h>
 #include <stdlib.h>
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <time.h>
 #include <vector>
 #include "src/ppm.h"
+#include "src/christianC.h"
 using namespace std;
 
 extern "C" {
 #include "src/fonts.h"
 }
 
-//Structures for a box
 struct Vec {
     float x, y, z;
 };
@@ -49,168 +49,156 @@ struct Shape {
     Vec center;
 };
 
-void menu(const int, const int);
-void startGame(const int, const int);
-void oneArrow(const int, const int);
-void twoArrow(const int, const int);
-void onArrow(const int, const int);
-void offArrow(const int, const int);
-void audioSettings (const int, const int);
-void gameOver (const int, const int);
-extern void tutorial(const int xres, const int yres);
+void player1Name(const int, const int, Input);
+void getName_player1(int, Input);
+void assign_namep1(char[], Input);
+extern bool display_playername;
+void player2Name(const int, const int, Input);
+void getName_player2(int, Input);
+void assign_namep2(char[], Input);
+extern bool display_playername2;
+extern bool display_modemenu;
+bool entering_one = true;
+bool entering_two = false;
 
-//Colors for the test in themenus and the sub menus
-//unsigned int red = 0xff0000;
-//unsigned int green = 0x00ff00;
-unsigned int yellow = 0xffff00;
-//unsigned int blue = 0x0000ff;
-//unsigned int aqua = 0x00ffff;
-unsigned int white = 0xffffff;
 
-void menu(const int xres, const int yres)
+unsigned int black_ = 0x000000;
+
+void player1Name (const int xres, const int yres, Input &input)
 {
-    int y = yres/2;
-    int x = xres/2;
+    float w, h;
 
+    Shape s;
 
-    //Welcome message Text
-    Rect menu;
-/*    menu.bot = y + 225;
-    menu.left = x;
-    menu.center = y;
-    ggprint8b(&menu, 16, white, "DODGE MAIN MENU");
-*/    
-    //Change/view the audio settings
-    menu.bot = y + 175;
-    menu.left = x;
-    menu.center = y;
-    ggprint8b(&menu, 16, yellow, "<t> Toggle Audio");
-
-    //View how tro play the game
-    menu.bot = y + 158;
-    menu.left = x;
-    menu.center = y;
-    ggprint8b(&menu, 16, yellow, "<h> How to Play");
-
-    //Chnage view the game mode
-    menu.bot = y + 141;
-    menu.left = x;
-    menu.center = y;
-    ggprint8b(&menu, 16, yellow, "<s> Start Game");
-
-}
-
-void startGame (const int xres, const int yres)
-{
-    int y = yres/2;
-    int x = xres/2;
-
-    Rect mode;
-    mode.bot = y + 225;
-    mode.left = x;
-    mode.center = y;
-    ggprint8b(&mode, 16, white, "Select Game Mode");
-
-    //For the one player mode
-    mode.bot = y + 175;
-    mode.left = x;
-    mode.center = y;
-    ggprint8b(&mode, 16, yellow, "1 Player");
-
-    //For the two player mode
-    mode.bot = y + 158;
-    mode.left = x;
-    mode.center = y;
-    ggprint8b(&mode, 16, yellow, "2 Players");
-
-}
-
-void oneArrow (const int xres, const int yres)
-{
-    int y = yres/2;
-    int x = xres/2;
-
-    Rect one_arrow;
-    one_arrow.bot = y + 175;
-    one_arrow.left = x - 35;
-    one_arrow.center = y;
-    ggprint8b(&one_arrow, 16, yellow, ">>");
+    s.width = 100;
+    s.height = 15;
+    s.center.x = xres/2;
+    s.center.y = yres/2 + 100;
+    glColor3ub(244, 241, 29);
+    glPushMatrix();
+    glTranslatef(s.center.x, s.center.y, s.center.z);
+    w = s.width;
+    h = s.height;
+    glBegin(GL_QUADS);
+    glVertex2i(-w,-h);
+    glVertex2i(-w, h);
+    glVertex2i( w, h);
+    glVertex2i( w,-h);
+    glEnd();
+    glPopMatrix();
     
-}
-
-void twoArrow (const int xres, const int yres)
-{
-    int y = yres/2;
-    int x = xres/2;
-
-    Rect two_arrow;
-    two_arrow.bot = y + 158;
-    two_arrow.left = x - 40;
-    two_arrow.center = y;
-    ggprint8b(&two_arrow, 16, yellow, ">>");
+    Rect p;
     
-}
+    p.bot = s.center.y + 30;
+    p.left = s.center.x;
+    p.center = s.center.y;
+    ggprint13(&p, 20, black_, "Enter player1 name");
 
-void audioSettings (const int xres, const int yres)
-{
-    int y = yres/2;
-    int x = xres/2;
-
-    Rect audio;
-    audio.bot = y + 225;
-    audio.left = x;
-    audio.center = y;
-    ggprint8b(&audio, 16, white, "Select Audio Mode");
-
-    //For on mode
-    audio.bot = y + 175;
-    audio.left = x;
-    audio.center = y;
-    ggprint8b(&audio, 16, yellow, "Audio On");
-
-    //For off mode
-    audio.bot = y + 158;
-    audio.left = x;
-    audio.center = y;
-    ggprint8b(&audio, 16, yellow, "Audio Off");
+    p.bot = s.center.y - 5;
+    p.left = s.center.x;
+    p.center = s.center.y;
+    ggprint13(&p, 20, black_, "%s", input.player1);
 
 }
 
-void onArrow (const int xres, const int yres)
+void getName_player1 (int key, Input &input)
 {
-    int y = yres/2;
-    int x = xres/2;
+    if (entering_one) {
+        if (key >= XK_a && key <= XK_z) {
+            char k[2];
+            k[0] = key;
+            k[1] = '\0';
+            strcat(input.player1, k);
+            return;
+        }
+        if (key == XK_BackSpace) {
+            int slen = strlen(input.player1);
+            if (slen > 0)
+                input.player1[slen - 1] = '\0';
+            return;
+        }
+        if (key == XK_Left) {
+            display_playername = false;
+            display_playername2 = false;
+            display_modemenu = true;
+            return;
+        }
+    }
+}
 
-    Rect on_arrow;
-    on_arrow.bot = y + 175;
-    on_arrow.left = x - 35;
-    on_arrow.center = y;
-    ggprint8b(&on_arrow, 16, yellow, ">>");
+void assign_namep1 (char p1_name[], Input &input)
+{
+    for (int i = 0; i < 100; i++)
+        p1_name[i] = input.player1[i];
+}
+
+void player2Name (const int xres, const int yres, Input &input)
+{
+    float w, h;
+
+    Shape s;
+
+    s.width = 100;
+    s.height = 15;
+    s.center.x = xres/2;
+    s.center.y = yres/2;
+    glColor3ub(244, 241, 29);
+    glPushMatrix();
+    glTranslatef(s.center.x, s.center.y, s.center.z);
+    w = s.width;
+    h = s.height;
+    glBegin(GL_QUADS);
+    glVertex2i(-w,-h);
+    glVertex2i(-w, h);
+    glVertex2i( w, h);
+    glVertex2i( w,-h);
+    glEnd();
+    glPopMatrix();
     
-}
-
-void offArrow (const int xres, const int yres)
-{
-    int y = yres/2;
-    int x = xres/2;
-
-    Rect off_arrow;
-    off_arrow.bot = y + 158;
-    off_arrow.left = x - 40;
-    off_arrow.center = y;
-    ggprint8b(&off_arrow, 16, yellow, ">>");
+    Rect p;
     
+    p.bot = s.center.y + 30;
+    p.left = s.center.x;
+    p.center = s.center.y;
+    ggprint13(&p, 20, black_, "Enter player2 name");
+
+    p.bot = s.center.y - 5;
+    p.left = s.center.x;
+    p.center = s.center.y;
+    ggprint13(&p, 20, black_, "%s", input.player2);
+
 }
 
-void gameOver (const int xres, const int yres)
+void getName_player2 (int key, Input &input)
 {
-    int y = yres/2;
-    int x = xres/2;
-
-    Rect over;
-    over.bot = y + 175;
-    over.left = x;
-    over.center = y;
-    ggprint8b(&over, 16, white, "GAME OVER!");
-
+    if (entering_two) {
+        if (key >= XK_a && key <= XK_z) {
+            char k[2];
+            k[0] = key;
+            k[1] = '\0';
+            strcat(input.player2, k);
+            return;
+        }
+        if (key == XK_BackSpace) {
+            int slen = strlen(input.player2);
+            if (slen > 0)
+                input.player2[slen - 1] = '\0';
+            return;
+        }
+        if (key == XK_Left) {
+            display_playername = false;
+            display_playername2 = false;
+            display_modemenu = true;
+            return;
+        }
+    }
 }
+
+void assign_namep2 (char p2_name[], Input &input)
+{
+    for (int i = 0; i < 100; i++)
+        p2_name[i] = input.player2[i];
+}
+
+
+

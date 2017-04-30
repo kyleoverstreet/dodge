@@ -100,7 +100,7 @@ float spike_mod = 15.0;
 int level = 1;
 int level_change = 100;
 
-extern string p1_name;
+extern char p1_name[100];
 int p1_health = 4;
 int p1_score = 0;
 bool p1_helm = false;
@@ -109,7 +109,7 @@ bool p1_dead = false;
 int p1_deadpos;
 
 extern bool two_player;
-extern string p2_name;
+extern char  p2_name[100];
 int p2_health = 4;
 int p2_score = 0;
 bool p2_helm = false;
@@ -871,7 +871,7 @@ void display_health(int xres, int yres)
 	}
 
 	// Player1 name
-	const char* p1_cstr = p1_name.c_str();
+	const char* p1_cstr = p1_name;
 	Rect n;
 	n.bot = y + 10;
 	n.left = x - 40;
@@ -921,7 +921,7 @@ void display_health(int xres, int yres)
 	if (two_player) {
 
 		// Player2 name
-		const char* p2_cstr = p2_name.c_str();
+		const char* p2_cstr = p2_name;
 		Rect n;
 		n.bot = y + 10;
 		n.left = x2 - 40;

@@ -28,6 +28,7 @@
 #include "ppm.h"
 #include "shared.h"
 #include "youngO.h"
+#include "christianC.h"
 using namespace std;
 
 extern "C" {
@@ -52,13 +53,11 @@ extern void mode_menu(const int, const int);
 extern void audio_menu(const int, const int);
 extern void tutorial(const int, const int);
 extern void end_menu(const int, const int);
-//extern void menu(const int, const int);
+extern void player1Name(const int, const int, Input &input);
+extern void getName_player1(int, Input &input);
+extern void player2Name(const int, const int, Input &input);
+extern void getName_player2(int, Input &input);
 extern void credits(const int, const int);
-/*extern void startGame(const int, const int);
-extern void oneArrow(const int, const int);
-extern void twoArrow(const int, const int);
-extern void audioSettings(const int, const int);
-extern void onArrow(const int, const int);*/
 extern void end_credits(int xres, int yres);
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
@@ -89,6 +88,8 @@ extern void cleanup_sounds();
 extern void check_sound();
 extern void play_theme();
 extern void play_health_pickup();
+extern void assign_namep1(char[], Input &input);
+extern void assign_namep2(char[], Input &input);
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -169,6 +170,7 @@ Spike *sphead = NULL;
 Helmet *hhead = NULL;
 Star *sthead = NULL;
 Heart *hearthead = NULL;
+Input input;
 
 /*int display_tutorial = 0;
 int display_menu = 1;
@@ -186,30 +188,38 @@ bool display_modemenu = false;
 bool display_audiomenu = false;
 bool display_tutorial = false;
 bool display_endmenu = false;
+bool display_playername = false;
+bool display_playername2 = false;
 bool audio_on = true;
 bool start_game = false;
 bool game_over = false;
-string p1_name;
+char p1_name[100];
+//string p1_name;
 extern bool p1_helm;
 extern bool p1_invincible;
 extern bool p1_dead;
 extern int p1_deadpos;
-string p2_name;
+char p2_name[100];
+//string p2_name;
 extern bool p2_helm;
 extern bool p2_invincible;
 extern bool p2_dead;
 extern int p2_deadpos;
+extern bool entering_one;
+extern bool entering_two;
 
 int keys[65536];
 
 int main(void)
 {
 	// Temporary console prompt until implemented in game window
+    /*
 	cout << "Please enter player1 name: ";
 	cin >> p1_name;
 	cout << "Please enter player2 name: ";
 	cin >> p2_name;
 	cout << endl;
+    */
 #ifdef USE_OPENAL_SOUND
 	initialize_sounds();
 #endif
@@ -693,6 +703,35 @@ void checkKeys(XEvent *e)
 	} else {
 		return;
 	}
+    if (display_playername) {
+        getName_player1(key, input);
+        if (keys[XK_Return]) {
+            if (menu_position == 1) {
+                display_playername = false;
+                two_player = false;
+                start_game = true;
+                assign_namep1(p1_name, input);
+                gamestart1p(&player, xres);
+            } else {
+                entering_one = false;
+                entering_two = true;
+                return;
+            } 
+           
+        }
+    }
+    if (display_playername2) {
+        getName_player2(key, input);
+        if (keys[XK_Return]) {
+            display_playername = false;
+            display_playername2 = false;
+            two_player = true;
+            start_game = true;
+            assign_namep1(p1_name, input);
+            assign_namep2(p2_name, input);
+            gamestart2p(&player, &player2, xres);
+        }
+    }
 	switch(key) {
 		case XK_m:
 			if (!start_game && !display_endmenu) {
@@ -719,11 +758,11 @@ void checkKeys(XEvent *e)
 			if (display_modemenu) {
 				if (menu_position == 1) {
 					display_modemenu = false;
-					two_player = false;
-					start_game = true;
-					gamestart1p(&player, xres);
+                    display_playername = true;
 				} else {
 					display_modemenu = false;
+                    //display_playername = true;
+                    //display_playername2 = true;
 					two_player = true;
 					start_game = true;
 					gamestart2p(&player, &player2, xres);
@@ -986,6 +1025,12 @@ void render(void)
 	if (display_endmenu) {
 		end_menu(xres, yres);
 	}
+    if (display_playername) {
+        player1Name(xres, yres, input);
+    }
+    if (display_playername2) {
+        player2Name(xres, yres, input);
+    }
 
 	// Display health and score to screen once game is started
 	if (start_game) {
