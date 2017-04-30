@@ -767,17 +767,10 @@ void checkKeys(XEvent *e)
 				if (menu_position == 1) {
 					display_modemenu = false;
                     display_playername = true;
-					two_player = false;
-					//start_game = true;
-					//gamestart1p(&player, xres);
 				// 2-Player
 				} else {
 					display_modemenu = false;
                     display_playername = true;
-                    //display_playername2 = true;
-					//two_player = true;
-					//start_game = true;
-					//gamestart2p(&player, &player2, xres);
 				}
 			}
 			// Audio settings
