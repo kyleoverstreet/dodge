@@ -696,12 +696,14 @@ void checkKeys(XEvent *e)
 	}
 	switch(key) {
 		case XK_m:
+			// Start menu
 			if (!start_game && !display_endmenu) {
 				display_startmenu = true;
 			}
 			
 			break;
 		case XK_Down:
+			// Keep menu position accurate
 			if (display_startmenu && menu_position != 3) {
 				menu_position++;
 			} else if ((display_modemenu || display_audiomenu) && menu_position != 2) {
@@ -711,18 +713,22 @@ void checkKeys(XEvent *e)
 			}
 			break;
 		case XK_Up:
+			// Keep menu position accurate
 			if ((display_startmenu || display_modemenu || display_audiomenu || display_endmenu)
 				&& menu_position != 1) {
 				menu_position--;
 			}
 			break;
 		case XK_Return:
+			// Game mode menu
 			if (display_modemenu) {
+				// 1-Player
 				if (menu_position == 1) {
 					display_modemenu = false;
 					two_player = false;
 					start_game = true;
 					gamestart1p(&player, xres);
+				// 2-Player
 				} else {
 					display_modemenu = false;
 					two_player = true;
@@ -730,7 +736,19 @@ void checkKeys(XEvent *e)
 					gamestart2p(&player, &player2, xres);
 				}
 			}
+			// Audio settings
+			if (display_audiomenu) {
+				// Enable audio
+				if (menu_position == 1) {
+					audio_on = true;
+				// Disable audio
+				} else {
+					audio_on = false;
+				}
+			}
+			// Game over menu
 			if (display_endmenu) {
+				// Play again
 				if (menu_position == 1) {
 					display_endmenu = false;
 					start_game = true;
@@ -739,14 +757,17 @@ void checkKeys(XEvent *e)
 					} else {
 						gamestart2p(&player, &player2, xres);
 					}
+				// Change game mode
 				} else if (menu_position == 2) {
 					display_endmenu = false;
 					display_modemenu = true;
 					menu_position = 1;
+				// Audio settings
 				} else if (menu_position == 3) {
 					display_endmenu = false;
 					display_audiomenu = true;
 					menu_position = 1;
+				// View scores
 				} else if (menu_position == 4) {
 					view_scores();
 				}
@@ -816,6 +837,7 @@ void physics(void)
 		}
 	}
 
+	// Delete all items after game is over
 	if (reset_game) {
 		while (sphead) {
 			deleteSpike(sphead);

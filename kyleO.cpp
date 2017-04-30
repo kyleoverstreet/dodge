@@ -232,7 +232,7 @@ void mode_menu(const int xres, const int yres)
 	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
 	glEnd();
 	glPopMatrix();
-	
+
 	if (keys[XK_Left]) {
 		if (!game_over) {
 			display_modemenu = false;
@@ -290,14 +290,6 @@ void audio_menu(const int xres, const int yres)
 	glEnd();
 	glPopMatrix();
 
-	if (keys[XK_Return]) {
-		if (menu_position == 1) {
-			audio_on = true;
-		} else if (menu_position == 2) {
-			audio_on = false;
-		}
-	}
-	
 	if (keys[XK_Left]) {
 		if (!game_over) {
 			display_audiomenu = false;
@@ -598,12 +590,16 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 					p1_health--;
 					if (p1_health > 0) {
 #ifdef USE_OPENAL_SOUND
-						play_health_loss();
+						if (audio_on) {
+							play_health_loss();
+						}
 #endif
 					} else {
 						// Player1 has no health
 #ifdef USE_OPENAL_SOUND
-						play_game_over();
+						if (audio_on) {
+							play_game_over();
+						}
 #endif
 						//gamelog(p1_name, p1_score);
 						p1_dead = true;
@@ -635,7 +631,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 				} else {
 					// Spike hit Player1's helmet
 #ifdef USE_OPENAL_SOUND
-					play_helmet_hit();
+					if (audio_on) {
+						play_helmet_hit();
+					}
 #endif
 					spike_bounce(spike);
 					p1_helm = false;
@@ -653,14 +651,18 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 						p2_health--;
 						if (p2_health > 0) {
 #ifdef USE_OPENAL_SOUND
-							play_health_loss();
+							if (audio_on) {
+								play_health_loss();
+							}
 #endif
 						} else {
 							// Player2 has no health
 #ifdef USE_OPENAL_SOUND
-							play_game_over();
+							if (audio_on) {
+								play_game_over();
+							}
 #endif
-							//gamelog(p2_name, p2_score);
+							gamelog(p2_name, p2_score);
 							p2_dead = true;
 							p2_deadpos = player2_pos;
 							if (p1_dead) {
@@ -680,7 +682,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 					} else {
 						// Spike hit Player2's helmet
 #ifdef USE_OPENAL_SOUND
-						play_helmet_hit();
+						if (audio_on) {
+							play_helmet_hit();
+						}
 #endif
 						spike_bounce(spike);
 						p2_helm = false;
@@ -722,14 +726,18 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 		if (helm_decision == 1) {
 		// Helmet landed on Player1
 #ifdef USE_OPENAL_SOUND
-			play_helmet_hit();
+			if (audio_on) {
+				play_helmet_hit();
+			}
 #endif
 			p1_helm = true;
 			deleteHelmet(helmet);
 		} else if (helm_decision == 2) {
 		// Helmet landed on Player2
 #ifdef USE_OPENAL_SOUND
-			play_helmet_hit();
+			if (audio_on) {
+				play_helmet_hit();
+			}
 #endif
 			p2_helm = true;
 			deleteHelmet(helmet);
@@ -737,7 +745,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 		} else if (helm_decision == 3) {
 			// Helmet landed on both players
 #ifdef USE_OPENAL_SOUND
-			play_helmet_hit();
+			if (audio_on) {
+				play_helmet_hit();
+			}
 #endif
 			// Give helmet to closest player
 			if (d1 <= d2) {
@@ -765,7 +775,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 				(!p1_dead)) {
 			// Star landed on Player1
 #ifdef USE_OPENAL_SOUND
-			play_powerup();
+			if (audio_on) {
+				play_powerup();
+			}
 #endif
 			p1_invincible = start_powerup_timer();
 			deleteStar(star);
@@ -777,7 +789,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 					 (star->pos[0] < player2_pos+38))) {
 				// Star landed on Player2
 #ifdef USE_OPENAL_SOUND
-				play_powerup();
+				if (audio_on) {
+					play_powerup();
+				}
 #endif
 				p2_invincible = start_powerup_timer();
 				if (!deleted_star) {
@@ -807,7 +821,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 
 			if (p1_health != 4) {
 #ifdef USE_OPENAL_SOUND
-				play_health_pickup();
+				if (audio_on) {
+					play_health_pickup();
+				}
 #endif
 				p1_health++;
 			}
@@ -823,7 +839,9 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 
 				if (p2_health != 4) {
 #ifdef USE_OPENAL_SOUND
-					play_health_pickup();
+					if (audio_on) {
+						play_health_pickup();
+					}
 #endif
 					p2_health++;
 				}
