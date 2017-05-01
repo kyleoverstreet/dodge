@@ -48,6 +48,12 @@ void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void convertpng2ppm(void);
 extern void cleanupPPM(void);
+
+extern bool start_text_timer();
+extern bool start_notext_timer();
+extern bool check_text_timer(bool);
+extern bool check_notext_timer(bool);
+
 extern void start_menu(const int, const int);
 extern void mode_menu(const int, const int);
 extern void audio_menu(const int, const int);
@@ -183,6 +189,8 @@ int display_oneArrow = 1;
 int display_twoArrow = 0;*/
 
 bool intro = true;
+bool blinkon = true;
+bool blinkoff = false;
 bool show_logo = true;
 bool intro_message = true;
 int menu_position = 1;
@@ -236,6 +244,8 @@ int main(void)
 #ifdef USE_OPENAL_SOUND
 	play_theme();
 #endif
+
+    blinkon = start_text_timer();
 	// Display both players for intro animation
 	gamestart2p(&player, &player2, xres);
 	while (!done) {
@@ -744,6 +754,8 @@ void checkKeys(XEvent *e)
 			if (!start_game && !display_endmenu) {
 				display_startmenu = true;
                 intro_message = false;
+                blinkon = false;
+                blinkoff =false;
 			}
 			
 			break;
@@ -1051,9 +1063,12 @@ void render(void)
 		logo(xres, 500);
 	}
 	
-    if (intro_message && !start_game && !game_over) {
-        introMessage(xres, yres);
-    }    
+    blinkon = check_text_timer(blinkon);
+    blinkoff = check_notext_timer(blinkoff);
+    if (blinkon){
+         introMessage(xres, yres);
+    }
+
 	if (display_startmenu) {
 		start_menu(xres, yres);
 	}
