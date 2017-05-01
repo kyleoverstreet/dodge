@@ -751,7 +751,9 @@ void checkKeys(XEvent *e)
 	switch(key) {
 		case XK_m:
 			// Start menu
-			if (!start_game && !display_endmenu) {
+			if (!start_game && !display_modemenu
+                && !display_audiomenu && !display_tutorial
+                && !display_endmenu) {
 				display_startmenu = true;
                 intro_message = false;
                 blinkon = false;
