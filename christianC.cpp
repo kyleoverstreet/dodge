@@ -267,21 +267,5 @@ void gameOverScores (const int xres, const int yres, char p1_name[], char p2_nam
         s.left = xres/2;
         s.center = yres/2;
         ggprint13(&s, 20, yellow, "Press c to continue");
-
-        
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
