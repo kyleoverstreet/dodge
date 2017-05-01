@@ -38,6 +38,10 @@ struct Shape {
     Vec center;
 };
 
+struct MenuBox {
+    Shape box[2];
+};
+
 void player1Name(const int, const int, Input);
 void getName_player1(int, Input);
 void assign_namep1(char[], Input);
@@ -76,17 +80,19 @@ void player1Name (const int xres, const int yres, Input &input)
 {
     float w, h;
 
-    Shape s;
+    MenuBox m1;
+    Shape *s;
 
-    s.width = 100;
-    s.height = 15;
-    s.center.x = xres/2;
-    s.center.y = yres/2 + 75;
-    glColor3ub(244, 241, 29);
+    m1.box[0].width = 100;
+    m1.box[0].height = 15;
+    m1.box[0].center.x = xres/2;
+    m1.box[0].center.y = yres/2 + 75;
+    glColor3ub(252, 246, 179);
+    s = &m1.box[0];
     glPushMatrix();
-    glTranslatef(s.center.x, s.center.y, s.center.z);
-    w = s.width;
-    h = s.height;
+    glTranslatef(s->center.x, s->center.y, 0);
+    w = s->width;
+    h = s->height;
     glBegin(GL_QUADS);
     glVertex2i(-w,-h);
     glVertex2i(-w, h);
@@ -97,14 +103,14 @@ void player1Name (const int xres, const int yres, Input &input)
     
     Rect p;
     
-    p.bot = s.center.y + 30;
-    p.left = s.center.x;
-    p.center = s.center.y;
+    p.bot = s->center.y + 30;
+    p.left = s->center.x;
+    p.center = s->center.y;
     ggprint13(&p, 20, black_, "Enter player1 name");
 
-    p.bot = s.center.y - 8;
-    p.left = s.center.x;
-    p.center = s.center.y;
+    p.bot = s->center.y - 8;
+    p.left = s->center.x;
+    p.center = s->center.y;
     ggprint13(&p, 20, black_, "%s", input.player1);
 
 }
@@ -144,17 +150,19 @@ void player2Name (const int xres, const int yres, Input &input)
 {
     float w, h;
 
-    Shape s;
+    MenuBox m2;
+    Shape *s;
 
-    s.width = 100;
-    s.height = 15;
-    s.center.x = xres/2;
-    s.center.y = yres/2 + 75;
+    m2.box[1].width = 100;
+    m2.box[1].height = 15;
+    m2.box[1].center.x = xres/2;
+    m2.box[1].center.y = yres/2 + 75;
     glColor3ub(244, 241, 29);
+    s = &m2.box[1];
     glPushMatrix();
-    glTranslatef(s.center.x, s.center.y, s.center.z);
-    w = s.width;
-    h = s.height;
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
     glBegin(GL_QUADS);
     glVertex2i(-w,-h);
     glVertex2i(-w, h);
@@ -165,14 +173,14 @@ void player2Name (const int xres, const int yres, Input &input)
     
     Rect p;
     
-    p.bot = s.center.y + 30;
-    p.left = s.center.x;
-    p.center = s.center.y;
+    p.bot = s->center.y + 30;
+    p.left = s->center.x;
+    p.center = s->center.y;
     ggprint13(&p, 20, black_, "Enter player2 name");
 
-    p.bot = s.center.y - 8;
-    p.left = s.center.x;
-    p.center = s.center.y;
+    p.bot = s->center.y - 8;
+    p.left = s->center.x;
+    p.center = s->center.y;
     ggprint13(&p, 20, black_, "%s", input.player2);
 
 }
