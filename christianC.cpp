@@ -61,6 +61,7 @@ extern bool two_player;
 extern bool display_startmenu;
 extern bool display_modemenu;
 extern bool display_audiomenu;
+extern bool display_endmenu;
 extern bool display_tutorial;
 extern bool show_logo;
 extern bool game_over;
@@ -386,7 +387,7 @@ void mode_menu(const int xres, const int yres)
 			menu_position = 1;
 		} else if (game_over) {
 			display_modemenu = false;
-			//display_endmenu = true;
+			display_endmenu = true;
 		}
 	}
 }
