@@ -74,6 +74,7 @@ extern void display_health(int, int);
 extern void display_score(int, int);
 extern void tombstone(int);
 extern void logo(int, int);
+extern void introMessage(int, int);
 extern void mainmenu(int, int);
 extern void gameover(int, int);
 extern void gameOver(const int, const int);
@@ -90,6 +91,7 @@ extern void play_theme();
 extern void play_health_pickup();
 extern void assign_namep1(char[], Input &input);
 extern void assign_namep2(char[], Input &input);
+extern void gameOverScores(char[], char[]);
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -182,6 +184,7 @@ int display_twoArrow = 0;*/
 
 bool intro = true;
 bool show_logo = true;
+bool intro_message = true;
 int menu_position = 1;
 bool display_startmenu = false;
 bool display_modemenu = false;
@@ -740,6 +743,7 @@ void checkKeys(XEvent *e)
 			// Start menu
 			if (!start_game && !display_endmenu) {
 				display_startmenu = true;
+                intro_message = false;
 			}
 			
 			break;
@@ -1046,7 +1050,10 @@ void render(void)
 	if (show_logo && !start_game && !game_over) {
 		logo(xres, 500);
 	}
-		
+	
+    if (intro_message && !start_game && !game_over) {
+        introMessage(xres, yres);
+    }    
 	if (display_startmenu) {
 		start_menu(xres, yres);
 	}

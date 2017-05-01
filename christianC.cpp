@@ -1,22 +1,14 @@
 //Created by: Christian Chavez
 //Dodge project
 //Individual coode
-//Last Update: 4/27/2017
+//Last Update: 4/30/2017
 
 /*
-                    *********Week 13 update*********
-for previous weeks I tried to implement a menu, but that was having issues
-when trying to implement it to the game. So, the previous method was scratched
-and a new one was started in order to get it wrking with the game. The Menu is
-designed to apper in the window when the game is started up and give the user
-a place for navigation, whether thats how to play the game, look at the high
-scores or pick what game mode they would like to do. On the 23rd I added the
-ability to bring up a menu and added limited functionality to navigate throuh
-the menu. On the 24th I solved an issue that orevented the menu bix popping up
-when more text was added inside the box. April 27th: Added the fucntionallity to this file
-and the main file to be able to select the game mode from the menu screen; I
-added the primitive menu for the audio settings and made the game over message
-apper on screen when the game is over.
+                    *********Week 14 update*********
+this code asks for the user's name and takes in string inputs from the screen.
+These values are then used to protray the character information that appears on
+the screen when the game is played. It asks for one player's name after the next
+when two player mode is selected.
 */
 
 #include <X11/Xlib.h>
@@ -60,6 +52,10 @@ extern bool display_playername2;
 extern bool display_modemenu;
 bool entering_one = true;
 bool entering_two = false;
+void introMessage(const int, const int);
+void gameOverScores(char [], char []);
+extern int p1_score;
+extern int p2_score;
 
 
 unsigned int black_ = 0x000000;
@@ -200,5 +196,18 @@ void assign_namep2 (char p2_name[], Input &input)
         p2_name[i] = input.player2[i];
 }
 
+void introMessage(const int xres, const int yres)
+{
+    unsigned int yellow = 0x00dddd00;
+    Rect i;
+    
+    i.bot = yres/2 + 80;
+    i.left = xres/2;
+    i.center = yres/2;
+    ggprint13(&i, 20, yellow, "Press 'm' for start menu");
+}
 
+void gameOverScores (char p1_name[], char p2_name[])
+{
 
+}
