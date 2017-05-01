@@ -53,10 +53,10 @@ extern bool display_modemenu;
 bool entering_one = true;
 bool entering_two = false;
 void introMessage(const int, const int);
-void gameOverScores(char [], char []);
+void gameOverScores(const int, const int, char [], char []);
 extern int p1_score;
 extern int p2_score;
-
+extern bool two_player;
 
 unsigned int black_ = 0x000000;
 
@@ -207,7 +207,81 @@ void introMessage(const int xres, const int yres)
     ggprint13(&i, 20, yellow, "Press 'm' for start menu");
 }
 
-void gameOverScores (char p1_name[], char p2_name[])
+void gameOverScores (const int xres, const int yres, char p1_name[], char p2_name[])
 {
+    unsigned int yellow = 0x00dddd00;
+    Rect s;
 
+    if (!two_player) {
+        s.bot = yres/2 + 100;
+        s.left = xres/2 - 40;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "%s's score: ", p1_name);
+
+        s.bot = yres/2 + 100;
+        s.left = xres/2 + 100;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "%i", p1_score);
+    
+        s.bot = yres/2 + 75;
+        s.left = xres/2;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "Press c to continue");
+
+    }
+
+    if (two_player) {
+        s.bot = yres/2 + 100;
+        s.left = xres/2 - 40;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "%s's score: ", p1_name);
+
+        s.bot = yres/2 + 100;
+        s.left = xres/2 + 100;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "%i", p1_score);
+
+        s.bot = yres/2 + 80;
+        s.left = xres/2 - 40;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "%s's score: ", p2_name);
+
+        s.bot = yres/2 + 80;
+        s.left = xres/2 + 100;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "%i", p2_score);
+
+        if (p1_score > p2_score) {
+            s.bot = yres/2 + 60;
+            s.left = xres/2;
+            s.center = yres/2;
+            ggprint13(&s, 20, yellow, "%s Wins!", p1_name);
+        } else {
+            s.bot = yres/2 + 60;
+            s.left = xres/2;
+            s.center = yres/2;
+            ggprint13(&s, 20, yellow, "%s Wins!", p2_name);
+        }
+        
+        s.bot = yres/2 + 40;
+        s.left = xres/2;
+        s.center = yres/2;
+        ggprint13(&s, 20, yellow, "Press c to continue");
+
+        
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

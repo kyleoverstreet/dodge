@@ -91,7 +91,7 @@ extern void play_theme();
 extern void play_health_pickup();
 extern void assign_namep1(char[], Input &input);
 extern void assign_namep2(char[], Input &input);
-extern void gameOverScores(char[], char[]);
+extern void gameOverScores(const int, const int, char[], char[]);
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -193,6 +193,7 @@ bool display_tutorial = false;
 bool display_endmenu = false;
 bool display_playername = false;
 bool display_playername2 = false;
+bool display_gameoverscores = false;
 bool audio_on = true;
 bool start_game = false;
 bool game_over = false;
@@ -747,6 +748,12 @@ void checkKeys(XEvent *e)
 			}
 			
 			break;
+        case XK_c:
+            if (game_over && display_gameoverscores) {
+                display_gameoverscores = false;
+                display_endmenu = true;
+            }
+            break;
 		case XK_Down:
 			// Keep menu position accurate
 			if (display_startmenu && menu_position != 3) {
@@ -1066,7 +1073,11 @@ void render(void)
 	if (display_tutorial) {
 		tutorial(xres, yres);
 	}
+	if (display_gameoverscores) {
+        gameOverScores(xres, yres, p1_name, p2_name);
+	}
 	if (display_endmenu) {
+        logo(xres, 500);
 		end_menu(xres, yres);
 	}
     if (display_playername) {
@@ -1093,7 +1104,7 @@ void render(void)
 	}
 
 	// Display "Game Over" after player(s) death 
-	if (game_over) {
+	if (game_over && display_gameoverscores) {
 		gameover(xres, 490);
 	}
 

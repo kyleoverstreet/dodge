@@ -109,6 +109,7 @@ bool p1_dead = false;
 int p1_deadpos;
 
 extern bool two_player;
+extern bool display_gameoverscores;
 extern char  p2_name[100];
 int p2_health = 4;
 int p2_score = 0;
@@ -240,7 +241,7 @@ void mode_menu(const int xres, const int yres)
 			menu_position = 1;
 		} else if (game_over) {
 			display_modemenu = false;
-			display_endmenu = true;
+			//display_endmenu = true;
 		}
 	}
 }
@@ -298,7 +299,7 @@ void audio_menu(const int xres, const int yres)
 		}
 		if (game_over) {
 			display_audiomenu = false;
-			display_endmenu = true;
+			//display_endmenu = true;
 		}
 	}
 }
@@ -608,10 +609,11 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							cout << "Game over" << endl;
 							cout << "Score: " << p1_score;
 							cout << endl << endl;
+                            display_gameoverscores = true;
 							game_over = true;
 							start_game = false;
 							reset_game = true;
-							display_endmenu = true;
+							//display_endmenu = true;
 							menu_position = 1;
 						}
 						if (two_player && p2_dead) {
@@ -619,10 +621,11 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							cout << "\nP2 score: " << p2_score;
 							cout << endl << endl;
 							cout << "Player 1 wins!" << endl;
+                            display_gameoverscores = true;
 							game_over = true;
 							start_game = false;
 							reset_game = true;
-							display_endmenu = true;
+							//display_endmenu = true;
 							menu_position = 1;
 						}
 					}
@@ -670,9 +673,10 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 								cout << "\nP2 score: " << p2_score;
 								cout << endl << endl;
 								cout << "Player 2 wins!" << endl;
+                                display_gameoverscores = true;
 								game_over = true;
 								start_game = false;
-								display_endmenu = true;
+							    	//display_endmenu = true;
 								menu_position = 1;
 							}
 						}
