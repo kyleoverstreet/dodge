@@ -35,11 +35,18 @@ extern int p1_score;
 extern int p2_score;
 extern bool p1_dead;
 extern bool p2_dead;
+extern bool blinkon;
+extern bool blinkoff;
 extern int movePlayer(int xres, Player *player);
 extern void keypressA(Player *player);
 extern void keypressD(Player *player);
 extern void keypressR(Player *player2);
 extern void keypressL(Player *player2);
+
+bool start_notext_timer(); 
+
+timespec txt_start, txt_current;
+
 
 extern void createSpikes(float n, const int xres, const int yres)
 {
@@ -377,4 +384,39 @@ void moveRandomly(Player *player, Player *player2)
 			keypressR(player2);
 		}
 	}
+}
+
+bool start_text_timer() {
+    clock_gettime(CLOCK_REALTIME, &txt_start);
+    return true;
+}
+
+bool check_text_timer(bool txt) {
+    if(txt == false) 
+	return false;
+    clock_gettime(CLOCK_REALTIME, &txt_current);
+    int timediff = txt_current.tv_sec - txt_start.tv_sec;
+    if( timediff < 1) 
+	return true;
+    else {
+    	blinkoff = start_notext_timer(); 
+		return false;	
+	}
+}
+
+bool start_notext_timer() {
+    clock_gettime(CLOCK_REALTIME, &txt_start);
+    return true;
+}
+bool check_notext_timer(bool txt) {
+    if(txt == false) 
+	return false;
+    clock_gettime(CLOCK_REALTIME, &txt_current);
+    int timediff = txt_current.tv_sec - txt_start.tv_sec;
+    if( timediff < 1) 
+	return true;
+    else {
+    	blinkon = start_text_timer();
+		return false;
+	}	
 }

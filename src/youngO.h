@@ -11,5 +11,9 @@ extern void drawStars(void);
 extern void drawHeart(void);
 extern void deleteHelmet(Helmet *node);
 extern void moveRandomly(Player *player, Player *player2);
+extern bool start_text_timer();
+extern bool start_notext_timer();
+extern bool check_text_timer(bool txt);
+extern bool check_notext_timer(bool txt);
 
 #endif
