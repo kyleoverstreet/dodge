@@ -2,8 +2,13 @@
 // CMPS 3350
 // Dodge Project
 
-// intro.. 
-
+//********************************************************************
+//* intro - two characters moving ramdomly before start game         *
+//* 	  - blinking "press "m" to start"                            *
+//*       - basically my intro connects to menu interface            *
+//* count down - count down numbers shows up right before start game *
+//* create, drop, and delete items (spikes, helmets, starts, hearts) *
+//********************************************************************
 
 #include <iostream>
 #include <X11/Xlib.h>
@@ -15,7 +20,6 @@
 #include "src/ppm.h"
 #include "src/shared.h"
 using namespace std;
-
 
 extern Spike *sphead;
 extern Helmet *hhead;
@@ -63,7 +67,7 @@ timespec countdown_start, countdown_current;
 
 extern void createSpikes(float n, const int xres, const int yres)
 {
-	//create new rain drops...
+	//create new spikes drops...
 	int i;
 	for (i = 0; i < n; i++) {
 		Spike *node = (Spike *)malloc(sizeof(Spike));
@@ -82,7 +86,7 @@ extern void createSpikes(float n, const int xres, const int yres)
 		//larger linewidth = faster speed
 		node->maxvel[1] = (float) (node->linewidth*16);
 		node->length = node->maxvel[1] * 0.2f;
-		//put raindrop into linked list
+		//put spikes into linked list
 		node->next = sphead;
 		if (sphead != NULL)
 			sphead->prev = node;
@@ -146,7 +150,7 @@ void deleteSpike(Spike *node)
 
 extern void createHelmets(float n, const int xres, const int yres)
 {
-	//create new rain drops...
+	//create new Helmets drops...
 	int i;
 	for (i = 0; i < n; i++) {
 		Helmet *node = (Helmet *)malloc(sizeof(Helmet));
@@ -165,7 +169,7 @@ extern void createHelmets(float n, const int xres, const int yres)
 		//larger linewidth = faster speed
 		node->maxvel[1] = (float) (node->linewidth*16);
 		node->length = node->maxvel[1] * 0.2f;
-		//put raindrop into linked list
+		//put helmets into linked list
 		node->next = hhead;
 		if (hhead != NULL)
 			hhead->prev = node;
@@ -224,7 +228,6 @@ extern void deleteHelmet(Helmet *node)
 
 extern void createStars(float n, const int xres, const int yres)
 {
-	//create new rain drops...
 	int i;
 	for (i = 0; i < n; i++) {
 		Star *node = (Star *)malloc(sizeof(Star));
@@ -243,7 +246,7 @@ extern void createStars(float n, const int xres, const int yres)
 		//larger linewidth = faster speed
 		node->maxvel[1] = (float) (node->linewidth*16);
 		node->length = node->maxvel[1] * 0.2f;
-		//put raindrop into linked list
+		//put stars into linked list
 		node->next = sthead;
 		if (sthead != NULL)
 			sthead->prev = node;
@@ -369,7 +372,7 @@ void deleteHeart(Heart *node)
 	delete node;
 	node = NULL;
 }
-
+//characters move randomly
 void moveRandomly(Player *player, Player *player2)
 {
 	srand(time(NULL));
@@ -398,13 +401,15 @@ void moveRandomly(Player *player, Player *player2)
 		}
 	}
 }
-
-bool start_text_timer() {
+//blink "press "m" to start
+bool start_text_timer() 
+{
     clock_gettime(CLOCK_REALTIME, &txt_start);
     return true;
 }
 
-bool check_text_timer(bool txt) {
+bool check_text_timer(bool txt) 
+{
     if(txt == false) 
 	return false;
     clock_gettime(CLOCK_REALTIME, &txt_current);
@@ -433,13 +438,14 @@ bool check_notext_timer(bool txt) {
 		return false;
 	}	
 }
-
-void start_countDown_timer() {
+//countDown 
+void start_countDown_timer() 
+{
     clock_gettime(CLOCK_REALTIME, &countdown_start);
 }
 
-bool check_countDown_timer() {
-    
+bool check_countDown_timer() 
+{    
     clock_gettime(CLOCK_REALTIME, &countdown_current);
     int timediff = countdown_current.tv_sec - countdown_start.tv_sec;
     if( timediff < 1) {
@@ -460,7 +466,6 @@ bool check_countDown_timer() {
     }
     return true;
 }
-
 
 void countDown3(const int xres, const int yres)
 {
@@ -505,5 +510,3 @@ void countDown0(const int xres, const int yres)
     i.center = 0;
     ggprint17(&i, 20, yellow, "START!!");
 }
-
-
