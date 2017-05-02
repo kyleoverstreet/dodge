@@ -221,6 +221,7 @@ extern bool p2_dead;
 extern int p2_deadpos;
 extern bool entering_one;
 extern bool entering_two;
+extern int menu_count;
 
 int keys[65536];
 
@@ -723,7 +724,6 @@ void checkKeys(XEvent *e)
         getName_player2(key, input);
         if (keys[XK_Return]) {
             display_playername2 = false;
-            two_player = true;
             start_game = true;
             assign_namep1(p1_name, input);
             assign_namep2(p2_name, input);
@@ -731,11 +731,11 @@ void checkKeys(XEvent *e)
         }
     }
     if (display_playername) {
+        menu_count = 3;
         getName_player1(key, input);
         if (keys[XK_Return]) {
             if (menu_position == 1) {
                 display_playername = false;
-                two_player = false;
                 start_game = true;
                 assign_namep1(p1_name, input);
                 gamestart1p(&player, xres);
@@ -750,7 +750,7 @@ void checkKeys(XEvent *e)
         }
     }
 	switch(key) {
-		case XK_m:
+        case XK_m:
 			// Start menu
 			if (!start_game && !display_modemenu
                 && !display_audiomenu && !display_tutorial
@@ -792,10 +792,12 @@ void checkKeys(XEvent *e)
 				if (menu_position == 1) {
 					display_modemenu = false;
                     display_playername = true;
+                    two_player = false;
 				// 2-Player
 				} else {
 					display_modemenu = false;
                     display_playername = true;
+                    two_player = true;
 				}
 			}
 			// Audio settings
@@ -1021,51 +1023,6 @@ void render(void)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
-	// Menu
-	/*if (display_menu && !start_game) {
-		mainmenu(xres, 400);
-		logo(xres, 500);
-	}
-
-	if (display_gameModes && !start_game) {
-		display_menu = 0;	
-		startGame(xres, yres);
-		if (display_oneArrow && !display_twoArrow) {
-			oneArrow(xres, yres);
-			if (keys[XK_Return]) {
-				two_player = false;
-				start_game ^= 1;
-				if (start_game) {
-					gamestart1p(&player, xres);
-				}
-			}
-		}
-		if (display_twoArrow & !display_oneArrow) {
-			twoArrow(xres, yres);
-			if (keys[XK_Return]) {
-				two_player = true;
-				start_game ^= 1 ;
-				if (start_game) {
-					gamestart2p(&player, &player2, xres);
-				}
-			}
-		}
-	}
-
-	if (display_tutorial && !start_game) {
-		tutorial(xres, yres);
-	}
-
-	if (display_audioSettings && !start_game) {
-		display_menu = 0;
-		audioSettings(xres, yres);
-		if (display_oneArrow && !display_twoArrow) {
-			onArrow(xres, yres);
-		}
-		if (display_twoArrow && !display_oneArrow) {
-			twoArrow(xres, yres);
-		}
-	}*/
 
 	// Menus (new)
 	if (show_logo && !start_game && !game_over) {
@@ -1084,6 +1041,12 @@ void render(void)
 	if (display_modemenu) {
 		mode_menu(xres, yres);
 	}
+    if (display_playername) {
+        player1Name(xres, yres, input);
+    }
+    if (display_playername2) {
+        player2Name(xres, yres, input);
+    }
 	if (display_audiomenu) {
 		audio_menu(xres, yres);
 	}
@@ -1097,12 +1060,6 @@ void render(void)
         logo(xres, 500);
 		end_menu(xres, yres);
 	}
-    if (display_playername) {
-        player1Name(xres, yres, input);
-    }
-    if (display_playername2) {
-        player2Name(xres, yres, input);
-    }
 
 	// Display health and score to screen once game is started
 	if (start_game) {

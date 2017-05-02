@@ -73,6 +73,7 @@ extern bool audio_on;
 extern int menu_position;
 extern GLuint silhouetteSpike;
 extern int keys[];
+int menu_count = 0;
 
 unsigned int black_ = 0x000000;
 
@@ -113,6 +114,21 @@ void player1Name (const int xres, const int yres, Input &input)
     p.center = s->center.y;
     ggprint13(&p, 20, black_, "%s", input.player1);
 
+    
+    p.bot = s->center.y - 45;
+    p.left = s->center.x;
+    p.center = s->center.y;
+    if (!two_player) {
+        ggprint13(&p, 20, black_, "Press Enter to Play!");
+    } else {
+        ggprint13(&p, 20, black_, "Press Enter to Continue");
+    }
+
+    if (keys[XK_Left] && menu_count != 2) {
+        display_playername = false;
+        display_modemenu = true;
+        //menu_count = 1;
+    } 
 }
 
 void getName_player1 (int key, Input &input)
@@ -129,12 +145,6 @@ void getName_player1 (int key, Input &input)
             int slen = strlen(input.player1);
             if (slen > 0)
                 input.player1[slen - 1] = '\0';
-            return;
-        }
-        if (key == XK_Left) {
-            display_playername = false;
-            display_playername2 = false;
-            display_modemenu = true;
             return;
         }
     }
@@ -157,10 +167,10 @@ void player2Name (const int xres, const int yres, Input &input)
     m2.box[1].height = 15;
     m2.box[1].center.x = xres/2;
     m2.box[1].center.y = yres/2 + 75;
-    glColor3ub(244, 241, 29);
+    glColor3ub(252, 246, 179);
     s = &m2.box[1];
     glPushMatrix();
-    glTranslatef(s->center.x, s->center.y, s->center.z);
+    glTranslatef(s->center.x, s->center.y, 0);
     w = s->width;
     h = s->height;
     glBegin(GL_QUADS);
@@ -183,6 +193,17 @@ void player2Name (const int xres, const int yres, Input &input)
     p.center = s->center.y;
     ggprint13(&p, 20, black_, "%s", input.player2);
 
+    p.bot = s->center.y - 45;
+    p.left = s->center.x;
+    p.center = s->center.y;
+    ggprint13(&p, 20, black_, "Press Enter to Play!");
+
+	if (keys[XK_Left]) {
+        display_playername2 = false;
+        display_playername = true;
+        menu_count = 2;
+	}
+
 }
 
 void getName_player2 (int key, Input &input)
@@ -199,12 +220,6 @@ void getName_player2 (int key, Input &input)
             int slen = strlen(input.player2);
             if (slen > 0)
                 input.player2[slen - 1] = '\0';
-            return;
-        }
-        if (key == XK_Left) {
-            display_playername = false;
-            display_playername2 = false;
-            display_modemenu = true;
             return;
         }
     }
@@ -224,7 +239,7 @@ void introMessage(const int xres, const int yres)
     i.bot = yres/2 + 80;
     i.left = xres/2;
     i.center = yres/2;
-    ggprint13(&i, 20, yellow, "Press 'm' for start menu");
+    ggprint13(&i, 20, yellow, "PRESS 'm' TO START!");
 }
 
 void gameOverScores (const int xres, const int yres, char p1_name[], char p2_name[])
@@ -388,16 +403,16 @@ void mode_menu(const int xres, const int yres)
 	glEnd();
 	glPopMatrix();
 
-	if (keys[XK_Left]) {
+	if (keys[XK_Left] && menu_count != 1) {
 		if (!game_over) {
 			display_modemenu = false;
 			display_startmenu = true;
 			menu_position = 1;
-		} else if (game_over) {
+		} else {
 			display_modemenu = false;
 			display_endmenu = true;
 		}
-	}
+    }
 }
 
 void audio_menu(const int xres, const int yres)
