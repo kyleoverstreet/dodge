@@ -62,7 +62,7 @@ extern void deleteHeart(Heart*);
 extern bool check_helm_timer(bool helm);
 extern bool start_helm_timer();
 extern bool start_powerup_timer();
-extern bool check_powerup_timer(bool powerup);
+extern bool check_powerup_timer(bool powerup,int xres, int yres);
 extern void menu(int, int);
 #ifdef USE_OPENAL_SOUND
 extern void play_helmet_hit();
@@ -644,10 +644,10 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 
 	// Check the timers for the powerup and helmet
 	//p1_helm = check_helm_timer(p1_helm);
-	p1_invincible = check_powerup_timer(p1_invincible);
+	p1_invincible = check_powerup_timer(p1_invincible,xres,yres);
 	if (two_player) {
 		//p2_helm = check_helm_timer(p2_helm);
-		p2_invincible = check_powerup_timer(p2_invincible);
+		p2_invincible = check_powerup_timer(p2_invincible,xres,yres);
 	}
 }
 

@@ -30,9 +30,11 @@ Ppmimage *creditsTransImage = NULL;
 GLuint 	creditsTexture;
 GLuint 	creditsTransTexture;
 extern unsigned char *buildAlphaData(Ppmimage *img);
-
+extern void drawSpikes(void);
+extern void createSpikes(float n, const int xres, const int yres);
 unsigned int black = 0xffffff;
 const float gravity = -0.1f;
+void display_invinsible(int time, int xres, int yres);
 
 extern "C" {
 #include "src/fonts.h"
@@ -252,18 +254,32 @@ extern bool start_powerup_timer() {
     clock_gettime(CLOCK_REALTIME, &power_start);
     return true;
 }
-extern bool check_powerup_timer(bool powerup) {
+extern bool check_powerup_timer(bool powerup, int xres, int yres) {
     if(powerup == false) 
 	return false;
     clock_gettime(CLOCK_REALTIME, &power_current);
     int timediff = power_current.tv_sec - power_start.tv_sec;
-    if( timediff < 5) 
+    if( timediff < 5) {	
+	display_invinsible(timediff, xres, yres);	
 	return true;
+    }
     else 
 	return false;	
 }
 
+void display_invinsible(int time, int xres, int yres) {
+	
+    Rect r;
 
+    r.bot = yres/2 + 90;
+    r.left = xres/2;
+    r.center = yres/2;
+    if(time) {
+    unsigned int color = 0xffffff;
+    ggprint13(&r, 16, color, "Invincibility test");
+    return;
+    }
+}
 
 //end credits scene
 
@@ -313,13 +329,13 @@ extern void end_credits(int xres, int yres) {
 
     unsigned int color = 0x9932CC;
     ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
+    ggprint13(&r, 16, color, "Movement and Collision - Kyle Overstreet and Young Soo");
+    ggprint13(&r, 16, color, "Menu Interface - Christian Chavez");
+    ggprint13(&r, 16, color, "Graphics - Jacob West");
     ggprint13(&r, 16, color, "");
-    ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
-    ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
-    ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
-    ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
-    ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
-    ggprint13(&r, 16, color, "Sound Developer - Kory Despot");
+    ggprint13(&r, 16, color, "");
+    ggprint13(&r, 16, color, "");
+    ggprint13(&r, 16, color, "");
 }
 
 
