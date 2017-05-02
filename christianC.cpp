@@ -468,7 +468,7 @@ void audio_menu(const int xres, const int yres)
 		}
 		if (game_over) {
 			display_audiomenu = false;
-			//display_endmenu = true;
+			display_endmenu = true;
 		}
 	}
 }

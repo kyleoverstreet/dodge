@@ -15,5 +15,7 @@ extern bool start_text_timer();
 extern bool start_notext_timer();
 extern bool check_text_timer(bool txt);
 extern bool check_notext_timer(bool txt);
+extern void start_countDown_timer();
+extern bool check_countDown_timer();
 
 #endif
