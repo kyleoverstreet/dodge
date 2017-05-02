@@ -100,7 +100,7 @@ extern void play_health_pickup();
 extern void assign_namep1(char[], Input &input);
 extern void assign_namep2(char[], Input &input);
 extern void gameOverScores(const int, const int, char[], char[]);
-
+extern void play_menu_select();
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -784,10 +784,13 @@ void checkKeys(XEvent *e)
 			// Keep menu position accurate
 			if (display_startmenu && menu_position != 3) {
 				menu_position++;
+				play_menu_select();
 			} else if ((display_modemenu || display_audiomenu) && menu_position != 2) {
 				menu_position++;
+				play_menu_select();
 			} else if (display_endmenu && menu_position != 4) {
 				menu_position++;
+				play_menu_select();
 			}
 			break;
 		case XK_Up:

@@ -227,6 +227,90 @@ extern void play_health_pickup()
 
     alSourcePlay(alSource);
 }
+
+extern void play_one() {
+    alBuffer = alutCreateBufferFromFile("./sounds/one.wav");
+
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
+extern void play_two() {
+    alBuffer = alutCreateBufferFromFile("./sounds/two.wav");
+
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
+extern void play_three() {
+    alBuffer = alutCreateBufferFromFile("./sounds/three.wav");
+
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
+extern void play_go() {
+    alBuffer = alutCreateBufferFromFile("./sounds/go.wav");
+
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
+extern void play_menu_select() {
+    alBuffer = alutCreateBufferFromFile("./sounds/menu_select.wav");
+
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
+
+
+
 #endif
 
 extern void spike_bounce(Spike* spike) {
