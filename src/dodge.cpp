@@ -765,7 +765,8 @@ void checkKeys(XEvent *e)
 			// Start menu
 			if (!start_game && !display_modemenu
                 && !display_audiomenu && !display_tutorial
-                && !display_endmenu) {
+                && !display_endmenu && !display_playername 
+                && !display_playername2) {
 				display_startmenu = true;
                 intro_message = false;
                 blinkon = false;
