@@ -122,6 +122,7 @@ extern bool display_startmenu;
 extern bool audio_on;
 extern bool display_tutorial;
 extern bool start_game;
+extern bool countdown_done;
 extern bool game_over;
 extern bool reset_game;
 bool deleted_spike;
@@ -283,21 +284,21 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 		level++;
 		cout << "increasing drop rate to level " << level << endl;
 	}
-	
-	if (random(100) < spike_mod) {
-		createSpikes(drop_rate, xres, yres);
-	}
-	if (random(200) < 1.3) {
-		createHelmets(drop_rate, xres, yres);
-	}
-	if (random(200) < 1.3) {
-		createStars(drop_rate, xres, yres);
+	if (countdown_done){
+		if (random(100) < spike_mod) {
+			createSpikes(drop_rate, xres, yres);
+		}
+		if (random(200) < 1.3) {
+			createHelmets(drop_rate, xres, yres);
+		}
+		if (random(200) < 1.3) {
+			createStars(drop_rate, xres, yres);
 
+		}
+		if (random(200) < 1.3) {
+			createHeart(drop_rate, xres, yres);
+		}
 	}
-	if (random(200) < 1.3) {
-		createHeart(drop_rate, xres, yres);
-	}
-
 	// Move items on screen
 	Spike *spike = sphead;
 	while (spike) {
@@ -391,7 +392,6 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							game_over = true;
 							start_game = false;
 							reset_game = true;
-							//display_endmenu = true;
 							menu_position = 1;
 						}
 						if (two_player && p2_dead) {
@@ -403,7 +403,6 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							game_over = true;
 							start_game = false;
 							reset_game = true;
-							//display_endmenu = true;
 							menu_position = 1;
 						}
 					}
@@ -453,8 +452,8 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 								cout << "Player 2 wins!" << endl;
                                 display_gameoverscores = true;
 								game_over = true;
+								reset_game = true;
 								start_game = false;
-							    	//display_endmenu = true;
 								menu_position = 1;
 							}
 						}

@@ -53,6 +53,8 @@ extern bool start_text_timer();
 extern bool start_notext_timer();
 extern bool check_text_timer(bool);
 extern bool check_notext_timer(bool);
+extern void start_countDown_timer();
+extern bool check_countDown_timer();
 
 extern void start_menu(const int, const int);
 extern void mode_menu(const int, const int);
@@ -98,6 +100,7 @@ extern void play_health_pickup();
 extern void assign_namep1(char[], Input &input);
 extern void assign_namep2(char[], Input &input);
 extern void gameOverScores(const int, const int, char[], char[]);
+
 #endif
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -191,6 +194,8 @@ int display_twoArrow = 0;*/
 bool intro = true;
 bool blinkon = true;
 bool blinkoff = false;
+bool countdown_started;
+bool countdown_done;
 bool show_logo = true;
 bool intro_message = true;
 int menu_position = 1;
@@ -728,6 +733,9 @@ void checkKeys(XEvent *e)
             assign_namep1(p1_name, input);
             assign_namep2(p2_name, input);
             gamestart2p(&player, &player2, xres);
+            start_countDown_timer();
+            countdown_started = true;
+            countdown_done = false;
         }
     }
     if (display_playername) {
@@ -739,6 +747,9 @@ void checkKeys(XEvent *e)
                 start_game = true;
                 assign_namep1(p1_name, input);
                 gamestart1p(&player, xres);
+                start_countDown_timer();
+                countdown_started = true;
+                countdown_done = false;
             } else {
                 entering_one = false;
                 entering_two = true;
@@ -816,8 +827,14 @@ void checkKeys(XEvent *e)
 					start_game = true;
 					if (!two_player) {
 						gamestart1p(&player, xres);
+                        start_countDown_timer();
+                        countdown_started = true;
+                        countdown_done = false;
 					} else {
 						gamestart2p(&player, &player2, xres);
+                        start_countDown_timer();
+                        countdown_started = true;
+                        countdown_done = false;
 					}
 				// Change game mode
 				} else if (menu_position == 2) {
@@ -1021,51 +1038,9 @@ void render(void)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 
-	// Menu
-	/*if (display_menu && !start_game) {
-		mainmenu(xres, 400);
-		logo(xres, 500);
-	}
-
-	if (display_gameModes && !start_game) {
-		display_menu = 0;	
-		startGame(xres, yres);
-		if (display_oneArrow && !display_twoArrow) {
-			oneArrow(xres, yres);
-			if (keys[XK_Return]) {
-				two_player = false;
-				start_game ^= 1;
-				if (start_game) {
-					gamestart1p(&player, xres);
-				}
-			}
-		}
-		if (display_twoArrow & !display_oneArrow) {
-			twoArrow(xres, yres);
-			if (keys[XK_Return]) {
-				two_player = true;
-				start_game ^= 1 ;
-				if (start_game) {
-					gamestart2p(&player, &player2, xres);
-				}
-			}
-		}
-	}
-
-	if (display_tutorial && !start_game) {
-		tutorial(xres, yres);
-	}
-
-	if (display_audioSettings && !start_game) {
-		display_menu = 0;
-		audioSettings(xres, yres);
-		if (display_oneArrow && !display_twoArrow) {
-			onArrow(xres, yres);
-		}
-		if (display_twoArrow && !display_oneArrow) {
-			twoArrow(xres, yres);
-		}
-	}*/
+    if (countdown_started) {
+        countdown_done = check_countDown_timer();
+    }
 
 	// Menus (new)
 	if (show_logo && !start_game && !game_over) {

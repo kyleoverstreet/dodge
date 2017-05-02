@@ -2,6 +2,9 @@
 // CMPS 3350
 // Dodge Project
 
+// intro.. 
+
+
 #include <iostream>
 #include <X11/Xlib.h>
 #include <GL/gl.h>
@@ -37,16 +40,26 @@ extern bool p1_dead;
 extern bool p2_dead;
 extern bool blinkon;
 extern bool blinkoff;
+extern bool countdown_done;
 extern int movePlayer(int xres, Player *player);
 extern void keypressA(Player *player);
 extern void keypressD(Player *player);
 extern void keypressR(Player *player2);
 extern void keypressL(Player *player2);
+extern bool check_countDown_timer();
+
+extern "C" {
+#include "src/fonts.h"
+}
 
 bool start_notext_timer(); 
+void countDown3(int, int);
+void countDown2(int, int);
+void countDown1(int, int);
+void countDown0(int, int);
 
 timespec txt_start, txt_current;
-
+timespec countdown_start, countdown_current;
 
 extern void createSpikes(float n, const int xres, const int yres)
 {
@@ -420,3 +433,78 @@ bool check_notext_timer(bool txt) {
 		return false;
 	}	
 }
+
+void start_countDown_timer() {
+    clock_gettime(CLOCK_REALTIME, &countdown_start);
+}
+
+bool check_countDown_timer() {
+    
+    clock_gettime(CLOCK_REALTIME, &countdown_current);
+    int timediff = countdown_current.tv_sec - countdown_start.tv_sec;
+    cout << "timediff=" << timediff << ", countdown_done=" <<countdown_done << endl;
+    if( timediff < 1) {
+    	countDown3(800,600);
+    	return false;
+    }
+    if(timediff < 2 && timediff >= 1){
+    	countDown2(800,600);
+    	return false;
+    }
+    if(timediff < 3 && timediff >=2){
+    	countDown1(800,600);
+    	return false;
+    }
+    if(timediff < 4 && timediff >=3){
+    	countDown0(800,600);
+    	return true;
+    }
+    return true;
+}
+
+
+void countDown3(const int xres, const int yres)
+{
+    unsigned int yellow = 0x00dddd00;
+    Rect i;
+    
+    i.bot = yres/2 + 80;
+    i.left = xres/2;
+    i.center = 0;
+    ggprint17(&i, 20, yellow, "   3");
+}
+
+void countDown2(const int xres, const int yres)
+{
+    unsigned int yellow = 0x00dddd00;
+    Rect i;
+    
+    i.bot = yres/2 + 80;
+    i.left = xres/2;
+    i.center = 0;
+    ggprint17(&i, 20, yellow, "   2");
+}
+
+void countDown1(const int xres, const int yres)
+{
+    unsigned int yellow = 0x00dddd00;
+    Rect i;
+    
+    i.bot = yres/2 + 80;
+    i.left = xres/2;
+    i.center = 0;
+    ggprint17(&i, 20, yellow, "   1");
+}
+
+void countDown0(const int xres, const int yres)
+{
+    unsigned int yellow = 0x00dddd00;
+    Rect i;
+    
+    i.bot = yres/2 + 80;
+    i.left = xres/2;
+    i.center = 0;
+    ggprint17(&i, 20, yellow, "START!!");
+}
+
+
