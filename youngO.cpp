@@ -442,7 +442,6 @@ bool check_countDown_timer() {
     
     clock_gettime(CLOCK_REALTIME, &countdown_current);
     int timediff = countdown_current.tv_sec - countdown_start.tv_sec;
-    cout << "timediff=" << timediff << ", countdown_done=" <<countdown_done << endl;
     if( timediff < 1) {
     	countDown3(800,600);
     	return false;
