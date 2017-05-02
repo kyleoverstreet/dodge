@@ -212,7 +212,7 @@ extern void play_game_over()
 }
 extern void play_health_pickup()
 {
-    alBuffer = alutCreateBufferFromFile("./sounds/health_pickup.wav");
+    alBuffer = alutCreateBufferFromFile("./sounds/health-pickup.wav");
 
     alGenSources(1, &alSource);
     alSourcei(alSource, AL_BUFFER, alBuffer);
