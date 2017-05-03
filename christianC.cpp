@@ -95,11 +95,11 @@ void onePlayerStart(const int xres, int key, char p1_name[], Player *player,
 {
     menu_count = 3;
     getName_player1(key, input);
-    if (keys[XK_Return]) {
+    assign_namep1(p1_name, input);
+    if (keys[XK_Return] && p1_name[0] != '\0') {
         if (menu_position == 1) {
             display_playername = false;
             start_game = true;
-            assign_namep1(p1_name, input);
             gamestart1p(player, xres);
 	    show_logo = false;
             start_countDown_timer();
@@ -120,11 +120,11 @@ void twoPlayerStart(const int xres, int key, char p1_name[], char p2_name[],
 {
     if (display_playername2) {
         getName_player2(key, input);
-        if (keys[XK_Return]) {
+	assign_namep1(p1_name, input);
+	assign_namep2(p2_name, input);
+        if (keys[XK_Return] && p2_name[0] != '\0') {
             display_playername2 = false;
             start_game = true;
-            assign_namep1(p1_name, input);
-            assign_namep2(p2_name, input);
             gamestart2p(player, player2, xres);
 	    show_logo = false;
             start_countDown_timer();

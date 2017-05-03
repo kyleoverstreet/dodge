@@ -47,7 +47,9 @@ void render(void);
 void checkResize(XEvent *e);
 void checkKeys(XEvent *e);
 extern void convertpng2ppm(void);
+extern void getImage(void);
 extern void cleanupPPM(void);
+extern void generateTextures(void);
 
 extern bool start_text_timer();
 extern bool start_notext_timer();
@@ -397,72 +399,11 @@ void initOpengl(void)
 	// Load the images file into a ppm structure.
 	convertpng2ppm();
 
-	// Background images
-	bgImage = ppm6GetImage("./images/background1.ppm");
-	bgTransImage = ppm6GetImage("./images/transparent.ppm");
-
-	// Logo image
-	logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
-
-	// Main menu image
-	mainmenuImage = ppm6GetImage("./images/Menu.ppm");
-
-	// Player1 images
-	playerImage = ppm6GetImage("./images/p1.ppm");
-	playerHelmImage  = ppm6GetImage("./images/p1Helm.ppm");
-	playerInvincibleImage = ppm6GetImage("./images/p1Invinc.ppm");
-	playerHelmInvincImage = ppm6GetImage("./images/p1HelmInvinc.ppm");
-
-	// Player2 images
-	player2Image = ppm6GetImage("./images/p2.ppm");
-	player2HelmImage = ppm6GetImage("./images/p2Helm.ppm");
-	player2InvincibleImage = ppm6GetImage("./images/p2Invinc.ppm");
-	player2HelmInvincImage = ppm6GetImage("./images/p2HelmInvinc.ppm");
-
-	// Item images
-	spikeImage = ppm6GetImage("./images/Spike.ppm");
-	helmetImage = ppm6GetImage("./images/helmet.ppm");
-	starImage = ppm6GetImage("./images/Star.ppm");
-	heartImage = ppm6GetImage("./images/heart.ppm");
-
-	// Health bar images
-	hp4Image = ppm6GetImage("./images/hp4.ppm");
-	hp3Image = ppm6GetImage("./images/hp3.ppm");
-	hp2Image = ppm6GetImage("./images/hp2.ppm");
-	hp1Image = ppm6GetImage("./images/hp1.ppm");
-	hp0Image = ppm6GetImage("./images/hp0.ppm");
-	hpiImage = ppm6GetImage("./images/hpi.ppm");
-
-	// Tombstone image
-	deathImage = ppm6GetImage("./images/death.ppm");
-
-	// Game Over Image
-	gameoverImage = ppm6GetImage("./images/GameOver.ppm");
+	// Load images into each individual Ppmimage structure
+	getImage();
 
 	// Create opengl texture elements
-	glGenTextures(1, &playerTexture);
-	glGenTextures(1, &playerHelmTexture);
-	glGenTextures(1, &playerInvincibleTexture);
-	glGenTextures(1, &playerHelmInvincTexture);
-	glGenTextures(1, &player2Texture);
-	glGenTextures(1, &player2HelmTexture);
-	glGenTextures(1, &player2InvincibleTexture);
-	glGenTextures(1, &player2HelmInvincTexture);
-	glGenTextures(1, &deathTexture);
-	glGenTextures(1, &gameoverTexture);
-	glGenTextures(1, &logoTexture);
-	glGenTextures(1, &mainmenuTexture);
-	glGenTextures(1, &hp4Texture);
-	glGenTextures(1, &hp3Texture);
-	glGenTextures(1, &hp2Texture);
-	glGenTextures(1, &hp1Texture);
-	glGenTextures(1, &hp0Texture);
-	glGenTextures(1, &hpiTexture);
-	glGenTextures(1, &silhouetteSpike);
-	glGenTextures(1, &silhouetteHelm);
-	glGenTextures(1, &silhouetteStar);
-	glGenTextures(1, &silhouetteHeart);
-	glGenTextures(1, &bgTexture);
+	generateTextures();
 
 	// Background
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
@@ -810,6 +751,7 @@ void checkKeys(XEvent *e)
 						gamestart1p(&player, xres);
 						show_logo = false;
                         start_countDown_timer();
+			start_countDown_timer();
                         countdown_started = true;
                         countdown_done = false;
 					} else {
@@ -1029,6 +971,10 @@ void render(void)
 	if (show_logo) {
 		logo(xres, 500);
 	}
+    // Menus (new)
+    if (show_logo && !start_game && !game_over) {
+	    logo(xres, 500);
+    }
 	
     blinkon = check_text_timer(blinkon);
     blinkoff = check_notext_timer(blinkoff);
