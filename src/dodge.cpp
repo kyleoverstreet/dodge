@@ -58,7 +58,7 @@ extern bool check_notext_timer(bool);
 extern void start_countDown_timer();
 extern bool check_countDown_timer();
 
-extern void start_menu(const int, const int);
+extern void start_menu(const int, const int, Input &input);
 extern void mode_menu(const int, const int);
 extern void audio_menu(const int, const int);
 extern void tutorial(const int, const int);
@@ -66,9 +66,9 @@ extern void end_menu(const int, const int);
 extern void onePlayerStart(const int, int, char[], Player* player, Input &input);
 extern void twoPlayerStart(const int, int, char[], char[], Player* player, 
                             Player* player2, Input &input);
-extern void player1Name(const int, const int, Input &input);
+extern void player1Name(const int, const int, char[], Input &input);
 extern void getName_player1(int, Input &input);
-extern void player2Name(const int, const int, Input &input);
+extern void player2Name(const int, const int, char[], char[], Input &input);
 extern void getName_player2(int, Input &input);
 extern void credits(const int, const int);
 extern void end_credits(int xres, int yres);
@@ -673,6 +673,7 @@ void checkKeys(XEvent *e)
         twoPlayerStart(xres, key, p1_name, p2_name, &player, &player2, input);
     }
     if (display_playername) {
+        cout << "HELLO\n";
         onePlayerStart(xres, key, p1_name, &player, input);
     }
 	switch(key) {
@@ -765,6 +766,8 @@ void checkKeys(XEvent *e)
 				} else if (menu_position == 2) {
 					display_endmenu = false;
 					display_modemenu = true;
+                    entering_one = true;
+                    entering_two = false;
 					menu_position = 1;
 				// Audio settings
 				} else if (menu_position == 3) {
@@ -983,16 +986,16 @@ void render(void)
     }
 
 	if (display_startmenu) {
-		start_menu(xres, yres);
+		start_menu(xres, yres, input);
 	}
 	if (display_modemenu) {
 		mode_menu(xres, yres);
 	}
     if (display_playername) {
-        player1Name(xres, yres, input);
+        player1Name(xres, yres, p1_name, input);
     }
     if (display_playername2) {
-        player2Name(xres, yres, input);
+        player2Name(xres, yres, p1_name, p2_name, input);
     }
 	if (display_audiomenu) {
 		audio_menu(xres, yres);

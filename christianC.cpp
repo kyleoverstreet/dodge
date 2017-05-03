@@ -47,14 +47,14 @@ extern Player *player;
 extern Player *player2;
 
 
-void player1Name(const int, const int, Input &input);
+void player1Name(const int, const int, char [], Input &input);
 void getName_player1(int, Input &input);
 void assign_namep1(char[], Input &input);
 extern bool display_playername;
-void player2Name(const int, const int, Input &input);
+void player2Name(const int, const int, char[], char [], Input &input);
 void getName_player2(int, Input &input);
 void assign_namep2(char[], Input &input);
-void start_menu(const int, const int);
+void start_menu(const int, const int, Input &input);
 void mode_menu(const int, const int);
 void audio_menu(const int, const int);
 void end_menu(const int, const int);
@@ -101,7 +101,7 @@ void onePlayerStart(const int xres, int key, char p1_name[], Player *player,
             display_playername = false;
             start_game = true;
             gamestart1p(player, xres);
-	    show_logo = false;
+            show_logo = false;
             start_countDown_timer();
             countdown_started = true;
             countdown_done = false;
@@ -120,13 +120,13 @@ void twoPlayerStart(const int xres, int key, char p1_name[], char p2_name[],
 {
     if (display_playername2) {
         getName_player2(key, input);
-	assign_namep1(p1_name, input);
-	assign_namep2(p2_name, input);
+	    //assign_namep1(p1_name, input);
+	    assign_namep2(p2_name, input);
         if (keys[XK_Return] && p2_name[0] != '\0') {
             display_playername2 = false;
             start_game = true;
             gamestart2p(player, player2, xres);
-	    show_logo = false;
+            show_logo = false;
             start_countDown_timer();
             countdown_started = true;
             countdown_done = false;
@@ -134,7 +134,7 @@ void twoPlayerStart(const int xres, int key, char p1_name[], char p2_name[],
     }
 }
 
-void player1Name (const int xres, const int yres, Input &input)
+void player1Name (const int xres, const int yres, char p1_name[], Input &input)
 {
     unsigned int black_ = 0x000000;
     float w, h;
@@ -185,15 +185,24 @@ void player1Name (const int xres, const int yres, Input &input)
     
 
     if (keys[XK_Left] && menu_count != 2) {
-        display_playername = false;
-        display_modemenu = true;
-        //menu_count = 1;
-    } 
+        if (!game_over) {
+            display_playername = false;
+            display_modemenu = true;
+        } else {
+            if (p1_name[0] == '\0') {
+                return;
+            } else {
+                display_playername = false;
+                display_modemenu = true;
+            }
+        }
+    }
 }
 
 void getName_player1 (int key, Input &input)
 {
     if (entering_one) {
+    cout << "INSIDE\n";
         if (key >= XK_a && key <= XK_z) {
             char k[2];
             k[0] = key;
@@ -216,7 +225,8 @@ void assign_namep1 (char p1_name[], Input &input)
         p1_name[i] = input.player1[i];
 }
 
-void player2Name (const int xres, const int yres, Input &input)
+void player2Name (const int xres, const int yres, char p1_name[], char p2_name[], 
+                    Input &input)
 {
     unsigned int black_ = 0x000000;
     float w, h;
@@ -259,11 +269,27 @@ void player2Name (const int xres, const int yres, Input &input)
     p.center = s->center.y;
     ggprint13(&p, 20, black_, "Press Enter to Play!");
 
-	if (keys[XK_Left]) {
-        display_playername2 = false;
-        display_playername = true;
-        menu_count = 2;
-	}
+    if (keys[XK_Left] && menu_count != 2) {
+        if (!game_over) {
+            display_playername2 = false;
+            display_playername = true;
+            input.player1[0] = '\0';
+            p1_name[0] = '\0';
+            entering_one = true;
+            entering_two = false;
+        } else {
+            if (p2_name[0] == '\0') {
+                return;
+            } else {
+                display_playername2 = false;
+                display_playername = true;
+                input.player1[0] = '\0';
+                p1_name[0] = '\0';
+                entering_one = true;
+                entering_two = false;
+            }
+        }
+    }
 
 }
 
@@ -366,8 +392,10 @@ void gameOverScores (const int xres, const int yres, char p1_name[], char p2_nam
     }
 }
 
-void start_menu(const int xres, const int yres)
+void start_menu(const int xres, const int yres, Input &input)
 {
+    input.player1[0] = '\0';
+    input.player2[0] = '\0';
 	unsigned int yellow = 0x00dddd00;
 	
 	Rect m;
