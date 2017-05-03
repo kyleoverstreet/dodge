@@ -740,7 +740,7 @@ void checkKeys(XEvent *e)
 			if (!start_game && !display_modemenu
                 && !display_audiomenu && !display_tutorial
                 && !display_endmenu && !display_playername 
-                && !display_playername2) {
+                && !display_playername2 && !display_gameoverscores) {
 				display_startmenu = true;
                 intro_message = false;
                 blinkon = false;
@@ -752,6 +752,7 @@ void checkKeys(XEvent *e)
             if (game_over && display_gameoverscores) {
                 display_gameoverscores = false;
                 display_endmenu = true;
+		show_logo = true;
             }
             break;
 		case XK_Down:
@@ -807,11 +808,13 @@ void checkKeys(XEvent *e)
 					start_game = true;
 					if (!two_player) {
 						gamestart1p(&player, xres);
+						show_logo = false;
                         start_countDown_timer();
                         countdown_started = true;
                         countdown_done = false;
 					} else {
 						gamestart2p(&player, &player2, xres);
+						show_logo = false;
                         start_countDown_timer();
                         countdown_started = true;
                         countdown_done = false;
@@ -1023,7 +1026,7 @@ void render(void)
     }
 
 	// Menus (new)
-	if (show_logo && !start_game && !game_over) {
+	if (show_logo) {
 		logo(xres, 500);
 	}
 	
@@ -1061,8 +1064,6 @@ void render(void)
 
 	// Display health and score to screen once game is started
 	if (start_game) {
-		//display_gameModes = 0;
-		//display_menu = 0;
 		display_health(xres, yres);
 		display_score(xres, yres);
 	}

@@ -101,6 +101,7 @@ void onePlayerStart(const int xres, int key, char p1_name[], Player *player,
             start_game = true;
             assign_namep1(p1_name, input);
             gamestart1p(player, xres);
+	    show_logo = false;
             start_countDown_timer();
             countdown_started = true;
             countdown_done = false;
@@ -125,6 +126,7 @@ void twoPlayerStart(const int xres, int key, char p1_name[], char p2_name[],
             assign_namep1(p1_name, input);
             assign_namep2(p2_name, input);
             gamestart2p(player, player2, xres);
+	    show_logo = false;
             start_countDown_timer();
             countdown_started = true;
             countdown_done = false;

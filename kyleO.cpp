@@ -381,7 +381,7 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 							play_game_over();
 						}
 #endif
-						//gamelog(p1_name, p1_score);
+						gamelog(p1_name, p1_score);
 						p1_dead = true;
 						p1_deadpos = player_pos;
 						if (!two_player) {
