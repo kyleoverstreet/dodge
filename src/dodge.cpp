@@ -673,7 +673,6 @@ void checkKeys(XEvent *e)
         twoPlayerStart(xres, key, p1_name, p2_name, &player, &player2, input);
     }
     if (display_playername) {
-        cout << "HELLO\n";
         onePlayerStart(xres, key, p1_name, &player, input);
     }
 	switch(key) {
