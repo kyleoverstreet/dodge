@@ -730,43 +730,9 @@ void checkKeys(XEvent *e)
 	}
     if (display_playername2) {
         twoPlayerStart(xres, key, p1_name, p2_name, &player, &player2, input);
-        /*
-        getName_player2(key, input);
-        if (keys[XK_Return]) {
-            display_playername2 = false;
-            start_game = true;
-            assign_namep1(p1_name, input);
-            assign_namep2(p2_name, input);
-            gamestart2p(&player, &player2, xres);
-            start_countDown_timer();
-            countdown_started = true;
-            countdown_done = false;
-        }
-        */
     }
     if (display_playername) {
         onePlayerStart(xres, key, p1_name, &player, input);
-        /*
-        menu_count = 3;
-        getName_player1(key, input);
-        if (keys[XK_Return]) {
-            if (menu_position == 1) {
-                display_playername = false;
-                start_game = true;
-                assign_namep1(p1_name, input);
-                gamestart1p(&player, xres);
-                start_countDown_timer();
-                countdown_started = true;
-                countdown_done = false;
-            } else {
-                entering_one = false;
-                entering_two = true;
-                display_playername = false;
-                display_playername2 = true;
-                return;
-            } 
-           
-        }*/
     }
 	switch(key) {
         case XK_m:
