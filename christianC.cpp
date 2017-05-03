@@ -202,7 +202,6 @@ void player1Name (const int xres, const int yres, char p1_name[], Input &input)
 void getName_player1 (int key, Input &input)
 {
     if (entering_one) {
-    cout << "INSIDE\n";
         if (key >= XK_a && key <= XK_z) {
             char k[2];
             k[0] = key;
