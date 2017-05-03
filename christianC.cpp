@@ -22,6 +22,7 @@ the game. It allows the players to turn the audio on/off.
 #include <time.h>
 #include <vector>
 #include "src/ppm.h"
+#include "src/shared.h"
 #include "src/christianC.h"
 using namespace std;
 
@@ -29,26 +30,30 @@ extern "C" {
 #include "src/fonts.h"
 }
 
-struct Vec {
+struct Vect {
     float x, y, z;
 };
 
-struct Shape {
+struct Box {
     float width, height;
-    Vec center;
+    Vect center;
 };
 
 struct MenuBox {
-    Shape box[2];
+    Box box[2];
 };
 
-void player1Name(const int, const int, Input);
-void getName_player1(int, Input);
-void assign_namep1(char[], Input);
+extern Player *player;
+extern Player *player2;
+
+
+void player1Name(const int, const int, Input &input);
+void getName_player1(int, Input &input);
+void assign_namep1(char[], Input &input);
 extern bool display_playername;
-void player2Name(const int, const int, Input);
-void getName_player2(int, Input);
-void assign_namep2(char[], Input);
+void player2Name(const int, const int, Input &input);
+void getName_player2(int, Input &input);
+void assign_namep2(char[], Input &input);
 void start_menu(const int, const int);
 void mode_menu(const int, const int);
 void audio_menu(const int, const int);
@@ -70,19 +75,70 @@ extern bool display_tutorial;
 extern bool show_logo;
 extern bool game_over;
 extern bool audio_on;
+extern bool start_game;
+extern void start_countDown_timer();
+extern bool countdown_started;
+extern bool countdown_done;
 extern int menu_position;
 extern GLuint silhouetteSpike;
 extern int keys[];
 int menu_count = 0;
+extern void gamestart1p(Player *player, int);
+extern void gamestart2p(Player *player, Player *player2, int);
+void onePlayerStart(const int, int, char [], Player *player, Input &input); 
+void twoPlayerStart(const int, int, Input &input, char [], char[], 
+                    Player *palyer, Player *player2); 
 
-unsigned int black_ = 0x000000;
+
+void onePlayerStart(const int xres, int key, char p1_name[], Player *player, 
+                    Input &input)
+{
+    menu_count = 3;
+    getName_player1(key, input);
+    if (keys[XK_Return]) {
+        if (menu_position == 1) {
+            display_playername = false;
+            start_game = true;
+            assign_namep1(p1_name, input);
+            gamestart1p(player, xres);
+            start_countDown_timer();
+            countdown_started = true;
+            countdown_done = false;
+        } else {
+            entering_one = false;
+            entering_two = true;
+            display_playername = false;
+            display_playername2 = true;
+            return;
+        }
+    }
+} 
+
+void twoPlayerStart(const int xres, int key, char p1_name[], char p2_name[], 
+                    Player *player, Player *player2, Input &input)
+{
+    if (display_playername2) {
+        getName_player2(key, input);
+        if (keys[XK_Return]) {
+            display_playername2 = false;
+            start_game = true;
+            assign_namep1(p1_name, input);
+            assign_namep2(p2_name, input);
+            gamestart2p(player, player2, xres);
+            start_countDown_timer();
+            countdown_started = true;
+            countdown_done = false;
+        }
+    }
+}
 
 void player1Name (const int xres, const int yres, Input &input)
 {
+    unsigned int black_ = 0x000000;
     float w, h;
 
     MenuBox m1;
-    Shape *s;
+    Box *s;
 
     m1.box[0].width = 100;
     m1.box[0].height = 15;
@@ -124,6 +180,8 @@ void player1Name (const int xres, const int yres, Input &input)
         ggprint13(&p, 20, black_, "Press Enter to Continue");
     }
 
+    
+
     if (keys[XK_Left] && menu_count != 2) {
         display_playername = false;
         display_modemenu = true;
@@ -158,10 +216,11 @@ void assign_namep1 (char p1_name[], Input &input)
 
 void player2Name (const int xres, const int yres, Input &input)
 {
+    unsigned int black_ = 0x000000;
     float w, h;
 
     MenuBox m2;
-    Shape *s;
+    Box *s;
 
     m2.box[1].width = 100;
     m2.box[1].height = 15;

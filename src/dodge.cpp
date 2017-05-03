@@ -61,6 +61,9 @@ extern void mode_menu(const int, const int);
 extern void audio_menu(const int, const int);
 extern void tutorial(const int, const int);
 extern void end_menu(const int, const int);
+extern void onePlayerStart(const int, int, char[], Player* player, Input &input);
+extern void twoPlayerStart(const int, int, char[], char[], Player* player, 
+                            Player* player2, Input &input);
 extern void player1Name(const int, const int, Input &input);
 extern void getName_player1(int, Input &input);
 extern void player2Name(const int, const int, Input &input);
@@ -726,6 +729,8 @@ void checkKeys(XEvent *e)
 		return;
 	}
     if (display_playername2) {
+        twoPlayerStart(xres, key, p1_name, p2_name, &player, &player2, input);
+        /*
         getName_player2(key, input);
         if (keys[XK_Return]) {
             display_playername2 = false;
@@ -737,8 +742,11 @@ void checkKeys(XEvent *e)
             countdown_started = true;
             countdown_done = false;
         }
+        */
     }
     if (display_playername) {
+        onePlayerStart(xres, key, p1_name, &player, input);
+        /*
         menu_count = 3;
         getName_player1(key, input);
         if (keys[XK_Return]) {
@@ -758,7 +766,7 @@ void checkKeys(XEvent *e)
                 return;
             } 
            
-        }
+        }*/
     }
 	switch(key) {
         case XK_m:
