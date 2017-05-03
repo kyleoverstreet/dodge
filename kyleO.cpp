@@ -147,8 +147,8 @@ void tutorial(const int xres, const int yres)
 	r2.left = xres/10;
 	r2.center = 0;
 	ggprint8b(&r2, 16, white, "Key controls:");
-	ggprint8b(&r2, 16, white, "a - moves player left");
-	ggprint8b(&r2, 16, white, "d - moves player right");
+	ggprint8b(&r2, 16, white, "a - moves player1 left");
+	ggprint8b(&r2, 16, white, "d - moves player1 right");
 	ggprint8b(&r2, 16, white, "Left arrow - moves player2 left");
 	ggprint8b(&r2, 16, white, "Right arrow - moves player2 right");
 
