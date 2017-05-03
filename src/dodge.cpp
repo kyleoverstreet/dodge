@@ -807,7 +807,7 @@ void checkKeys(XEvent *e)
 					start_game = true;
 					if (!two_player) {
 						gamestart1p(&player, xres);
-                        start_countDown_timer();
+			start_countDown_timer();
                         countdown_started = true;
                         countdown_done = false;
 					} else {
@@ -1022,10 +1022,10 @@ void render(void)
         countdown_done = check_countDown_timer();
     }
 
-	// Menus (new)
-	if (show_logo && !start_game && !game_over) {
-		logo(xres, 500);
-	}
+    // Menus (new)
+    if (show_logo && !start_game && !game_over) {
+	    logo(xres, 500);
+    }
 	
     blinkon = check_text_timer(blinkon);
     blinkoff = check_notext_timer(blinkoff);
