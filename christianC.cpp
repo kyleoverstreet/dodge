@@ -86,7 +86,7 @@ int menu_count = 0;
 extern void gamestart1p(Player *player, int);
 extern void gamestart2p(Player *player, Player *player2, int);
 void onePlayerStart(const int, int, char [], Player *player, Input &input); 
-void twoPlayerStart(const int, int, Input &input, char [], char[], 
+void twoPlayerStart(const int, int, Input &input, char[], 
                     Player *palyer, Player *player2); 
 
 
@@ -115,7 +115,7 @@ void onePlayerStart(const int xres, int key, char p1_name[], Player *player,
     }
 } 
 
-void twoPlayerStart(const int xres, int key, char p1_name[], char p2_name[], 
+void twoPlayerStart(const int xres, int key, char p2_name[], 
                     Player *player, Player *player2, Input &input)
 {
     if (display_playername2) {

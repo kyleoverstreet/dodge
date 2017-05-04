@@ -64,7 +64,7 @@ extern void audio_menu(const int, const int);
 extern void tutorial(const int, const int);
 extern void end_menu(const int, const int);
 extern void onePlayerStart(const int, int, char[], Player* player, Input &input);
-extern void twoPlayerStart(const int, int, char[], char[], Player* player, 
+extern void twoPlayerStart(const int, int, char[], Player* player, 
                             Player* player2, Input &input);
 extern void player1Name(const int, const int, char[], Input &input);
 extern void getName_player1(int, Input &input);
@@ -670,7 +670,7 @@ void checkKeys(XEvent *e)
 		return;
 	}
     if (display_playername2) {
-        twoPlayerStart(xres, key, p1_name, p2_name, &player, &player2, input);
+        twoPlayerStart(xres, key, p2_name, &player, &player2, input);
     }
     if (display_playername) {
         onePlayerStart(xres, key, p1_name, &player, input);
