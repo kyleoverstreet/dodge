@@ -213,6 +213,8 @@ bool display_endmenu = false;
 bool display_playername = false;
 bool display_playername2 = false;
 bool display_gameoverscores = false;
+extern float spike_mod;
+extern int level;
 bool audio_on = true;
 bool start_game = false;
 bool game_over = false;
@@ -255,7 +257,9 @@ int main(void)
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 #ifdef USE_OPENAL_SOUND
-	play_theme();
+	if (audio_on) {
+		play_theme();
+	}
 #endif
 
     blinkon = start_text_timer();
@@ -760,6 +764,8 @@ void checkKeys(XEvent *e)
 					start_game = true;
 					if (!two_player) {
 						gamestart1p(&player, xres);
+						spike_mod = 15.0;
+						level = 0;
 						show_logo = false;
                         start_countDown_timer();
 			start_countDown_timer();
@@ -767,6 +773,8 @@ void checkKeys(XEvent *e)
                         countdown_done = false;
 					} else {
 						gamestart2p(&player, &player2, xres);
+						spike_mod = 15.0;
+						level = 0;
 						show_logo = false;
                         start_countDown_timer();
                         countdown_started = true;

@@ -2,15 +2,7 @@
 // CMPS 3350
 // Dodge Project
 // Individual source code
-// Last edit: 4/29/17
-
-/****** WEEK 13 ******
-Working on many things:
-
-Intro animation
-New displays
-Score webpage
-**********************/
+// Last edit: 5/4/17
 
 #include <X11/Xlib.h>
 #include <GL/gl.h>
@@ -282,7 +274,6 @@ void dropItems(int player_pos, int player2_pos, const int xres, const int yres)
 		spike_mod += 4;
 		level_change += 100;
 		level++;
-		cout << "increasing drop rate to level " << level << endl;
 	}
 	if (countdown_done){
 		if (random(100) < spike_mod) {

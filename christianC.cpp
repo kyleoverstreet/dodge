@@ -46,7 +46,6 @@ struct MenuBox {
 extern Player *player;
 extern Player *player2;
 
-
 void player1Name(const int, const int, char [], Input &input);
 void getName_player1(int, Input &input);
 void assign_namep1(char[], Input &input);
@@ -64,6 +63,8 @@ bool entering_one = true;
 bool entering_two = false;
 void introMessage(const int, const int);
 void gameOverScores(const int, const int, char [], char []);
+extern int level;
+extern float spike_mod;
 extern int p1_score;
 extern int p2_score;
 extern bool two_player;
@@ -101,6 +102,8 @@ void onePlayerStart(const int xres, int key, char p1_name[], Player *player,
             display_playername = false;
             start_game = true;
             gamestart1p(player, xres);
+		spike_mod = 15.0;
+		level = 0;
             show_logo = false;
             start_countDown_timer();
             countdown_started = true;
@@ -126,6 +129,8 @@ void twoPlayerStart(const int xres, int key, char p2_name[],
             display_playername2 = false;
             start_game = true;
             gamestart2p(player, player2, xres);
+		spike_mod = 15.0;
+		level = 0;
             show_logo = false;
             start_countDown_timer();
             countdown_started = true;
