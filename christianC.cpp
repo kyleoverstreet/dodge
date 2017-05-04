@@ -5,7 +5,12 @@
 
 /*
 This code is responsible for the menu functionality for the start and end of
-the game. It allows the players to turn the audio on/off. 
+the game. It allows the players to turn the audio on/off. It uses the fonts 
+provided by gordon. My code also handles the player inout for their names
+and passes the values to the fucntion that starts the game. Their is also
+a game over screen fucntion that shows a game over image with the player's
+score and if two players are playing, the winner is displayed. A challenge
+was handling how player input works with multiple games played.
 */
 
 #include <X11/Xlib.h>
