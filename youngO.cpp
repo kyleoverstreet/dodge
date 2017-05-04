@@ -463,9 +463,9 @@ bool check_countDown_timer()
     clock_gettime(CLOCK_REALTIME, &countdown_current);
     int timediff = countdown_current.tv_sec - countdown_start.tv_sec;
     if( timediff < 1) {
-	if(one) {
-	    play_one();
-	    one = false;
+	if(three) {
+	    play_three();
+	    three = false;
 	}
 	countDown3(800,600);
 	return false;
@@ -479,9 +479,9 @@ bool check_countDown_timer()
 	return false;
     }
     if(timediff < 3 && timediff >=2){
-	if(three) {
-	    play_three();
-	    three = false;
+	if(one) {
+	    play_one();
+	    one = false;
 	}
 	countDown1(800,600);
 	return false;
