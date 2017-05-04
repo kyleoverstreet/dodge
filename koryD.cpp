@@ -62,6 +62,7 @@ extern void initialize_sounds()
     alListenerf(AL_GAIN, 1.0f);
 
 }
+
 extern void cleanup_sounds()
 {
     ALCcontext *Context = alcGetCurrentContext();
@@ -74,17 +75,7 @@ extern void cleanup_sounds()
     alcCloseDevice(Device);
 
 }
-/*extern void check_sound() 
-  {
-  ALint state;
-  alGetSourcei(alSource, AL_SOURCE_STATE, &state);
-  if(state != AL_PLAYING) {
-  printf("deleting buffer and source\n");
-  alDeleteSources(1, &alSource);
-  alDeleteBuffers(1, &alBuffer);
-  }
-  }
-  */
+
 extern void play_helmet_hit()
 {
     //ALuint alBuffer;
@@ -176,6 +167,10 @@ extern void play_theme()
 
     alSourcePlay(alSource);
 }
+extern void stop_theme() 
+{
+	return;
+}
 extern void play_health_loss()
 {
     alBuffer = alutCreateBufferFromFile("./sounds/health_loss.wav");
@@ -229,7 +224,7 @@ extern void play_health_pickup()
 }
 
 extern void play_one() {
-    alBuffer = alutCreateBufferFromFile("./sounds/one.wav");
+    alBuffer = alutCreateBufferFromFile("./sounds/beep.wav");
 
     alGenSources(1, &alSource);
     alSourcei(alSource, AL_BUFFER, alBuffer);
@@ -293,7 +288,7 @@ extern void play_go() {
     alSourcePlay(alSource);
 }
 extern void play_menu_select() {
-    alBuffer = alutCreateBufferFromFile("./sounds/menu_select.wav");
+    alBuffer = alutCreateBufferFromFile("./sounds/menu.wav");
 
     alGenSources(1, &alSource);
     alSourcei(alSource, AL_BUFFER, alBuffer);
@@ -416,10 +411,6 @@ extern void end_credits(int xres, int yres) {
     ggprint13(&r, 16, color, "Movement and Collision - Kyle Overstreet and Young Soo");
     ggprint13(&r, 16, color, "Menu Interface - Christian Chavez");
     ggprint13(&r, 16, color, "Graphics - Jacob West");
-    ggprint13(&r, 16, color, "");
-    ggprint13(&r, 16, color, "");
-    ggprint13(&r, 16, color, "");
-    ggprint13(&r, 16, color, "");
 }
 
 

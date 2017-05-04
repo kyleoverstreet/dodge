@@ -93,6 +93,7 @@ extern void gameover(int, int);
 extern void gameOver(const int, const int);
 extern void view_scores();
 #ifdef USE_OPENAL_SOUND
+extern void stop_theme();
 extern void play_health_loss();
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -700,19 +701,28 @@ void checkKeys(XEvent *e)
 			// Keep menu position accurate
 			if (display_startmenu && menu_position != 3) {
 				menu_position++;
+#ifdef USE_OPENAL_SOUND
 				play_menu_select();
+#endif
 			} else if ((display_modemenu || display_audiomenu) && menu_position != 2) {
 				menu_position++;
+#ifdef USE_OPENAL_SOUND
 				play_menu_select();
+#endif
 			} else if (display_endmenu && menu_position != 4) {
 				menu_position++;
+#ifdef USE_OPENAL_SOUND
 				play_menu_select();
+#endif
 			}
 			break;
 		case XK_Up:
 			// Keep menu position accurate
 			if ((display_startmenu || display_modemenu || display_audiomenu || display_endmenu)
 				&& menu_position != 1) {
+#ifdef USE_OPENAL_SOUND
+				play_menu_select();
+#endif
 				menu_position--;
 			}
 			break;
@@ -738,6 +748,7 @@ void checkKeys(XEvent *e)
 					audio_on = true;
 				// Disable audio
 				} else {
+					stop_theme();
 					audio_on = false;
 				}
 			}
