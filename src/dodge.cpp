@@ -94,6 +94,7 @@ extern void gameOver(const int, const int);
 extern void view_scores();
 #ifdef USE_OPENAL_SOUND
 extern void stop_theme();
+extern void continue_theme();
 extern void play_health_loss();
 extern void initialize_sounds();
 extern void play_helmet_hit();
@@ -702,17 +703,20 @@ void checkKeys(XEvent *e)
 			if (display_startmenu && menu_position != 3) {
 				menu_position++;
 #ifdef USE_OPENAL_SOUND
-				play_menu_select();
+				if(audio_on) 
+					play_menu_select();
 #endif
 			} else if ((display_modemenu || display_audiomenu) && menu_position != 2) {
 				menu_position++;
 #ifdef USE_OPENAL_SOUND
-				play_menu_select();
+				if(audio_on)
+					play_menu_select();
 #endif
 			} else if (display_endmenu && menu_position != 4) {
 				menu_position++;
 #ifdef USE_OPENAL_SOUND
-				play_menu_select();
+				if(audio_on)
+					play_menu_select();
 #endif
 			}
 			break;
@@ -721,7 +725,8 @@ void checkKeys(XEvent *e)
 			if ((display_startmenu || display_modemenu || display_audiomenu || display_endmenu)
 				&& menu_position != 1) {
 #ifdef USE_OPENAL_SOUND
-				play_menu_select();
+				if(audio_on)
+					play_menu_select();
 #endif
 				menu_position--;
 			}
@@ -746,6 +751,7 @@ void checkKeys(XEvent *e)
 				// Enable audio
 				if (menu_position == 1) {
 					audio_on = true;
+					continue_theme();
 				// Disable audio
 				} else {
 					stop_theme();

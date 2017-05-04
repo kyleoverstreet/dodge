@@ -45,6 +45,7 @@ timespec power_start, power_current;
 
 #ifdef USE_OPENAL_SOUND
 ALuint alSource;
+ALuint themeSource;
 ALuint alBuffer;
 
 extern void initialize_sounds() 
@@ -154,22 +155,27 @@ extern void play_theme()
 {
     alBuffer = alutCreateBufferFromFile("./sounds/theme.wav");
 
-    alGenSources(1, &alSource);
-    alSourcei(alSource, AL_BUFFER, alBuffer);
+    alGenSources(1, &themeSource);
+    alSourcei(themeSource, AL_BUFFER, alBuffer);
 
-    alSourcef(alSource, AL_GAIN, 1.0f);
-    alSourcef(alSource, AL_PITCH, 1.0f);
-    alSourcei(alSource, AL_LOOPING, AL_TRUE);
+    alSourcef(themeSource, AL_GAIN, .30f);
+    alSourcef(themeSource, AL_PITCH, 1.0f);
+    alSourcei(themeSource, AL_LOOPING, AL_TRUE);
     if (alGetError() != AL_NO_ERROR) {
 	printf("ERROR setting sound source\n");
 	return;
     }
 
-    alSourcePlay(alSource);
+    alSourcePlay(themeSource);
 }
 extern void stop_theme() 
 {
+	alSourcePause(themeSource);
 	return;
+}
+extern void continue_theme() 
+{
+	alSourcePlay(themeSource);
 }
 extern void play_health_loss()
 {
@@ -224,7 +230,7 @@ extern void play_health_pickup()
 }
 
 extern void play_one() {
-    alBuffer = alutCreateBufferFromFile("./sounds/beep.wav");
+    alBuffer = alutCreateBufferFromFile("./sounds/one.wav");
 
     alGenSources(1, &alSource);
     alSourcei(alSource, AL_BUFFER, alBuffer);
@@ -272,7 +278,7 @@ extern void play_three() {
     alSourcePlay(alSource);
 }
 extern void play_go() {
-    alBuffer = alutCreateBufferFromFile("./sounds/go.wav");
+    alBuffer = alutCreateBufferFromFile("./sounds/start.wav");
 
     alGenSources(1, &alSource);
     alSourcei(alSource, AL_BUFFER, alBuffer);
