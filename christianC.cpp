@@ -107,8 +107,8 @@ void onePlayerStart(const int xres, int key, char p1_name[], Player *player,
             display_playername = false;
             start_game = true;
             gamestart1p(player, xres);
-		spike_mod = 15.0;
-		level = 0;
+            spike_mod = 15.0;
+            level = 0;
             show_logo = false;
             start_countDown_timer();
             countdown_started = true;
@@ -134,8 +134,8 @@ void twoPlayerStart(const int xres, int key, char p2_name[],
             display_playername2 = false;
             start_game = true;
             gamestart2p(player, player2, xres);
-		spike_mod = 15.0;
-		level = 0;
+            spike_mod = 15.0;
+            level = 0;
             show_logo = false;
             start_countDown_timer();
             countdown_started = true;
