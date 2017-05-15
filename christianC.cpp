@@ -405,216 +405,216 @@ void start_menu(const int xres, const int yres, Input &input)
 {
     input.player1[0] = '\0';
     input.player2[0] = '\0';
-	unsigned int yellow = 0x00dddd00;
-	
-	Rect m;
-	m.bot = yres - 200;
-	m.left = xres/2 - 55;
-	m.center = 0;
-	ggprint13(&m, 16, yellow, "Play Game");
-	ggprint13(&m, 16, yellow, "Audio Settings");
-	ggprint13(&m, 16, yellow, "How to Play");
+    unsigned int yellow = 0x00dddd00;
 
-	int spike_x;
-	int spike_y;
+    Rect m;
+    m.bot = yres - 200;
+    m.left = xres/2 - 55;
+    m.center = 0;
+    ggprint13(&m, 16, yellow, "Play Game");
+    ggprint13(&m, 16, yellow, "Audio Settings");
+    ggprint13(&m, 16, yellow, "How to Play");
 
-	if (menu_position == 1) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 190;
-	} else if (menu_position == 2) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 207;
-	} else if (menu_position == 3) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 224;
-	}
+    int spike_x;
+    int spike_y;
 
-	float w = 10.0;
-	// Display spike
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glTranslatef(spike_x,spike_y,0);
-	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
-	glEnd();
-	glPopMatrix();
+    if (menu_position == 1) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 190;
+    } else if (menu_position == 2) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 207;
+    } else if (menu_position == 3) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 224;
+    }
 
-	if (keys[XK_Return]) {
-		if (menu_position == 1) {
-			display_startmenu = false;
-			display_modemenu = true;
-		} else if (menu_position == 2) {
-			display_startmenu = false;
-			display_audiomenu = true;
-			menu_position = 1;
-		} else if (menu_position == 3) {
-			display_startmenu = false;
-			display_tutorial = true;
-			show_logo = false;
-		}
-	}
+    float w = 10.0;
+    // Display spike
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(spike_x,spike_y,0);
+    glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+    glEnd();
+    glPopMatrix();
+
+    if (keys[XK_Return]) {
+        if (menu_position == 1) {
+            display_startmenu = false;
+            display_modemenu = true;
+        } else if (menu_position == 2) {
+            display_startmenu = false;
+            display_audiomenu = true;
+            menu_position = 1;
+        } else if (menu_position == 3) {
+            display_startmenu = false;
+            display_tutorial = true;
+            show_logo = false;
+        }
+    }
 }
 
 void mode_menu(const int xres, const int yres)
 {
-	unsigned int yellow = 0x00dddd00;
-	
-	Rect m;
-	m.bot = yres - 200;
-	m.left = xres/2 - 55;
-	m.center = 0;
-	ggprint13(&m, 16, yellow, "1-Player");
-	ggprint13(&m, 16, yellow, "2-Player");
-	ggprint13(&m, 16, yellow, " ");
-	
-	int spike_x = xres/2 - 73;
-	int spike_y = yres - 190;
-	if (menu_position == 1) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 190;
-	} else if (menu_position == 2) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 207;
-	}
-	
-	float w = 10.0;
-	// Display spike
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glTranslatef(spike_x,spike_y,0);
-	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
-	glEnd();
-	glPopMatrix();
+    unsigned int yellow = 0x00dddd00;
 
-	if (keys[XK_Left] && menu_count != 1) {
-		if (!game_over) {
-			display_modemenu = false;
-			display_startmenu = true;
-			menu_position = 1;
-		} else {
-			display_modemenu = false;
-			display_endmenu = true;
-		}
+    Rect m;
+    m.bot = yres - 200;
+    m.left = xres/2 - 55;
+    m.center = 0;
+    ggprint13(&m, 16, yellow, "1-Player");
+    ggprint13(&m, 16, yellow, "2-Player");
+    ggprint13(&m, 16, yellow, " ");
+
+    int spike_x = xres/2 - 73;
+    int spike_y = yres - 190;
+    if (menu_position == 1) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 190;
+    } else if (menu_position == 2) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 207;
+    }
+
+    float w = 10.0;
+    // Display spike
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(spike_x,spike_y,0);
+    glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+    glEnd();
+    glPopMatrix();
+
+    if (keys[XK_Left] && menu_count != 1) {
+        if (!game_over) {
+            display_modemenu = false;
+            display_startmenu = true;
+            menu_position = 1;
+        } else {
+            display_modemenu = false;
+            display_endmenu = true;
+        }
     }
 }
 
 void audio_menu(const int xres, const int yres)
 {
-	unsigned int yellow = 0x00dddd00;
-	
-	Rect m;
-	m.bot = yres - 200;
-	m.left = xres/2 - 55;
-	m.center = 0;
-	ggprint13(&m, 16, yellow, "Enable Audio");
-	ggprint13(&m, 16, yellow, "Disable Audio");
-	ggprint13(&m, 16, yellow, " ");
+    unsigned int yellow = 0x00dddd00;
 
-	if (audio_on) {
-		ggprint13(&m, 16, yellow, "Audio is currently ON!");
-	} else {
-		ggprint13(&m, 16, yellow, "Audio is currently OFF!");
-	}
-	
-	int spike_x = xres/2 - 73;
-	int spike_y = yres - 190;
-	if (menu_position == 1) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 190;
-	} else if (menu_position == 2) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 207;
-	}
-	
-	float w = 10.0;
-	// Display spike
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glTranslatef(spike_x,spike_y,0);
-	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
-	glEnd();
-	glPopMatrix();
+    Rect m;
+    m.bot = yres - 200;
+    m.left = xres/2 - 55;
+    m.center = 0;
+    ggprint13(&m, 16, yellow, "Enable Audio");
+    ggprint13(&m, 16, yellow, "Disable Audio");
+    ggprint13(&m, 16, yellow, " ");
 
-	if (keys[XK_Left]) {
-		if (!game_over) {
-			display_audiomenu = false;
-			display_startmenu = true;
-			menu_position = 2;
-		}
-		if (game_over) {
-			display_audiomenu = false;
-			display_endmenu = true;
-		}
-	}
+    if (audio_on) {
+        ggprint13(&m, 16, yellow, "Audio is currently ON!");
+    } else {
+        ggprint13(&m, 16, yellow, "Audio is currently OFF!");
+    }
+
+    int spike_x = xres/2 - 73;
+    int spike_y = yres - 190;
+    if (menu_position == 1) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 190;
+    } else if (menu_position == 2) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 207;
+    }
+
+    float w = 10.0;
+    // Display spike
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(spike_x,spike_y,0);
+    glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+    glEnd();
+    glPopMatrix();
+
+    if (keys[XK_Left]) {
+        if (!game_over) {
+            display_audiomenu = false;
+            display_startmenu = true;
+            menu_position = 2;
+        }
+        if (game_over) {
+            display_audiomenu = false;
+            display_endmenu = true;
+        }
+    }
 }
 
 void end_menu(const int xres, const int yres)
 {
-	unsigned int yellow = 0x00dddd00;
-	
-	Rect m;
-	m.bot = yres - 200;
-	m.left = xres/2 - 55;
-	m.center = 0;
-	ggprint13(&m, 16, yellow, "Play Again");
-	ggprint13(&m, 16, yellow, "Change Game Mode");
-	ggprint13(&m, 16, yellow, "Audio Settings");
-	ggprint13(&m, 16, yellow, "View Scores");
+    unsigned int yellow = 0x00dddd00;
 
-	int spike_x;
-	int spike_y;
+    Rect m;
+    m.bot = yres - 200;
+    m.left = xres/2 - 55;
+    m.center = 0;
+    ggprint13(&m, 16, yellow, "Play Again");
+    ggprint13(&m, 16, yellow, "Change Game Mode");
+    ggprint13(&m, 16, yellow, "Audio Settings");
+    ggprint13(&m, 16, yellow, "View Scores");
 
-	if (menu_position == 1) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 190;
-	} else if (menu_position == 2) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 207;
-	} else if (menu_position == 3) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 224;
-	} else if (menu_position == 4) {
-		spike_x = xres/2 - 73;
-		spike_y = yres - 241;
-	}
+    int spike_x;
+    int spike_y;
 
-	float w = 10.0;
-	// Display spike
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glTranslatef(spike_x,spike_y,0);
-	glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
-	glEnd();
-	glPopMatrix();
+    if (menu_position == 1) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 190;
+    } else if (menu_position == 2) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 207;
+    } else if (menu_position == 3) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 224;
+    } else if (menu_position == 4) {
+        spike_x = xres/2 - 73;
+        spike_y = yres - 241;
+    }
+
+    float w = 10.0;
+    // Display spike
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(spike_x,spike_y,0);
+    glBindTexture(GL_TEXTURE_2D, silhouetteSpike);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i( w, w);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( w,-w);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(-w,-w);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, w);
+    glEnd();
+    glPopMatrix();
 }
