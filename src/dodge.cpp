@@ -88,7 +88,6 @@ extern void display_score(int, int);
 extern void tombstone(int);
 extern void logo(int, int);
 extern void introMessage(int, int);
-extern void mainmenu(int, int);
 extern void gameover(int, int);
 extern void gameOver(const int, const int);
 extern void view_scores();
@@ -135,7 +134,6 @@ bool two_player = true;
 Ppmimage *bgImage = NULL;
 Ppmimage *bgTransImage = NULL;
 Ppmimage *logoImage = NULL;
-Ppmimage *mainmenuImage = NULL;
 Ppmimage *playerImage = NULL;
 Ppmimage *playerHelmImage = NULL;
 Ppmimage *playerInvincibleImage = NULL;
@@ -160,7 +158,6 @@ Ppmimage *gameoverImage = NULL;
 GLuint bgTexture;
 GLuint bgTransTexture;
 GLuint logoTexture;
-GLuint mainmenuTexture;
 GLuint playerTexture;
 GLuint playerHelmTexture;
 GLuint playerInvincibleTexture;
@@ -440,15 +437,6 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
-	// Main menu
-	w = mainmenuImage->width;
-	h = mainmenuImage->height;	
-	glBindTexture(GL_TEXTURE_2D, mainmenuTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	silhouetteData = buildAlphaData(mainmenuImage);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	// Player1
 	w = playerImage->width;
 	h = playerImage->height;

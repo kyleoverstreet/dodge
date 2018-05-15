@@ -1,4 +1,6 @@
 # Dodge
+[!2-Player Mode](images/gameplay.png "2-Player Mode")
+
 Dodge is a game in which the main objective is to live as long as possible while avoiding death by falling spikes. Items to aid the player include helmets which absorb single hits, hearts which replenish 25% of the player's health, and stars which give the player invincibility for three seconds. Dodge has a single-player game mode and a two-player versus mode.
 
 ## Getting Started

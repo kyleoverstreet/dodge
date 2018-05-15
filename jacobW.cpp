@@ -14,7 +14,6 @@ using namespace std;
 
 extern GLuint deathTexture;
 extern GLuint logoTexture;
-extern GLuint mainmenuTexture;
 extern GLuint gameoverTexture;
 extern int p1_health;
 extern int p1_score;
@@ -27,7 +26,6 @@ extern bool game_over;
 extern Ppmimage *bgImage;
 extern Ppmimage *bgTransImage;
 extern Ppmimage *logoImage;
-extern Ppmimage *mainmenuImage;
 extern Ppmimage *playerImage;
 extern Ppmimage *playerHelmImage;
 extern Ppmimage *playerInvincibleImage;
@@ -93,7 +91,6 @@ void cleanupPPM(void) {
     remove("./images/heart.ppm");
     remove("./images/death.ppm");
     remove("./images/DodgeLogo.ppm");
-    remove("./images/Menu.ppm");
     remove("./images/GameOver.ppm");
 }
 
@@ -120,7 +117,6 @@ void convertpng2ppm(void) {
     system("convert ./images/heart.png ./images/heart.ppm");
     system("convert ./images/death.png ./images/death.ppm");
     system("convert ./images/DodgeLogo.png ./images/DodgeLogo.ppm");
-    system("convert ./images/Menu.png ./images/Menu.ppm");
     system("convert ./images/GameOver.png ./images/GameOver.ppm");
 }
 
@@ -131,9 +127,6 @@ void getImage(void) {
 
     // Logo image
     logoImage = ppm6GetImage("./images/DodgeLogo.ppm");
-
-    // Main menu image
-    mainmenuImage = ppm6GetImage("./images/Menu.ppm");
 
     // Player1 images
     playerImage = ppm6GetImage("./images/p1.ppm");
@@ -181,7 +174,6 @@ void generateTextures(void) {
     glGenTextures(1, &deathTexture);
     glGenTextures(1, &gameoverTexture);
     glGenTextures(1, &logoTexture);
-    glGenTextures(1, &mainmenuTexture);
     glGenTextures(1, &hp4Texture);
     glGenTextures(1, &hp3Texture);
     glGenTextures(1, &hp2Texture);
@@ -294,25 +286,6 @@ void logo(int xres, int y)
     glTexCoord2f(0.0f, 0.0f); glVertex2i(-100, 30);
     glTexCoord2f(1.0f, 0.0f); glVertex2i( 100, 30);
     glTexCoord2f(1.0f, 1.0f); glVertex2i( 100,-30);
-    glEnd();
-    glPopMatrix();
-}
-
-void mainmenu(int xres, int y)
-{
-    //display menu at (x,y)
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glPushMatrix();
-    glTranslatef(xres/2,y,0);
-    glBindTexture(GL_TEXTURE_2D, mainmenuTexture);
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0.0f);
-    glColor4ub(255,255,255,255);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(-100,-50);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(-100, 50);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i( 100, 50);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i( 100,-50);
     glEnd();
     glPopMatrix();
 }
